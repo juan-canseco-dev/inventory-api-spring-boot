@@ -9,6 +9,7 @@ import com.jcanseco.inventoryapi.repositories.CategoryRepository;
 import com.jcanseco.inventoryapi.services.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,7 +51,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Page<CategoryDto> getCategoriesPaged(GetCategoriesRequest request) {
-        return null;
+        var pageNumber = request.getPageNumber() > 0? request.getPageNumber() - 1 : request.getPageNumber();
+        var pageSize = request.getPageSize();
+        var filterName = request.getName();
+        var pageRequest = PageRequest.of(pageNumber, pageSize);
+        var page = repository.findAllByNameContainingOrderByName(filterName, pageRequest);
+        return page.map(mapper::entityToDto);
     }
-
 }

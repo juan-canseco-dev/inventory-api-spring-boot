@@ -7,6 +7,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,7 +25,7 @@ public class CategoriesTests {
     }
 
     @Test
-    public void createCategory() {
+    public void createCategoryWhenValidCategoryReturnSavedCategoryWithGeneratedId() {
 
         var category = Category.builder().name("Electronics").build();
         var newCategory = repository.saveAndFlush(category);
@@ -62,6 +64,41 @@ public class CategoriesTests {
         this.repository.saveAllAndFlush(categories);
         var foundCategories = repository.findAllByNameContainingOrderByName("video");
         assertEquals(1, foundCategories.size());
+    }
+
+    @Test
+    public void findAllPagedCategoriesByNameWhenInputIsValidShouldReturnValidPage() {
+
+        var categories = List.of(
+                Category.builder().name("Electronics").build(),
+                Category.builder().name("Video").build(),
+                Category.builder().name("Video Games").build()
+        );
+
+        repository.saveAllAndFlush(categories);
+
+        var request = PageRequest.of(0, 10);
+        var page = repository.findAllByNameContainingOrderByName("vi", request);
+
+        assertNotNull(page.getContent());
+        assertEquals(2, page.getContent().size());
+    }
+
+    @Test
+    public void findAllPagedCategoriesWhenNameIsEmptyShouldReturnValidPageWithAllItems() {
+        var categories = List.of(
+                Category.builder().name("Electronics").build(),
+                Category.builder().name("Video").build(),
+                Category.builder().name("Video Games").build()
+        );
+
+        repository.saveAllAndFlush(categories);
+
+        var request = PageRequest.of(0, 10);
+        var page = repository.findAllByNameContainingOrderByName("", request);
+
+        assertNotNull(page.getContent());
+        assertEquals(3, page.getContent().size());
     }
 
 }
