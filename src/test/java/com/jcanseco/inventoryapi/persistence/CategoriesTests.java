@@ -2,12 +2,11 @@ package com.jcanseco.inventoryapi.persistence;
 
 import com.jcanseco.inventoryapi.entities.Category;
 import com.jcanseco.inventoryapi.repositories.CategoryRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,6 +17,10 @@ public class CategoriesTests {
 
     @Autowired
     private CategoryRepository repository;
+    @AfterEach
+    public void cleanup() {
+        repository.deleteAll();
+    }
 
     @Test
     public void createCategory() {
@@ -48,6 +51,17 @@ public class CategoriesTests {
                         savedCategories.containsAll(foundCategories) &&
                         foundCategories.containsAll(savedCategories)
         );
+    }
+
+    @Test
+    public void findAllCategoriesByNameContainingWhenContains() {
+        var categories = List.of(
+                Category.builder().name("Electronics").build(),
+                Category.builder().name("Video Games").build()
+        );
+        this.repository.saveAllAndFlush(categories);
+        var foundCategories = repository.findAllByNameContainingOrderByName("video");
+        assertEquals(1, foundCategories.size());
     }
 
 }
