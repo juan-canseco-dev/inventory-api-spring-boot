@@ -3,6 +3,7 @@ package com.jcanseco.inventoryapi.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+@EqualsAndHashCode
 @Builder
 @Setter
 @Getter

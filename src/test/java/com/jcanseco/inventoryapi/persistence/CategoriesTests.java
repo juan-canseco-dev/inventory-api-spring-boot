@@ -6,6 +6,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.HashSet;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Categories Repository Tests")
@@ -27,6 +31,23 @@ public class CategoriesTests {
         var categoryOpt = repository.findById(newCategory.getId());
         assertTrue(categoryOpt.isPresent());
 
+    }
+
+    @Test
+    public void findAllCategoriesByNameWhenNameIsEmptyShouldReturnList() {
+
+        var categories = List.of(
+                Category.builder().name("Electronics").build(),
+                Category.builder().name("Video Games").build()
+        );
+
+        var savedCategories = this.repository.saveAllAndFlush(categories);
+        var foundCategories = repository.findAllByNameContainingOrderByName("");
+        assertTrue(
+                savedCategories.size() == foundCategories.size() &&
+                        savedCategories.containsAll(foundCategories) &&
+                        foundCategories.containsAll(savedCategories)
+        );
     }
 
 }
