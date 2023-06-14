@@ -4,6 +4,7 @@ import com.jcanseco.inventoryapi.dtos.CategoryDto;
 import com.jcanseco.inventoryapi.dtos.CreateCategoryDto;
 import com.jcanseco.inventoryapi.dtos.GetCategoriesRequest;
 import com.jcanseco.inventoryapi.dtos.UpdateCategoryDto;
+import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.CategoryMapper;
 import com.jcanseco.inventoryapi.repositories.CategoryRepository;
 import com.jcanseco.inventoryapi.services.CategoryService;
@@ -11,7 +12,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @AllArgsConstructor
@@ -23,22 +23,39 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto createCategory(CreateCategoryDto dto) {
-        return null;
+        var category = mapper.createDtoToEntity(dto);
+        var newCategory = repository.saveAndFlush(category);
+        return mapper.entityToDto(newCategory);
     }
 
     @Override
     public CategoryDto updateCategory(UpdateCategoryDto dto) {
-        return null;
+
+        var category = repository
+                .findById(dto.getCategoryId())
+                .orElseThrow(() -> new NotFoundException(String.format("Category with the Id {%d} was not found.", dto.getCategoryId())));
+
+        category.setName(dto.getName());
+
+        var updatedCategory = repository.saveAndFlush(category);
+        return mapper.entityToDto(updatedCategory);
     }
 
     @Override
     public void deleteCategory(Long categoryId) {
+        var category = repository
+                .findById(categoryId)
+                .orElseThrow(() -> new NotFoundException(String.format("Category with the Id {%d} was not found.", categoryId)));
 
+        repository.delete(category);
     }
 
     @Override
-    public CategoryDto getCategoryById(CategoryDto dto) {
-        return null;
+    public CategoryDto getCategoryById(Long categoryId) {
+        return repository
+                .findById(categoryId)
+                .map(mapper::entityToDto)
+                .orElseThrow(() -> new NotFoundException(String.format("Category with the Id {%d} was not found.", categoryId)));
     }
 
     @Override
