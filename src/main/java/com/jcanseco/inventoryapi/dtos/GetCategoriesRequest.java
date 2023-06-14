@@ -5,16 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
-
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetCategoriesRequest {
     @Min(1)
-    private Long pageNumber;
+    private Integer pageNumber;
     @Min(1)
-    private Long pageSize;
+    private Integer pageSize;
     private String name;
 }

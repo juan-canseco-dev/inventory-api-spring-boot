@@ -60,7 +60,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> getCategories(String name) {
-        return repository.findAllByNameContainingOrderByName(name)
+        var filterName = name == null? "" : name;
+        return repository.findAllByNameContainingOrderByName(filterName)
                 .stream()
                 .map(mapper::entityToDto).
                 toList();
@@ -70,7 +71,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Page<CategoryDto> getCategoriesPaged(GetCategoriesRequest request) {
         var pageNumber = request.getPageNumber() > 0? request.getPageNumber() - 1 : request.getPageNumber();
         var pageSize = request.getPageSize();
-        var filterName = request.getName();
+        var filterName = request.getName() == null? "" : request.getName();
         var pageRequest = PageRequest.of(pageNumber, pageSize);
         var page = repository.findAllByNameContainingOrderByName(filterName, pageRequest);
         return page.map(mapper::entityToDto);
