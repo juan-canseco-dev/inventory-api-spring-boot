@@ -1,9 +1,9 @@
 package com.jcanseco.inventoryapi.services.impl;
 
-import com.jcanseco.inventoryapi.dtos.CategoryDto;
-import com.jcanseco.inventoryapi.dtos.CreateCategoryDto;
-import com.jcanseco.inventoryapi.dtos.GetCategoriesRequest;
-import com.jcanseco.inventoryapi.dtos.UpdateCategoryDto;
+import com.jcanseco.inventoryapi.dtos.categories.CategoryDto;
+import com.jcanseco.inventoryapi.dtos.categories.CreateCategoryDto;
+import com.jcanseco.inventoryapi.dtos.categories.GetCategoriesRequest;
+import com.jcanseco.inventoryapi.dtos.categories.UpdateCategoryDto;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.CategoryMapper;
 import com.jcanseco.inventoryapi.repositories.CategoryRepository;

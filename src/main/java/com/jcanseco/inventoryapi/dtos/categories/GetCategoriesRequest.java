@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.dtos;
+package com.jcanseco.inventoryapi.dtos.categories;
 
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;

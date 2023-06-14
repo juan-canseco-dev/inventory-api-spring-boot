@@ -1,6 +1,6 @@
 package com.jcanseco.inventoryapi.integration;
 
-import com.jcanseco.inventoryapi.dtos.CreateCategoryDto;
+import com.jcanseco.inventoryapi.dtos.categories.CreateCategoryDto;
 import com.jcanseco.inventoryapi.repositories.CategoryRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

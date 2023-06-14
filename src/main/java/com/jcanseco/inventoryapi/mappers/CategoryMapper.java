@@ -1,7 +1,7 @@
 package com.jcanseco.inventoryapi.mappers;
 
-import com.jcanseco.inventoryapi.dtos.CategoryDto;
-import com.jcanseco.inventoryapi.dtos.CreateCategoryDto;
+import com.jcanseco.inventoryapi.dtos.categories.CategoryDto;
+import com.jcanseco.inventoryapi.dtos.categories.CreateCategoryDto;
 import com.jcanseco.inventoryapi.entities.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

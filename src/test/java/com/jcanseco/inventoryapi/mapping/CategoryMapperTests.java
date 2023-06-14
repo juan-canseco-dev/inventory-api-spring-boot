@@ -1,6 +1,6 @@
 package com.jcanseco.inventoryapi.mapping;
 
-import com.jcanseco.inventoryapi.dtos.CreateCategoryDto;
+import com.jcanseco.inventoryapi.dtos.categories.CreateCategoryDto;
 import com.jcanseco.inventoryapi.entities.Category;
 import com.jcanseco.inventoryapi.mappers.CategoryMapper;
 import org.junit.jupiter.api.Test;
