@@ -73,4 +73,17 @@ public class GetCategoriesTests {
                 .andExpect(jsonPath("$.content", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.content.size()").value(1));
     }
+
+    @Test
+    public void getAllCategoriesWhenPageNumberOrPageSizeAreNegativeStatusShouldBeBadRequest() throws Exception {
+        var request = MockMvcRequestBuilders
+                .get("/api/categories")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNumber", "-1")
+                .param("pageSize", "1");
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
 }
