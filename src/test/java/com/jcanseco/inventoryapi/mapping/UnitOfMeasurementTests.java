@@ -1,6 +1,6 @@
 package com.jcanseco.inventoryapi.mapping;
 
-import com.jcanseco.inventoryapi.dtos.unitofmeasurements.CreateUnitOfMeasurementDto;
+import com.jcanseco.inventoryapi.dtos.units.CreateUnitOfMeasurementDto;
 import com.jcanseco.inventoryapi.entities.UnitOfMeasurement;
 import com.jcanseco.inventoryapi.mappers.UnitOfMeasurementMapper;
 import org.junit.jupiter.api.Test;

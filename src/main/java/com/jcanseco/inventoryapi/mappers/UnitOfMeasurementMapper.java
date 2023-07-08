@@ -1,7 +1,7 @@
 package com.jcanseco.inventoryapi.mappers;
 
-import com.jcanseco.inventoryapi.dtos.unitofmeasurements.CreateUnitOfMeasurementDto;
-import com.jcanseco.inventoryapi.dtos.unitofmeasurements.UnitOfMeasurementDto;
+import com.jcanseco.inventoryapi.dtos.units.CreateUnitOfMeasurementDto;
+import com.jcanseco.inventoryapi.dtos.units.UnitOfMeasurementDto;
 import com.jcanseco.inventoryapi.entities.UnitOfMeasurement;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

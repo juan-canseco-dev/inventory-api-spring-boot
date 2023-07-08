@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.dtos.unitofmeasurements;
+package com.jcanseco.inventoryapi.dtos.units;
 
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;

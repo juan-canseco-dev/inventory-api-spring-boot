@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.dtos.unitofmeasurements;
+package com.jcanseco.inventoryapi.dtos.units;
 
 import lombok.*;
 
@@ -7,6 +7,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateUnitOfMeasurementDto {
+public class UnitOfMeasurementDto {
+    private Long id;
     private String name;
 }
