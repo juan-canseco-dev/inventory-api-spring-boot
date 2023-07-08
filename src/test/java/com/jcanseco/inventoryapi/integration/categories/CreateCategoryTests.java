@@ -1,32 +1,29 @@
-package com.jcanseco.inventoryapi.integration;
+package com.jcanseco.inventoryapi.integration.categories;
 
-import com.jcanseco.inventoryapi.entities.Category;
+import com.jcanseco.inventoryapi.dtos.categories.CreateCategoryDto;
 import com.jcanseco.inventoryapi.repositories.CategoryRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.hamcrest.Matchers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class GetCategoryTests {
+public class CreateCategoryTests {
+
     @Autowired
     private MockMvc mockMvc;
     @Autowired
+    private ObjectMapper mapper;
+    @Autowired
     private CategoryRepository repository;
-    private Category savedCategory;
-
-    @BeforeEach
-    public void setup() {
-        savedCategory = repository.saveAndFlush( Category.builder().name("Electronics").build());
-    }
 
     @AfterEach
     public void cleanup() {
@@ -34,29 +31,33 @@ public class GetCategoryTests {
     }
 
     @Test
-    public void getCategoryByIdWhenCategoryExistsStatusShouldBeOk() throws Exception {
+    public void createCategoryWhenModelIsValidStatusShouldBeOk() throws Exception {
+
+        var createdDto = new CreateCategoryDto("Electronics");
+
         var request = MockMvcRequestBuilders
-                .get("/api/categories/" + savedCategory.getId())
+                .post("/api/categories")
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(createdDto));
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.id").value(savedCategory.getId()))
-                .andExpect(jsonPath("$.name").value(savedCategory.getName()));
+                .andExpect(jsonPath("$.name").value(createdDto.getName()));
     }
 
     @Test
-    public void getCategoryByIdWhenCategoryNotExistsStatusShouldBeNotFound() throws Exception {
+    public void createCategoryWhenModelIsInvalidStatusShouldBeBadRequest() throws Exception{
+        var createdDto = new CreateCategoryDto("");
 
         var request = MockMvcRequestBuilders
-                .get("/api/categories/1000")
+                .post("/api/categories")
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(createdDto));
 
         mockMvc.perform(request)
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 }
-

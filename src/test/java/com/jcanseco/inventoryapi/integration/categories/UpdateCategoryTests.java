@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.integration;
+package com.jcanseco.inventoryapi.integration.categories;
 
 import com.jcanseco.inventoryapi.dtos.categories.UpdateCategoryDto;
 import com.jcanseco.inventoryapi.entities.Category;
