@@ -1,6 +1,5 @@
 package com.jcanseco.inventoryapi.persistence;
 
-import com.jcanseco.inventoryapi.entities.Category;
 import com.jcanseco.inventoryapi.entities.UnitOfMeasurement;
 import com.jcanseco.inventoryapi.repositories.UnitOfMeasurementRepository;
 import org.junit.jupiter.api.AfterEach;
