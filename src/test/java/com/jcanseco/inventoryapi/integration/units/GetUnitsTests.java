@@ -69,8 +69,13 @@ public class GetUnitsTests {
         mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.content", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.content.size()").value(1));
+                .andExpect(jsonPath("$.items", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.pageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(1))
+                .andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.hasPreviousPage").value(false))
+                .andExpect(jsonPath("$.hasNextPage").value(false));
     }
 
     @Test

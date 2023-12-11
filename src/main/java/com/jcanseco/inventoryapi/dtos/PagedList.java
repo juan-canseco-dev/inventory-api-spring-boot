@@ -1,29 +1,26 @@
 package com.jcanseco.inventoryapi.dtos;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
 
-@Getter
 @RequiredArgsConstructor
+@Getter
 public class PagedList<T> {
 
     private final List<T> items;
-    private final int pageIndex;
+    private final int pageNumber;
+    private final int pageSize;
     private final int totalPages;
-    private final long rowsCount;
-    public PagedList() {
-        this.items = null;
-        this.pageIndex = 0;
-        this.totalPages = 0;
-        this.rowsCount = 0;
-    }
+    private final long totalElements;
 
+    @JsonSerialize
     public boolean hasPreviousPage() {
-        return getPageIndex() > 1;
+        return pageNumber > 1;
     }
-
+    @JsonSerialize
     public boolean hasNextPage() {
-        return getPageIndex() < getTotalPages();
+        return pageNumber < totalPages;
     }
 }

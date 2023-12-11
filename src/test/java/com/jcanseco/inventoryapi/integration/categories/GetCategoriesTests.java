@@ -27,6 +27,7 @@ public class GetCategoriesTests {
 
     @BeforeEach
     public void setup() {
+        repository.deleteAll();
         var categories = List.of(
                 Category.builder().name("Electronics").build(),
                 Category.builder().name("Video").build(),
@@ -69,9 +70,15 @@ public class GetCategoriesTests {
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.content", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.content.size()").value(1));
+                .andExpect(jsonPath("$.items", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.pageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(1))
+                .andExpect(jsonPath("$.totalPages").value(3))
+                .andExpect(jsonPath("$.totalElements").value(3))
+                .andExpect(jsonPath("$.hasPreviousPage").value(false))
+                .andExpect(jsonPath("$.hasNextPage").value(true));
     }
 
     @Test

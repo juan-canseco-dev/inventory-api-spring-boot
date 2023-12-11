@@ -1,5 +1,6 @@
 package com.jcanseco.inventoryapi.services;
 
+import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.dtos.categories.CategoryDto;
 import com.jcanseco.inventoryapi.dtos.categories.CreateCategoryDto;
 import com.jcanseco.inventoryapi.dtos.categories.GetCategoriesRequest;
@@ -13,5 +14,5 @@ public interface CategoryService {
     void deleteCategory(Long categoryId);
     CategoryDto getCategoryById(Long categoryId);
     List<CategoryDto> getCategories(String name);
-    Page<CategoryDto> getCategoriesPaged(GetCategoriesRequest request);
+    PagedList<CategoryDto> getCategoriesPaged(GetCategoriesRequest request);
 }
