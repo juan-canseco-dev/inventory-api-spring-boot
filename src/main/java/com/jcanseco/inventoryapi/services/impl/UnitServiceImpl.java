@@ -11,6 +11,7 @@ import com.jcanseco.inventoryapi.repositories.UnitOfMeasurementRepository;
 import com.jcanseco.inventoryapi.services.UnitService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -58,10 +59,35 @@ public class UnitServiceImpl implements UnitService {
                 .orElseThrow(() -> new NotFoundException(String.format("UnitOfMeasurement with the Id {%d} was not found.", unitId)));
     }
 
+    private boolean sortOrderIsAscending(GetUnitsOfMeasurementRequest request) {
+        if (request.getSortOrder() == null) {
+            return true;
+        }
+        return request.getSortOrder().equals("asc") || request.getSortOrder().equals("ascending");
+    }
+
+
+    private String getOrderBy(GetUnitsOfMeasurementRequest request) {
+        if (request.getOrderBy() == null) {
+            return "name";
+        }
+        return request.getOrderBy();
+    }
+
+    private Sort getSortOrder(GetUnitsOfMeasurementRequest request) {
+        var ascending = sortOrderIsAscending(request);
+        var orderBy = getOrderBy(request);
+        if (ascending) {
+            return Sort.by(orderBy).ascending();
+        }
+        return Sort.by(orderBy).descending();
+    }
+
     @Override
-    public List<UnitOfMeasurementDto> getUnits(String name) {
-        var filterName = name == null? "" : name;
-        return repository.findAllByNameContainingOrderByName(filterName)
+    public List<UnitOfMeasurementDto> getUnits(GetUnitsOfMeasurementRequest request) {
+        var filterName = request.getName() == null? "" : request.getName();
+        var sort = getSortOrder(request);
+        return repository.findAllByNameContainingOrderByName(filterName, sort)
                 .stream()
                 .map(mapper::entityToDto).
                 toList();
@@ -73,7 +99,8 @@ public class UnitServiceImpl implements UnitService {
         var pageNumber = request.getPageNumber() > 0? request.getPageNumber() - 1 : request.getPageNumber();
         var pageSize = request.getPageSize();
         var filterName = request.getName() == null? "" : request.getName();
-        var pageRequest = PageRequest.of(pageNumber, pageSize);
+        var sort = getSortOrder(request);
+        var pageRequest = PageRequest.of(pageNumber, pageSize, sort);
         var page = repository.findAllByNameContainingOrderByName(filterName, pageRequest);
 
         var items = page.get().map(mapper::entityToDto).toList();

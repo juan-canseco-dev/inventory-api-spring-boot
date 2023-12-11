@@ -47,7 +47,7 @@ public class UnitsController {
     @GetMapping
     public ResponseEntity<?> getAll(@Valid GetUnitsOfMeasurementRequest request) {
         if (request.getPageSize() == null || request.getPageNumber() == null) {
-            var response = service.getUnits(request.getName());
+            var response = service.getUnits(request);
             return ResponseEntity.ok(response);
         }
         var response = service.getUnitsPage(request);

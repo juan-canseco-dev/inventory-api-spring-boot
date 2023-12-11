@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -15,4 +16,6 @@ public class GetCategoriesRequest {
     @Min(1)
     private Integer pageSize;
     private String name;
+    private String sortBy;
+    private String sortOrder;
 }

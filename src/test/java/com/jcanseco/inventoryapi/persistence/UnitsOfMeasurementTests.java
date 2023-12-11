@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -47,7 +48,7 @@ public class UnitsOfMeasurementTests {
         );
 
         var savedUnits = this.repository.saveAllAndFlush(units);
-        var foundUnits = repository.findAllByNameContainingOrderByName("");
+        var foundUnits = repository.findAllByNameContainingOrderByName("", Sort.by("name").ascending());
 
         assertTrue(
                 savedUnits.size() == foundUnits.size() &&
@@ -63,7 +64,7 @@ public class UnitsOfMeasurementTests {
                 UnitOfMeasurement.builder().name("Box").build()
         );
         this.repository.saveAllAndFlush(units);
-        var foundUnits = repository.findAllByNameContainingOrderByName("kilo");
+        var foundUnits = repository.findAllByNameContainingOrderByName("kilo", Sort.by("name").ascending());
         assertEquals(1, foundUnits.size());
     }
 

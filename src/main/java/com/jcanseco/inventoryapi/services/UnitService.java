@@ -12,6 +12,6 @@ public interface UnitService {
     UnitOfMeasurementDto createUnit(CreateUnitOfMeasurementDto dto);
     UnitOfMeasurementDto updateUnit(UpdateUnitOfMeasurementDto dto);
     void deleteUnit(Long unitId);
-    List<UnitOfMeasurementDto> getUnits(String name);
+    List<UnitOfMeasurementDto> getUnits(GetUnitsOfMeasurementRequest request);
     PagedList<UnitOfMeasurementDto> getUnitsPage(GetUnitsOfMeasurementRequest request);
 }
