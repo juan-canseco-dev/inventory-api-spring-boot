@@ -90,4 +90,32 @@ public class GetUnitsTests {
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void getAllUnitsWhenOrderByIsInvalidShouldBeBadRequest() throws Exception {
+        var request = MockMvcRequestBuilders
+                .get("/api/units")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNumber", "1")
+                .param("pageSize", "10")
+                .param("orderBy","nameee");
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getAllUnitsWhenSortOrderIsInvalidShouldBeBadRequest() throws Exception {
+        var request = MockMvcRequestBuilders
+                .get("/api/units")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNumber", "1")
+                .param("pageSize", "10")
+                .param("sortOrder","descc");
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
 }
