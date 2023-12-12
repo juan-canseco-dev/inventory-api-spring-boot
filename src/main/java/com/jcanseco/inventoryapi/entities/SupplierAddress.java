@@ -24,10 +24,8 @@ public class SupplierAddress {
     protected String city;
     @Column(nullable = false, length = 10)
     protected String zipCode;
-    @Column(nullable = false, length = 50)
-    protected String line1;
-    @Column(length = 50)
-    protected String line2;
+    @Column(nullable = false, length = 75)
+    protected String street;
 
     @JsonIgnore
     @OneToOne(mappedBy = "address")
