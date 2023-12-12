@@ -8,9 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-
+import org.springframework.data.domain.Sort;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Categories Repository Tests")
@@ -47,7 +46,7 @@ public class CategoriesTests {
         );
 
         var savedCategories = this.repository.saveAllAndFlush(categories);
-        var foundCategories = repository.findAllByNameContainingOrderByName("");
+        var foundCategories = repository.findAllByNameContaining("", Sort.by("name").ascending());
         assertTrue(
                 savedCategories.size() == foundCategories.size() &&
                         savedCategories.containsAll(foundCategories) &&
@@ -57,12 +56,13 @@ public class CategoriesTests {
 
     @Test
     public void findAllCategoriesByNameContainingWhenContains() {
+        repository.deleteAll();
         var categories = List.of(
                 Category.builder().name("Electronics").build(),
                 Category.builder().name("Video Games").build()
         );
         this.repository.saveAllAndFlush(categories);
-        var foundCategories = repository.findAllByNameContainingOrderByName("video");
+        var foundCategories = repository.findAllByNameContaining("video", Sort.by("name").ascending());
         assertEquals(1, foundCategories.size());
     }
 
@@ -78,7 +78,7 @@ public class CategoriesTests {
         repository.saveAllAndFlush(categories);
 
         var request = PageRequest.of(0, 10);
-        var page = repository.findAllByNameContainingOrderByName("vi", request);
+        var page = repository.findAllByNameContaining("vi", request);
 
         assertNotNull(page.getContent());
         assertEquals(2, page.getContent().size());
@@ -95,7 +95,7 @@ public class CategoriesTests {
         repository.saveAllAndFlush(categories);
 
         var request = PageRequest.of(0, 10);
-        var page = repository.findAllByNameContainingOrderByName("", request);
+        var page = repository.findAllByNameContaining("", request);
 
         assertNotNull(page.getContent());
         assertEquals(3, page.getContent().size());

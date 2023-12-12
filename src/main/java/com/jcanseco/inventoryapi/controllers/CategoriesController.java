@@ -47,7 +47,7 @@ public class CategoriesController {
     @GetMapping
     public ResponseEntity<?> getAll(@Valid GetCategoriesRequest request) {
         if (request.getPageSize() == null || request.getPageNumber() == null) {
-            var response = service.getCategories(request.getName());
+            var response = service.getCategories(request);
             return ResponseEntity.ok(response);
         }
         var response = service.getCategoriesPaged(request);

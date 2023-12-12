@@ -93,4 +93,33 @@ public class GetCategoriesTests {
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void getAllCategoriesWhenOrderByIsInvalidShouldBeBadRequest() throws Exception {
+        var request = MockMvcRequestBuilders
+                .get("/api/categories")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNumber", "1")
+                .param("pageSize", "10")
+                .param("orderBy","nameee");
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getAllCategoriesWhenSortOrderIsInvalidShouldBeBadRequest() throws Exception {
+        var request = MockMvcRequestBuilders
+                .get("/api/units/categories")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNumber", "1")
+                .param("pageSize", "10")
+                .param("sortOrder","descc");
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
+
 }

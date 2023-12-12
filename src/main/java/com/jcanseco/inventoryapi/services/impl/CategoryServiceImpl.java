@@ -11,6 +11,7 @@ import com.jcanseco.inventoryapi.repositories.CategoryRepository;
 import com.jcanseco.inventoryapi.services.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -58,10 +59,36 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new NotFoundException(String.format("Category with the Id {%d} was not found.", categoryId)));
     }
 
+    private boolean sortOrderIsAscending(GetCategoriesRequest request) {
+        if (request.getSortOrder() == null) {
+            return true;
+        }
+        return request.getSortOrder().equals("asc") || request.getSortOrder().equals("ascending");
+    }
+
+
+    private String getOrderBy(GetCategoriesRequest request) {
+        if (request.getOrderBy() == null) {
+            return "name";
+        }
+        return request.getOrderBy();
+    }
+
+    private Sort getSortOrder(GetCategoriesRequest request) {
+        var ascending = sortOrderIsAscending(request);
+        var orderBy = getOrderBy(request);
+        if (ascending) {
+            return Sort.by(orderBy).ascending();
+        }
+        return Sort.by(orderBy).descending();
+    }
+
     @Override
-    public List<CategoryDto> getCategories(String name) {
-        var filterName = name == null? "" : name;
-        return repository.findAllByNameContainingOrderByName(filterName)
+    public List<CategoryDto> getCategories(GetCategoriesRequest request) {
+
+        var filterName = request.getName() == null? "" : request.getName();
+        var sort = getSortOrder(request);
+        return repository.findAllByNameContaining(filterName, sort)
                 .stream()
                 .map(mapper::entityToDto).
                 toList();
@@ -72,8 +99,10 @@ public class CategoryServiceImpl implements CategoryService {
         var pageNumber = request.getPageNumber() > 0? request.getPageNumber() - 1 : request.getPageNumber();
         var pageSize = request.getPageSize();
         var filterName = request.getName() == null? "" : request.getName();
-        var pageRequest = PageRequest.of(pageNumber, pageSize);
-        var page = repository.findAllByNameContainingOrderByName(filterName, pageRequest);
+
+        var sort = getSortOrder(request);
+        var pageRequest = PageRequest.of(pageNumber, pageSize, sort);
+        var page = repository.findAllByNameContaining(filterName, pageRequest);
 
         var items = page.get().map(mapper::entityToDto).toList();
         var totalPages = page.getTotalPages();

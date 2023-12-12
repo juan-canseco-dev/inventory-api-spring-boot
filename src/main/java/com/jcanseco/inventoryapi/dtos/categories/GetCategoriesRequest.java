@@ -1,5 +1,7 @@
 package com.jcanseco.inventoryapi.dtos.categories;
 
+import com.jcanseco.inventoryapi.validators.orderBy.OrderBy;
+import com.jcanseco.inventoryapi.validators.sortorder.SortOrder;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +18,11 @@ public class GetCategoriesRequest {
     @Min(1)
     private Integer pageSize;
     private String name;
-    private String sortBy;
+    @OrderBy(
+            message = "Invalid Order By field. The following options are valid: 'id' or 'name'.",
+            fields = {"id", "name"}
+    )
+    private String orderBy;
+    @SortOrder
     private String sortOrder;
 }

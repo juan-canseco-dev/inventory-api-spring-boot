@@ -13,6 +13,6 @@ public interface CategoryService {
     CategoryDto updateCategory(UpdateCategoryDto dto);
     void deleteCategory(Long categoryId);
     CategoryDto getCategoryById(Long categoryId);
-    List<CategoryDto> getCategories(String name);
+    List<CategoryDto> getCategories(GetCategoriesRequest request);
     PagedList<CategoryDto> getCategoriesPaged(GetCategoriesRequest request);
 }
