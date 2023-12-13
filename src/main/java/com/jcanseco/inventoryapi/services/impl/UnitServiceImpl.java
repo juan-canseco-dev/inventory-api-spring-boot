@@ -87,7 +87,7 @@ public class UnitServiceImpl implements UnitService {
     public List<UnitOfMeasurementDto> getUnits(GetUnitsOfMeasurementRequest request) {
         var filterName = request.getName() == null? "" : request.getName();
         var sort = getSortOrder(request);
-        return repository.findAllByNameContainingOrderByName(filterName, sort)
+        return repository.findAllByNameContaining(filterName, sort)
                 .stream()
                 .map(mapper::entityToDto).
                 toList();
@@ -101,7 +101,7 @@ public class UnitServiceImpl implements UnitService {
         var filterName = request.getName() == null? "" : request.getName();
         var sort = getSortOrder(request);
         var pageRequest = PageRequest.of(pageNumber, pageSize, sort);
-        var page = repository.findAllByNameContainingOrderByName(filterName, pageRequest);
+        var page = repository.findAllByNameContaining(filterName, pageRequest);
 
         var items = page.get().map(mapper::entityToDto).toList();
         var totalPages = page.getTotalPages();

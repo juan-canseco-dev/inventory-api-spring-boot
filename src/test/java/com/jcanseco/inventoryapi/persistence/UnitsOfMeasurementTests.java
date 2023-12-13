@@ -3,105 +3,94 @@ package com.jcanseco.inventoryapi.persistence;
 import com.jcanseco.inventoryapi.entities.UnitOfMeasurement;
 import com.jcanseco.inventoryapi.repositories.UnitOfMeasurementRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Units Of Measurement Tests")
 @SpringBootTest
 public class UnitsOfMeasurementTests {
+
     @Autowired
     private UnitOfMeasurementRepository repository;
+
+    @BeforeEach
+    public void setup() {
+        var units = List.of(
+                createUnit("Meter"),
+                createUnit("Kilogram"),
+                createUnit("Liter"),
+                createUnit("Gram"),
+                createUnit("Millimeter"),
+                createUnit("Centimeter"),
+                createUnit("Inch"),
+                createUnit("Pound"),
+                createUnit("Gallon"),
+                createUnit("Ounce")
+        );
+        repository.saveAllAndFlush(units);
+    }
 
     @AfterEach
     public void cleanup() {
         repository.deleteAll();
     }
 
+    private UnitOfMeasurement createUnit(String name) {
+        return UnitOfMeasurement.builder()
+                .name(name)
+                .build();
+    }
     @Test
     public void createUnitWhenValidUnitReturnSavedUnitWithGeneratedId() {
 
-        var unit = UnitOfMeasurement.builder().name("Electronics").build();
+        var unit = createUnit("New Unit");
         var newUnit = repository.saveAndFlush(unit);
 
         assertTrue(newUnit.getId() > 0);
         assertEquals(unit.getName(), newUnit.getName());
 
-        var categoryOpt = repository.findById(newUnit.getId());
-        assertTrue(categoryOpt.isPresent());
-
+        var unitOtp = repository.findById(newUnit.getId());
+        assertTrue(unitOtp.isPresent());
     }
 
     @Test
     public void findAllUnitsByNameWhenNameIsEmptyShouldReturnList() {
-
-        var units = List.of(
-                UnitOfMeasurement.builder().name("Kilogram").build(),
-                UnitOfMeasurement.builder().name("Box").build()
-        );
-
-        var savedUnits = this.repository.saveAllAndFlush(units);
-        var foundUnits = repository.findAllByNameContainingOrderByName("", Sort.by("name").ascending());
-
-        assertTrue(
-                savedUnits.size() == foundUnits.size() &&
-                        savedUnits.containsAll(foundUnits) &&
-                        foundUnits.containsAll(savedUnits)
-        );
+        var foundUnits = repository.findAllByNameContaining("", Sort.by("name").ascending());
+        assertNotNull(foundUnits);
+        assertEquals(10, foundUnits.size());
     }
 
     @Test
     public void findAllUnitsByNameContainingWhenContains() {
-        var units = List.of(
-                UnitOfMeasurement.builder().name("Kilogram").build(),
-                UnitOfMeasurement.builder().name("Box").build()
-        );
-        this.repository.saveAllAndFlush(units);
-        var foundUnits = repository.findAllByNameContainingOrderByName("kilo", Sort.by("name").ascending());
-        assertEquals(1, foundUnits.size());
+        var foundUnits = repository.findAllByNameContaining("oun", Sort.by("name").ascending());
+        assertEquals(2, foundUnits.size());
     }
 
     @Test
     public void findAllPagedUnitsByNameWhenInputIsValidShouldReturnValidPage() {
-
-        var units = List.of(
-                UnitOfMeasurement.builder().name("Box").build(),
-                UnitOfMeasurement.builder().name("Kilogram").build(),
-                UnitOfMeasurement.builder().name("Kilo").build()
-        );
-
-        repository.saveAllAndFlush(units);
-
-        var request = PageRequest.of(0, 10);
-        var page = repository.findAllByNameContainingOrderByName("ki", request);
+        var request = PageRequest.of(0, 2);
+        var page = repository.findAllByNameContaining("l", request);
 
         assertNotNull(page.getContent());
         assertEquals(2, page.getContent().size());
+        assertEquals(2, page.getTotalPages());
+        assertEquals(4, page.getTotalElements());
     }
 
     @Test
     public void findAllPagedUnitsWhenNameIsEmptyShouldReturnValidPageWithAllItems() {
-
-        var units = List.of(
-                UnitOfMeasurement.builder().name("Box").build(),
-                UnitOfMeasurement.builder().name("Kilo").build(),
-                UnitOfMeasurement.builder().name("Kilogram").build()
-        );
-
-        repository.saveAllAndFlush(units);
-
         var request = PageRequest.of(0, 10);
-        var page = repository.findAllByNameContainingOrderByName("", request);
+        var page = repository.findAllByNameContaining("", request);
 
         assertNotNull(page.getContent());
-        assertEquals(3, page.getContent().size());
+        assertEquals(10, page.getContent().size());
     }
 
 }

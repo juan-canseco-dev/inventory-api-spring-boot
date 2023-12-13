@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface UnitOfMeasurementRepository extends JpaRepository<UnitOfMeasurement, Long> {
-    List<UnitOfMeasurement> findAllByNameContainingOrderByName(String name, Sort sort);
-    Page<UnitOfMeasurement> findAllByNameContainingOrderByName(String name, Pageable pageable);
+    List<UnitOfMeasurement> findAllByNameContaining(String name, Sort sort);
+    Page<UnitOfMeasurement> findAllByNameContaining(String name, Pageable pageable);
 }
