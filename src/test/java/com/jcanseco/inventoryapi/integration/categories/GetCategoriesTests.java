@@ -25,15 +25,26 @@ public class GetCategoriesTests {
     @Autowired
     private CategoryRepository repository;
 
+    private Category createCategory(String name) {
+        return Category.builder()
+                .name(name)
+                .build();
+    }
     @BeforeEach
     public void setup() {
-        repository.deleteAll();
         var categories = List.of(
-                Category.builder().name("Electronics").build(),
-                Category.builder().name("Video").build(),
-                Category.builder().name("Video Games").build()
+                createCategory("Electronics"),
+                createCategory("Clothing"),
+                createCategory("Home and Garden"),
+                createCategory("Books"),
+                createCategory("Sports and Outdoors"),
+                createCategory("Health and Beauty"),
+                createCategory("Toys and Games"),
+                createCategory("Automotive"),
+                createCategory("Furniture"),
+                createCategory("Music")
         );
-        repository.saveAllAndFlush(categories);
+        this.repository.saveAllAndFlush(categories);
     }
 
     @AfterEach
@@ -53,7 +64,7 @@ public class GetCategoriesTests {
         mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.size()").value(2))
+                .andExpect(jsonPath("$.size()").value(1))
                 .andExpect(jsonPath("$").isArray());
     }
 
@@ -65,7 +76,7 @@ public class GetCategoriesTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("pageNumber", "1")
-                .param("pageSize", "1")
+                .param("pageSize", "3")
                 .param("name", "e");
 
         mockMvc.perform(request)
@@ -74,9 +85,9 @@ public class GetCategoriesTests {
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.items", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.pageNumber").value(1))
-                .andExpect(jsonPath("$.pageSize").value(1))
-                .andExpect(jsonPath("$.totalPages").value(3))
-                .andExpect(jsonPath("$.totalElements").value(3))
+                .andExpect(jsonPath("$.pageSize").value(3))
+                .andExpect(jsonPath("$.totalPages").value(2))
+                .andExpect(jsonPath("$.totalElements").value(6))
                 .andExpect(jsonPath("$.hasPreviousPage").value(false))
                 .andExpect(jsonPath("$.hasNextPage").value(true));
     }
