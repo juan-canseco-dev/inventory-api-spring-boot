@@ -24,14 +24,27 @@ public class GetUnitsTests {
     @Autowired
     private UnitOfMeasurementRepository repository;
 
+    private UnitOfMeasurement createUnit(String name) {
+        return UnitOfMeasurement.builder()
+                .name(name)
+                .build();
+    }
+
     @BeforeEach
     public void setup() {
-        var categories = List.of(
-                UnitOfMeasurement.builder().name("Kilogram").build(),
-                UnitOfMeasurement.builder().name("Kilo").build(),
-                UnitOfMeasurement.builder().name("Box").build()
+        var units = List.of(
+                createUnit("Meter"),
+                createUnit("Kilogram"),
+                createUnit("Liter"),
+                createUnit("Gram"),
+                createUnit("Millimeter"),
+                createUnit("Centimeter"),
+                createUnit("Inch"),
+                createUnit("Pound"),
+                createUnit("Gallon"),
+                createUnit("Ounce")
         );
-        repository.saveAllAndFlush(categories);
+        repository.saveAllAndFlush(units);
     }
 
     @AfterEach
@@ -46,7 +59,7 @@ public class GetUnitsTests {
                 .get("/api/units")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("name", "k");
+                .param("name", "oun");
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
@@ -63,19 +76,19 @@ public class GetUnitsTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("pageNumber", "1")
-                .param("pageSize", "1")
-                .param("name", "b");
+                .param("pageSize", "2")
+                .param("name", "l");
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.items", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.pageNumber").value(1))
-                .andExpect(jsonPath("$.pageSize").value(1))
-                .andExpect(jsonPath("$.totalPages").value(1))
-                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.pageSize").value(2))
+                .andExpect(jsonPath("$.totalPages").value(2))
+                .andExpect(jsonPath("$.totalElements").value(4))
                 .andExpect(jsonPath("$.hasPreviousPage").value(false))
-                .andExpect(jsonPath("$.hasNextPage").value(false));
+                .andExpect(jsonPath("$.hasNextPage").value(true));
     }
 
     @Test
