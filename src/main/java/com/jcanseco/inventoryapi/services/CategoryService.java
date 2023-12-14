@@ -5,7 +5,6 @@ import com.jcanseco.inventoryapi.dtos.categories.CategoryDto;
 import com.jcanseco.inventoryapi.dtos.categories.CreateCategoryDto;
 import com.jcanseco.inventoryapi.dtos.categories.GetCategoriesRequest;
 import com.jcanseco.inventoryapi.dtos.categories.UpdateCategoryDto;
-import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface CategoryService {
