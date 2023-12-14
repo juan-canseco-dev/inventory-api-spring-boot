@@ -17,7 +17,7 @@ import lombok.Setter;
 public class UpdateSupplierDto {
 
     @Min(1)
-    private long supplierId;
+    private Long supplierId;
 
     @Size(max = 50)
     @NotEmpty
