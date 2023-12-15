@@ -3,7 +3,6 @@ package com.jcanseco.inventoryapi.persistence;
 import com.jcanseco.inventoryapi.entities.Supplier;
 import com.jcanseco.inventoryapi.entities.SupplierAddress;
 import com.jcanseco.inventoryapi.repositories.SupplierRepository;
-import com.jcanseco.inventoryapi.specifications.SupplierSpecifications;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,9 +19,6 @@ public class SuppliersTests {
 
     @Autowired
     private SupplierRepository repository;
-
-    @Autowired
-    private SupplierSpecifications specifications;
 
 
     private Supplier createSupplier(String companyName,
@@ -105,7 +101,7 @@ public class SuppliersTests {
 
         var sort = Sort.by("companyName").ascending();
 
-        var criteria = specifications.getSupplierSpecification(
+        var criteria = SupplierRepository.Specs.byCompanyAndContactInfo(
                 companyName,
                 contactName,
                 contactPhone
@@ -126,7 +122,7 @@ public class SuppliersTests {
 
         var sort = Sort.by("companyName").ascending();
 
-        var criteria = specifications.getSupplierSpecification(
+        var criteria = SupplierRepository.Specs.byCompanyAndContactInfo(
                 companyName,
                 contactName,
                 contactPhone
@@ -148,7 +144,7 @@ public class SuppliersTests {
 
         var sort = Sort.by("companyName").ascending();
 
-        var criteria = specifications.getSupplierSpecification(
+        var criteria = SupplierRepository.Specs.byCompanyAndContactInfo(
                 companyName,
                 contactName,
                 contactPhone
@@ -171,7 +167,7 @@ public class SuppliersTests {
 
         var sort = Sort.by("companyName").ascending();
 
-        var criteria = specifications.getSupplierSpecification(
+        var criteria = SupplierRepository.Specs.byCompanyAndContactInfo(
                 companyName,
                 contactName,
                 contactPhone

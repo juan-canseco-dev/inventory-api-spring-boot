@@ -5,12 +5,10 @@ import com.jcanseco.inventoryapi.dtos.suppliers.CreateSupplierDto;
 import com.jcanseco.inventoryapi.dtos.suppliers.GetSuppliersRequest;
 import com.jcanseco.inventoryapi.dtos.suppliers.SupplierDto;
 import com.jcanseco.inventoryapi.dtos.suppliers.UpdateSupplierDto;
-import com.jcanseco.inventoryapi.entities.Supplier;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.SupplierMapper;
 import com.jcanseco.inventoryapi.repositories.SupplierRepository;
 import com.jcanseco.inventoryapi.services.SupplierService;
-import com.jcanseco.inventoryapi.specifications.SupplierSpecifications;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,8 +20,6 @@ public class SupplierServiceImpl implements SupplierService {
 
     private final SupplierRepository repository;
     private final SupplierMapper mapper;
-    private final SupplierSpecifications specifications;
-
     @Override
     public SupplierDto createSupplier(CreateSupplierDto dto) {
         var supplier = mapper.createDtoToEntity(dto);
@@ -93,7 +89,7 @@ public class SupplierServiceImpl implements SupplierService {
 
         var sort = getSortOrder(request);
 
-        var specification = specifications.getSupplierSpecification(
+        var specification = SupplierRepository.Specs.byCompanyAndContactInfo(
                 request.getCompanyName(),
                 request.getContactName(),
                 request.getContactPhone()
@@ -119,7 +115,7 @@ public class SupplierServiceImpl implements SupplierService {
         var pageNumber = request.getPageNumber() > 0? request.getPageNumber() - 1 : request.getPageNumber();
         var pageSize = request.getPageSize();
 
-        var specification = specifications.getSupplierSpecification(
+        var specification = SupplierRepository.Specs.byCompanyAndContactInfo(
                 request.getCompanyName(),
                 request.getContactName(),
                 request.getContactPhone()
