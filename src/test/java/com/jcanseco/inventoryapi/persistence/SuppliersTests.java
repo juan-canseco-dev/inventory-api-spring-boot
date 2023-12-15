@@ -3,17 +3,15 @@ package com.jcanseco.inventoryapi.persistence;
 import com.jcanseco.inventoryapi.entities.Supplier;
 import com.jcanseco.inventoryapi.entities.SupplierAddress;
 import com.jcanseco.inventoryapi.repositories.SupplierRepository;
+import com.jcanseco.inventoryapi.specifications.SupplierSpecifications;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Suppliers Repository Tests")
@@ -22,6 +20,9 @@ public class SuppliersTests {
 
     @Autowired
     private SupplierRepository repository;
+
+    @Autowired
+    private SupplierSpecifications specifications;
 
 
     private Supplier createSupplier(String companyName,
@@ -96,44 +97,92 @@ public class SuppliersTests {
     }
 
     @Test
-    public void findAllSuppliersByAllSearchFiltersShouldReturnList() {
+    public void findSuppliersByCompanyNameShouldReturnList() {
 
-        var companyName = "p";
-        var contactName = "m";
-        var contactPhone = "9";
+        var companyName = "a";
+        var contactName = "";
+        var contactPhone = "";
 
-        var foundSuppliers = this.repository.findAllByCompanyNameContainingOrContactNameContainingOrContactPhoneContaining(
+        var sort = Sort.by("companyName").ascending();
+
+        var criteria = specifications.getSupplierSpecification(
                 companyName,
                 contactName,
-                contactPhone,
-                Sort.by("companyName").ascending()
+                contactPhone
         );
 
+        assertNotNull(criteria);
+        var foundSuppliers = repository.findAll(criteria, sort);
+
         assertNotNull(foundSuppliers);
-        assertEquals(6, foundSuppliers.size());
+        assertEquals(4, foundSuppliers.size());
     }
 
     @Test
-    public void findSuppliersPageByAllSearchFiltersShouldPagedReturnList() {
+    public void findSupplierByContactNameShouldReturnList() {
+        var companyName = "";
+        var contactName = "j";
+        var contactPhone = "";
 
-        var companyName = "p";
-        var contactName = "m";
+        var sort = Sort.by("companyName").ascending();
+
+        var criteria = specifications.getSupplierSpecification(
+                companyName,
+                contactName,
+                contactPhone
+        );
+
+        assertNotNull(criteria);
+
+        var foundSuppliers = repository.findAll(criteria, sort);
+
+        assertNotNull(foundSuppliers);
+        assertEquals(3, foundSuppliers.size());
+    }
+
+    @Test
+    public void findSupplierByContactPhoneShouldReturnList() {
+        var companyName = "";
+        var contactName = "";
         var contactPhone = "9";
 
         var sort = Sort.by("companyName").ascending();
 
-        var pageRequest = PageRequest.of(0, 3, sort);
-
-        var page = this.repository.findAllByCompanyNameContainingOrContactNameContainingOrContactPhoneContaining(
+        var criteria = specifications.getSupplierSpecification(
                 companyName,
                 contactName,
-                contactPhone,
-                pageRequest
+                contactPhone
         );
 
-        assertNotNull(page.getContent());
-        assertEquals(3, page.getContent().size());
-        assertEquals(2, page.getTotalPages());
-        assertEquals(6, page.getTotalElements());
+        assertNotNull(criteria);
+
+        var foundSuppliers = repository.findAll(criteria, sort);
+
+        assertNotNull(foundSuppliers);
+        assertEquals(1, foundSuppliers.size());
+    }
+
+    @Test
+    public void findSupplierByAllFiltersShouldReturnList() {
+
+        var companyName = "a";
+        var contactName = "l";
+        var contactPhone = "5";
+
+        var sort = Sort.by("companyName").ascending();
+
+        var criteria = specifications.getSupplierSpecification(
+                companyName,
+                contactName,
+                contactPhone
+        );
+
+        assertNotNull(criteria);
+
+        var foundSuppliers = repository.findAll(criteria, sort);
+
+        assertNotNull(foundSuppliers);
+        assertEquals(3, foundSuppliers.size());
+
     }
 }

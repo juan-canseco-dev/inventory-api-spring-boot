@@ -5,22 +5,24 @@ import com.jcanseco.inventoryapi.dtos.suppliers.CreateSupplierDto;
 import com.jcanseco.inventoryapi.dtos.suppliers.GetSuppliersRequest;
 import com.jcanseco.inventoryapi.dtos.suppliers.SupplierDto;
 import com.jcanseco.inventoryapi.dtos.suppliers.UpdateSupplierDto;
+import com.jcanseco.inventoryapi.entities.Supplier;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.SupplierMapper;
 import com.jcanseco.inventoryapi.repositories.SupplierRepository;
 import com.jcanseco.inventoryapi.services.SupplierService;
+import com.jcanseco.inventoryapi.specifications.SupplierSpecifications;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
-
 @Service
 @AllArgsConstructor
 public class SupplierServiceImpl implements SupplierService {
 
     private final SupplierRepository repository;
     private final SupplierMapper mapper;
+    private final SupplierSpecifications specifications;
 
     @Override
     public SupplierDto createSupplier(CreateSupplierDto dto) {
@@ -89,18 +91,23 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public List<SupplierDto> getSuppliers(GetSuppliersRequest request) {
 
-        var companyName = request.getCompanyName();
-        var contactName = request.getContactName();
-        var contactPhone = request.getContactPhone();
-
         var sort = getSortOrder(request);
 
-        return repository.findAllByCompanyNameContainingOrContactNameContainingOrContactPhoneContaining(
-                        companyName,
-                        contactName,
-                        contactPhone,
-                        sort
-                )
+        var specification = specifications.getSupplierSpecification(
+                request.getCompanyName(),
+                request.getContactName(),
+                request.getContactPhone()
+        );
+
+        if (specification == null) {
+            return repository.findAll(sort)
+                    .stream()
+                    .map(mapper::entityToDto)
+                    .toList();
+        }
+
+        return repository
+                .findAll(specification, sort)
                 .stream()
                 .map(mapper::entityToDto)
                 .toList();
@@ -112,20 +119,16 @@ public class SupplierServiceImpl implements SupplierService {
         var pageNumber = request.getPageNumber() > 0? request.getPageNumber() - 1 : request.getPageNumber();
         var pageSize = request.getPageSize();
 
-        var companyName = request.getCompanyName();
-        var contactName = request.getContactName();
-        var contactPhone = request.getContactPhone();
+        var specification = specifications.getSupplierSpecification(
+                request.getCompanyName(),
+                request.getContactName(),
+                request.getContactPhone()
+        );
 
         var sort = getSortOrder(request);
         var pageRequest = PageRequest.of(pageNumber, pageSize, sort);
 
-        var page = repository.findAllByCompanyNameContainingOrContactNameContainingOrContactPhoneContaining(
-                companyName,
-                contactName,
-                contactPhone,
-                pageRequest
-        );
-
+        var page = specification == null? repository.findAll(pageRequest) : repository.findAll(specification, pageRequest);
 
         var items = page.get().map(mapper::entityToDto).toList();
         var totalPages = page.getTotalPages();
