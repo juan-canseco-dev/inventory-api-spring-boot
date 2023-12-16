@@ -15,10 +15,9 @@ import java.util.List;
 import org.hamcrest.Matchers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 @SpringBootTest
 @AutoConfigureMockMvc
-public class GetCategoriesTests {
+public class GetCategoriesPageTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,44 +51,53 @@ public class GetCategoriesTests {
         repository.deleteAll();
     }
 
-    @Test
-    public void getCategoriesWithEmptyNameShouldReturnList() throws Exception {
-
-        var request = MockMvcRequestBuilders
-                .get("/api/categories")
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON);
-
-        mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.size()").value(10))
-                .andExpect(jsonPath("$").isArray());
-    }
 
     @Test
-    public void getCategoriesWithNamePresentShouldReturnList() throws Exception {
+    public void getCategoriesPageShouldReturnPagedList() throws Exception {
 
         var request = MockMvcRequestBuilders
                 .get("/api/categories")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("name","c");
+                .param("pageNumber", "1")
+                .param("pageSize", "3")
+                .param("name", "e");
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.size()").value(3))
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$.items", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.pageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(3))
+                .andExpect(jsonPath("$.totalPages").value(2))
+                .andExpect(jsonPath("$.totalElements").value(6))
+                .andExpect(jsonPath("$.hasPreviousPage").value(false))
+                .andExpect(jsonPath("$.hasNextPage").value(true));
     }
 
     @Test
-    public void getCategoriesWhenOrderByIsInvalidShouldBeBadRequest() throws Exception {
+    public void getCategoriesPageWhenPageNumberOrPageSizeAreNegativeStatusShouldBeBadRequest() throws Exception {
         var request = MockMvcRequestBuilders
                 .get("/api/categories")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("orderBy","invalid_field");
+                .param("pageNumber", "-1")
+                .param("pageSize", "1");
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getCategoriesPageWhenOrderByIsInvalidShouldBeBadRequest() throws Exception {
+        var request = MockMvcRequestBuilders
+                .get("/api/categories")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNumber", "1")
+                .param("pageSize", "10")
+                .param("orderBy","invalid_order_by");
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest());
@@ -101,9 +109,12 @@ public class GetCategoriesTests {
                 .get("/api/units/categories")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNumber", "1")
+                .param("pageSize", "10")
                 .param("sortOrder","invalid_sort_order");
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest());
     }
+
 }
