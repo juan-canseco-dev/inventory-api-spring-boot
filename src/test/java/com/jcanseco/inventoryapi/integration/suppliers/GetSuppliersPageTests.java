@@ -13,14 +13,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.hamcrest.Matchers;
-
 import java.util.List;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class GetSuppliersTests {
+public class GetSuppliersPageTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -71,104 +69,146 @@ public class GetSuppliersTests {
         repository.deleteAll();
     }
 
-
     @Test
-    public void getSuppliersWithEmptyFiltersAndEmptyOrderByAndEmptySortOrderShouldReturnList() throws Exception {
+    public void getSuppliersPageWithEmptyFiltersAndEmptyOrderByAndEmptySortOrderShouldReturnPagedList() throws Exception {
 
-        var request = MockMvcRequestBuilders
-                .get("/api/suppliers")
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON);
-
-        mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.size()").value(10))
-                .andExpect(jsonPath("$").isArray());
-    }
-
-    @Test
-    public void getSupplierByCompanyNameShouldReturnList() throws Exception {
         var request = MockMvcRequestBuilders
                 .get("/api/suppliers")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("companyName", "a");
+                .param("pageNumber", "1")
+                .param("pageSize", "5");
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.size()").value(4))
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$.items", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.pageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(5))
+                .andExpect(jsonPath("$.totalPages").value(2))
+                .andExpect(jsonPath("$.totalElements").value(10))
+                .andExpect(jsonPath("$.hasPreviousPage").value(false))
+                .andExpect(jsonPath("$.hasNextPage").value(true));
     }
 
     @Test
-    public void getSuppliersByContactNameShouldReturnList() throws Exception {
+    public void getSuppliersPageByCompanyNameShouldReturnPagedList() throws Exception {
         var request = MockMvcRequestBuilders
                 .get("/api/suppliers")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("contactName", "j");
+                .param("companyName", "a")
+                .param("pageNumber", "1")
+                .param("pageSize", "2");
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.size()").value(3))
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$.items", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.pageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(2))
+                .andExpect(jsonPath("$.totalPages").value(2))
+                .andExpect(jsonPath("$.totalElements").value(4))
+                .andExpect(jsonPath("$.hasPreviousPage").value(false))
+                .andExpect(jsonPath("$.hasNextPage").value(true));
     }
 
     @Test
-    public void getSuppliersByContactPhoneShouldReturnList() throws Exception {
+    public void getSuppliersPageByContactNameShouldReturnPagedList() throws Exception {
         var request = MockMvcRequestBuilders
                 .get("/api/suppliers")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("contactPhone", "9");
+                .param("contactName", "j")
+                .param("pageNumber", "1")
+                .param("pageSize", "2");
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$.items", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.pageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(2))
+                .andExpect(jsonPath("$.totalPages").value(2))
+                .andExpect(jsonPath("$.totalElements").value(3))
+                .andExpect(jsonPath("$.hasPreviousPage").value(false))
+                .andExpect(jsonPath("$.hasNextPage").value(true));
     }
 
     @Test
-    public void getSuppliersByCompanyAndContactInfoShouldReturnList() throws Exception {
+    public void getSuppliersPageByContactPhoneShouldReturnPagedList() throws Exception {
+
+        var request = MockMvcRequestBuilders
+                .get("/api/suppliers")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("contactPhone", "1234-1")
+                .param("pageNumber", "1")
+                .param("pageSize", "1");
+
+        mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.items", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.pageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(1))
+                .andExpect(jsonPath("$.totalPages").value(2))
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.hasPreviousPage").value(false))
+                .andExpect(jsonPath("$.hasNextPage").value(true));
+    }
+
+    @Test
+    public void getSuppliersPageByCompanyAndContactInfoShouldReturnPagedList() throws Exception {
+
         var request = MockMvcRequestBuilders
                 .get("/api/suppliers")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("companyName", "a")
                 .param("contactName", "l")
-                .param("contactPhone", "5");
+                .param("contactPhone", "5")
+                .param("pageNumber", "1")
+                .param("pageSize", "2");
+
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.size()").value(3))
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$.items", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.pageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(2))
+                .andExpect(jsonPath("$.totalPages").value(2))
+                .andExpect(jsonPath("$.totalElements").value(3))
+                .andExpect(jsonPath("$.hasPreviousPage").value(false))
+                .andExpect(jsonPath("$.hasNextPage").value(true));
     }
     @Test
-    public void getSuppliersWhenSortOrderIsInvalidShouldReturnBadRequest() throws Exception {
+    public void getSuppliersPageWhenSortOrderIsInvalidShouldReturnBadRequest() throws Exception {
 
         var request = MockMvcRequestBuilders
                 .get("/api/suppliers")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNumber", "1")
+                .param("pageSize", "5")
                 .param("sortOrder", "invalid_sort_order");
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest());
     }
     @Test
-    public void getSuppliersWhenOrderByIsInvalidShouldReturnBadRequest() throws Exception {
+    public void getSuppliersPageWhenOrderByIsInvalidShouldReturnBadRequest() throws Exception {
         var request = MockMvcRequestBuilders
                 .get("/api/suppliers")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNumber", "1")
+                .param("pageSize", "5")
                 .param("orderBy", "invalid_order_by");
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest());
     }
+
 }
