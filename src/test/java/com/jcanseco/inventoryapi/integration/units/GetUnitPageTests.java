@@ -17,7 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class GetUnitsTests {
+public class GetUnitPageTests {
+
 
     @Autowired
     private MockMvc mockMvc;
@@ -53,23 +54,43 @@ public class GetUnitsTests {
     }
 
     @Test
-    public void getUnitsWithNameFilterShouldReturnList() throws Exception {
+    public void getUnitsPageWithNameFilterShouldReturnPagedList() throws Exception {
 
         var request = MockMvcRequestBuilders
                 .get("/api/units")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("name", "oun");
+                .param("pageNumber", "1")
+                .param("pageSize", "2")
+                .param("name", "l");
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.size()").value(2))
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$.items", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.pageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(2))
+                .andExpect(jsonPath("$.totalPages").value(2))
+                .andExpect(jsonPath("$.totalElements").value(4))
+                .andExpect(jsonPath("$.hasPreviousPage").value(false))
+                .andExpect(jsonPath("$.hasNextPage").value(true));
     }
 
     @Test
-    public void getUnitsWhenOrderByIsInvalidShouldBeBadRequest() throws Exception {
+    public void getUnitsPageWhenPageNumberOrPageSizeAreNegativeStatusShouldBeBadRequest() throws Exception {
+        var request = MockMvcRequestBuilders
+                .get("/api/units")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNumber", "-1")
+                .param("pageSize", "1");
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getUnitsPageWhenOrderByIsInvalidShouldBeBadRequest() throws Exception {
         var request = MockMvcRequestBuilders
                 .get("/api/units")
                 .accept(MediaType.APPLICATION_JSON)
@@ -83,14 +104,14 @@ public class GetUnitsTests {
     }
 
     @Test
-    public void getUnitsWhenSortOrderIsInvalidShouldBeBadRequest() throws Exception {
+    public void getUnitsPageWhenSortOrderIsInvalidShouldBeBadRequest() throws Exception {
         var request = MockMvcRequestBuilders
                 .get("/api/units")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("pageNumber", "1")
                 .param("pageSize", "10")
-                .param("sortOrder","sort_order_invalid");
+                .param("sortOrder","invalid_sort_order");
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest());
