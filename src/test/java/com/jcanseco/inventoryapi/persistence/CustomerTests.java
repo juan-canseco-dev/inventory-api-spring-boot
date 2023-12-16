@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
@@ -88,6 +89,30 @@ public class CustomerTests {
         assertTrue(newCustomer.getId() > 0);
         assertNotNull(newCustomer.getAddress());
         assertTrue(newCustomer.getAddress().getId() > 0);
+    }
+
+
+    @Test
+    public void createCustomerWithExistentDniShouldThrowException() {
+        var address = CustomerAddress
+                .builder()
+                .country("Mexico")
+                .state("Sonora")
+                .city("Hermosillo")
+                .zipCode("83200")
+                .street("Center")
+                .build();
+
+
+        var customer = Customer
+                .builder()
+                .dni("901234567")
+                .phone("555-1234-1")
+                .fullName("John Troll")
+                .address(address)
+                .build();
+
+        assertThrows(DataIntegrityViolationException.class, () -> repository.saveAndFlush(customer));
     }
 
     @Test
