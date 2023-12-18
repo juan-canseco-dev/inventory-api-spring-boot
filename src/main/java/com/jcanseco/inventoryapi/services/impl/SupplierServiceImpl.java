@@ -23,7 +23,8 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public SupplierDto createSupplier(CreateSupplierDto dto) {
         var supplier = mapper.createDtoToEntity(dto);
-        return mapper.entityToDto(supplier);
+        var newSupplier = repository.saveAndFlush(supplier);
+        return mapper.entityToDto(newSupplier);
     }
 
     @Override

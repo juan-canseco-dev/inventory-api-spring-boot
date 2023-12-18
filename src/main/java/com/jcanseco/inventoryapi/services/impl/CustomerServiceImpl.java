@@ -25,7 +25,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerDto createCustomer(CreateCustomerDto dto) {
         var customer = mapper.createDtoToEntity(dto);
-        return  mapper.entityToDto(customer);
+        var newCustomer = repository.saveAndFlush(customer);
+        return  mapper.entityToDto(newCustomer);
     }
 
     @Override
