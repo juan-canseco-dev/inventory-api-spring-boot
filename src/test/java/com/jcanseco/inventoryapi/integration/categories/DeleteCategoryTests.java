@@ -37,7 +37,7 @@ public class DeleteCategoryTests {
     }
 
     @Test
-    public void deleteCategoryWhenCategoryExistsStatusShouldBeOk() throws Exception {
+    public void deleteCategoryWhenCategoryExistsStatusShouldBeNoContent() throws Exception {
 
         var categoryId = savedCategory.getId();
 

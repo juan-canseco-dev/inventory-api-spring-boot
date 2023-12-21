@@ -52,7 +52,7 @@ public class DeleteSupplierTests {
     }
 
     @Test
-    public void deleteSupplierWhenSupplierExistsStatusShouldBeOk() throws Exception {
+    public void deleteSupplierWhenSupplierExistsStatusShouldBeNoContent() throws Exception {
 
         var supplierId = savedSupplier.getId();
 

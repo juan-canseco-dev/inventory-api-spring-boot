@@ -39,7 +39,7 @@ public class UpdateCategoryTests {
     }
 
     @Test
-    public void updateCategoryWhenCategoryExistsAndModelIsValidStatusShouldBeOk() throws Exception {
+    public void updateCategoryWhenCategoryExistsAndModelIsValidStatusShouldBeNoContent() throws Exception {
 
         var categoryId = savedCategory.getId();
         var updateCategory = new UpdateCategoryDto(categoryId, "Electronics & Games");

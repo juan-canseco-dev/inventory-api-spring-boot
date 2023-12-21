@@ -57,7 +57,7 @@ public class UpdateSupplierTests {
     }
 
     @Test
-    public void updateSupplierWhenSupplierExistsAndModelIsValidStatusShouldBeOk() throws Exception {
+    public void updateSupplierWhenSupplierExistsAndModelIsValidStatusShouldBeNoContent() throws Exception {
 
         var supplierId = savedSupplier.getId();
 

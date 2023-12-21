@@ -53,7 +53,7 @@ public class DeleteCustomerTests {
     }
 
     @Test
-    public void deleteCustomerWhenCustomerExistsStatusShouldBeOk() throws Exception {
+    public void deleteCustomerWhenCustomerExistsStatusShouldBeNoContent() throws Exception {
 
         var customerId = savedCustomer.getId();
 

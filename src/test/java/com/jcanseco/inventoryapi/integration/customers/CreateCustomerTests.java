@@ -32,7 +32,7 @@ public class CreateCustomerTests {
     }
 
     @Test
-    public void createCustomerWhenModelIsValidStatusShouldBeOk() throws Exception {
+    public void createCustomerWhenModelIsValidStatusShouldBeCreated() throws Exception {
 
         var address = AddressDto
                 .builder()

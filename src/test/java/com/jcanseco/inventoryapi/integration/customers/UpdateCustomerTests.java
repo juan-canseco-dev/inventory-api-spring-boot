@@ -57,7 +57,7 @@ public class UpdateCustomerTests {
     }
 
     @Test
-    public void updateCustomerWhenCustomerExistsAndModelIsValidStatusShouldBeOk() throws Exception {
+    public void updateCustomerWhenCustomerExistsAndModelIsValidStatusShouldBeNoContent() throws Exception {
 
         var customerId = savedCustomer.getId();
 

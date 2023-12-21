@@ -30,7 +30,7 @@ public class CreateCategoryTests {
     }
 
     @Test
-    public void createCategoryWhenModelIsValidStatusShouldBeOk() throws Exception {
+    public void createCategoryWhenModelIsValidStatusShouldBeCreated() throws Exception {
 
         var createdDto = new CreateCategoryDto("Electronics");
 

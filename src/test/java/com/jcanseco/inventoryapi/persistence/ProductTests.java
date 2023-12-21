@@ -81,6 +81,7 @@ public class ProductTests {
                 .name(name)
                 .purchasePrice(BigDecimal.valueOf(purchasePrice))
                 .salePrice(BigDecimal.valueOf(salePrice))
+                .quantity(0L)
                 .build();
     }
 
@@ -179,6 +180,7 @@ public class ProductTests {
                 .supplier(supplier1)
                 .category(category1)
                 .unit(unit1)
+                .quantity(0L)
                 .purchasePrice(BigDecimal.valueOf(19.99))
                 .salePrice(BigDecimal.valueOf(20.99))
                 .build();
