@@ -45,11 +45,18 @@ public class ProductServiceImpl implements ProductService {
                 .findById(dto.getUnitId())
                 .orElseThrow(() -> new DomainException(String.format("The Unit Of Measurement with the Id {%d} was not found.", dto.getUnitId())));
 
+
+        if (dto.getSalePrice() < dto.getPurchasePrice()) {
+            throw new DomainException("The Sale Price must be greater than Purchase Price.");
+        }
+
+
         var product = Product.builder()
                 .supplier(supplier)
                 .category(category)
                 .unit(unit)
                 .name(dto.getName())
+                .quantity(0L)
                 .purchasePrice(BigDecimal.valueOf(dto.getPurchasePrice()))
                 .salePrice(BigDecimal.valueOf(dto.getSalePrice()))
                 .build();
@@ -85,6 +92,10 @@ public class ProductServiceImpl implements ProductService {
                     .findById(dto.getUnitId())
                     .orElseThrow(() -> new DomainException(String.format("The Unit Of Measurement with the Id {%d} was not found.", dto.getUnitId())));
             product.setUnit(unit);
+        }
+
+        if (dto.getSalePrice() < dto.getPurchasePrice()) {
+            throw new DomainException("The Sale Price must be greater than Purchase Price.");
         }
 
         product.setName(dto.getName());
