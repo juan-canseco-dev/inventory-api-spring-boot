@@ -1,11 +1,12 @@
 package com.jcanseco.inventoryapi.exceptions.handler;
 
+import com.jcanseco.inventoryapi.exceptions.DomainException;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import io.micrometer.common.util.StringUtils;
-import jakarta.validation.ConstraintViolationException;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.validation.ConstraintViolationException;;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -38,18 +39,16 @@ import java.util.stream.Collectors;
  *
  */
 
-@Slf4j
-@RestControllerAdvice
-@Order(Ordered.HIGHEST_PRECEDENCE)
-@AllArgsConstructor
-public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
 
+@Order(Ordered.HIGHEST_PRECEDENCE)
+@RestControllerAdvice
+public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
     public static final String ACCESS_DENIED = "Access denied!";
     public static final String INVALID_REQUEST = "Invalid request";
-    public static final String NOT_FOUND = "Not Found";
     public static final String ERROR_MESSAGE_TEMPLATE = "message: %s %n requested uri: %s";
     public static final String LIST_JOIN_DELIMITER = ",";
     public static final String FIELD_ERROR_SEPARATOR = ": ";
+    private static final Logger local_logger = LoggerFactory.getLogger(GeneralExceptionHandler.class);
     private static final String ERRORS_FOR_PATH = "errors {} for path {}";
     private static final String PATH = "path";
     private static final String ERRORS = "error";
@@ -58,13 +57,11 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String TIMESTAMP = "timestamp";
     private static final String TYPE = "type";
 
-
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException exception,
-            HttpHeaders headers,
-            HttpStatusCode status,
-            WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatusCode status,
+                                                                  WebRequest request) {
 
         List<String> validationErrors = exception.getBindingResult()
                 .getFieldErrors()
@@ -74,15 +71,16 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         return getExceptionResponseEntity(exception, HttpStatus.BAD_REQUEST, request, validationErrors);
     }
 
+
     @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException exception,
-                                                                  HttpHeaders headers,
-                                                                  HttpStatusCode status,
-                                                                  WebRequest request) {
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException exception,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
         return getExceptionResponseEntity(exception, HttpStatus.valueOf(status.value()), request,
                 Collections.singletonList(exception.getLocalizedMessage()));
     }
-
 
     @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<Object> handleConstraintViolation(
@@ -94,11 +92,20 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         return getExceptionResponseEntity(exception, HttpStatus.BAD_REQUEST, request, validationErrors);
     }
 
-    @ExceptionHandler({NotFoundException.class})
-    public ResponseEntity<Object> handleNotFoundException(NotFoundException exception, WebRequest request) {
-        return getExceptionResponseEntity(exception, HttpStatus.NOT_FOUND, request, Collections.singletonList(exception.getLocalizedMessage()));
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler({DomainException.class})
+    public ResponseEntity<Object> handleDomainException(
+            DomainException exception, WebRequest request) {
+        return getExceptionResponseEntity(exception, HttpStatus.UNPROCESSABLE_ENTITY, request, Collections.singletonList(exception.getMessage()));
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler({NotFoundException.class})
+    public ResponseEntity<Object> handleNotFoundException(
+            NotFoundException exception,
+            WebRequest request) {
+        return getExceptionResponseEntity(exception, HttpStatus.NOT_FOUND, request, Collections.singletonList(exception.getMessage()));
+    }
     /**
      * A general handler for all uncaught exceptions
      */
@@ -114,7 +121,6 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         logger.error(String.format(ERROR_MESSAGE_TEMPLATE, message, path), exception);
         return getExceptionResponseEntity(exception, status, request, Collections.singletonList(message));
     }
-
 
     /**
      * Build a detailed information about the exception in the response
@@ -134,7 +140,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         final String errorsMessage = CollectionUtils.isNotEmpty(errors) ?
                 errors.stream().filter(StringUtils::isNotEmpty).collect(Collectors.joining(LIST_JOIN_DELIMITER))
                 :status.getReasonPhrase();
-        log.error(ERRORS_FOR_PATH, errorsMessage, path);
+        local_logger.error(ERRORS_FOR_PATH, errorsMessage, path);
         return new ResponseEntity<>(body, status);
     }
 
@@ -142,7 +148,6 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         return switch (status) {
             case UNAUTHORIZED -> ACCESS_DENIED;
             case BAD_REQUEST -> INVALID_REQUEST;
-            case NOT_FOUND ->  NOT_FOUND;
             default -> status.getReasonPhrase();
         };
     }
