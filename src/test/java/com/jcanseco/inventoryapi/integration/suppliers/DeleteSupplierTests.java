@@ -61,7 +61,7 @@ public class DeleteSupplierTests {
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(request)
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         var supplierOpt = repository.findById(supplierId);
         assertTrue(supplierOpt.isEmpty());

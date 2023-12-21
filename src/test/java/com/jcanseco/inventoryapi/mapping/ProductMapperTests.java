@@ -92,7 +92,5 @@ public class ProductMapperTests {
         assertEquals(entity.getSupplier().getCompanyName(), dto.getSupplier().getCompanyName());
         assertEquals(entity.getSupplier().getContactName(), dto.getSupplier().getContactName());
         assertEquals(entity.getSupplier().getContactPhone(), dto.getSupplier().getContactPhone());
-        
-        assertNotNull(dto.getSupplier().getAddress());
     }
 }

@@ -116,6 +116,36 @@ public class SupplierMapperTests {
         assertEquals(supplier.getCompanyName(), dto.getCompanyName());
         assertEquals(supplier.getContactName(), dto.getContactName());
         assertEquals(supplier.getContactPhone(), dto.getContactPhone());
+    }
+
+    @Test
+    public void entityToDetailsDto() {
+        var supplierId = 1L;
+
+        var address = SupplierAddress
+                .builder()
+                .country("Mexico")
+                .state("Sonora")
+                .city("Hermosillo")
+                .zipCode("83200")
+                .street("Center")
+                .build();
+
+        var supplier = Supplier.builder()
+                .id(supplierId)
+                .companyName("ABC Corp")
+                .contactName("John Doe")
+                .contactPhone("555-1234-1")
+                .address(address)
+                .build();
+
+        var dto = mapper.entityToDetailsDto(supplier);
+        assertNotNull(dto);
+
+        assertEquals(supplier.getId(), dto.getId());
+        assertEquals(supplier.getCompanyName(), dto.getCompanyName());
+        assertEquals(supplier.getContactName(), dto.getContactName());
+        assertEquals(supplier.getContactPhone(), dto.getContactPhone());
 
         assertEquals(address.getCountry(), dto.getAddress().getCountry());
         assertEquals(address.getState(), dto.getAddress().getState());

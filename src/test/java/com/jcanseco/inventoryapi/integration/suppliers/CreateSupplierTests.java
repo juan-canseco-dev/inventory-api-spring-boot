@@ -57,12 +57,9 @@ public class CreateSupplierTests {
                 .content(mapper.writeValueAsString(createDto));
 
         mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.companyName", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.contactName", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.contactPhone", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.address", Matchers.notNullValue()));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$", Matchers.notNullValue()))
+                .andExpect(jsonPath("$").isNumber());
     }
 
     @Test

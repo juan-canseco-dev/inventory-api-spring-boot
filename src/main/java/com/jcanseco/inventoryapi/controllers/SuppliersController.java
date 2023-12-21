@@ -1,15 +1,14 @@
 package com.jcanseco.inventoryapi.controllers;
 
-import com.jcanseco.inventoryapi.dtos.suppliers.CreateSupplierDto;
-import com.jcanseco.inventoryapi.dtos.suppliers.GetSuppliersRequest;
-import com.jcanseco.inventoryapi.dtos.suppliers.SupplierDto;
-import com.jcanseco.inventoryapi.dtos.suppliers.UpdateSupplierDto;
+import com.jcanseco.inventoryapi.dtos.suppliers.*;
 import com.jcanseco.inventoryapi.services.SupplierService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Validated
 @AllArgsConstructor
@@ -21,26 +20,29 @@ public class SuppliersController {
     private final SupplierService service;
 
     @PostMapping
-    public ResponseEntity<SupplierDto> create(@RequestBody @Valid CreateSupplierDto dto) {
-        return ResponseEntity.ok(service.createSupplier(dto));
+    public ResponseEntity<Long> create(@RequestBody @Valid CreateSupplierDto dto) throws URISyntaxException {
+        var supplierId = service.createSupplier(dto);
+        var location = new URI("/api/suppliers/" + supplierId);
+        return ResponseEntity.created(location).body(supplierId);
     }
 
     @PutMapping("{supplierId}")
-    public ResponseEntity<SupplierDto> update(@PathVariable Long supplierId, @RequestBody @Valid UpdateSupplierDto dto) {
+    public ResponseEntity<?> update(@PathVariable Long supplierId, @RequestBody @Valid UpdateSupplierDto dto) {
         if (!dto.getSupplierId().equals(supplierId)) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(service.updateSupplier(dto));
+        service.updateSupplier(dto);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("{supplierId}")
     public ResponseEntity<?> delete(@PathVariable Long supplierId) {
         service.deleteSupplier(supplierId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("{supplierId}")
-    public ResponseEntity<SupplierDto> getById(@PathVariable Long supplierId) {
+    public ResponseEntity<SupplierDetailsDto> getById(@PathVariable Long supplierId) {
         return ResponseEntity.ok(service.getSupplierById(supplierId));
     }
 

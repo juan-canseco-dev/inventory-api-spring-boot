@@ -1,10 +1,7 @@
 package com.jcanseco.inventoryapi.services.impl;
 
 import com.jcanseco.inventoryapi.dtos.PagedList;
-import com.jcanseco.inventoryapi.dtos.suppliers.CreateSupplierDto;
-import com.jcanseco.inventoryapi.dtos.suppliers.GetSuppliersRequest;
-import com.jcanseco.inventoryapi.dtos.suppliers.SupplierDto;
-import com.jcanseco.inventoryapi.dtos.suppliers.UpdateSupplierDto;
+import com.jcanseco.inventoryapi.dtos.suppliers.*;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.SupplierMapper;
 import com.jcanseco.inventoryapi.repositories.SupplierRepository;
@@ -21,14 +18,14 @@ public class SupplierServiceImpl implements SupplierService {
     private final SupplierRepository repository;
     private final SupplierMapper mapper;
     @Override
-    public SupplierDto createSupplier(CreateSupplierDto dto) {
+    public Long createSupplier(CreateSupplierDto dto) {
         var supplier = mapper.createDtoToEntity(dto);
         var newSupplier = repository.saveAndFlush(supplier);
-        return mapper.entityToDto(newSupplier);
+        return newSupplier.getId();
     }
 
     @Override
-    public SupplierDto updateSupplier(UpdateSupplierDto dto) {
+    public void updateSupplier(UpdateSupplierDto dto) {
 
         var supplier = repository
                 .findById(dto.getSupplierId())
@@ -39,9 +36,7 @@ public class SupplierServiceImpl implements SupplierService {
         supplier.setContactPhone(dto.getContactPhone());
         supplier.setAddress(mapper.dtoToAddress(dto.getAddress()));
 
-        var updatedSupplier = repository.saveAndFlush(supplier);
-
-        return mapper.entityToDto(updatedSupplier);
+        repository.saveAndFlush(supplier);
     }
 
     @Override
@@ -55,10 +50,10 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    public SupplierDto getSupplierById(Long supplierId) {
+    public SupplierDetailsDto getSupplierById(Long supplierId) {
         return repository
                 .findById(supplierId)
-                .map(mapper::entityToDto)
+                .map(mapper::entityToDetailsDto)
                 .orElseThrow(() -> new NotFoundException(String.format("Supplier with the Id {%d} was not found.", supplierId)));
     }
 

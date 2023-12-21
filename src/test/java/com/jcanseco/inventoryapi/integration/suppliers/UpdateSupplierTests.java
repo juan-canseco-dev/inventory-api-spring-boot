@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.hamcrest.Matchers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -86,18 +85,7 @@ public class UpdateSupplierTests {
                 .content(mapper.writeValueAsString(updateDto));
 
         mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.id").value(supplierId))
-                .andExpect(jsonPath("$.companyName").value(updateDto.getCompanyName()))
-                .andExpect(jsonPath("$.contactName").value(updateDto.getContactName()))
-                .andExpect(jsonPath("$.contactPhone").value(updateDto.getContactPhone()))
-                .andExpect(jsonPath("$.address", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.address.country").value(updateDto.getAddress().getCountry()))
-                .andExpect(jsonPath("$.address.state").value(updateDto.getAddress().getState()))
-                .andExpect(jsonPath("$.address.city").value(updateDto.getAddress().getCity()))
-                .andExpect(jsonPath("$.address.zipCode").value(updateDto.getAddress().getZipCode()))
-                .andExpect(jsonPath("$.address.street").value(updateDto.getAddress().getStreet()));
+                .andExpect(status().isNoContent());
     }
 
     @Test
