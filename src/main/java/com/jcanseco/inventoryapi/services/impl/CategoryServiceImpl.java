@@ -23,14 +23,14 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper mapper;
 
     @Override
-    public CategoryDto createCategory(CreateCategoryDto dto) {
+    public Long createCategory(CreateCategoryDto dto) {
         var category = mapper.createDtoToEntity(dto);
         var newCategory = repository.saveAndFlush(category);
-        return mapper.entityToDto(newCategory);
+        return newCategory.getId();
     }
 
     @Override
-    public CategoryDto updateCategory(UpdateCategoryDto dto) {
+    public void updateCategory(UpdateCategoryDto dto) {
 
         var category = repository
                 .findById(dto.getCategoryId())
@@ -38,8 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         category.setName(dto.getName());
 
-        var updatedCategory = repository.saveAndFlush(category);
-        return mapper.entityToDto(updatedCategory);
+        repository.saveAndFlush(category);
     }
 
     @Override

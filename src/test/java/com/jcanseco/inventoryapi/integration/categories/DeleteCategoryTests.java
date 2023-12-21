@@ -46,7 +46,7 @@ public class DeleteCategoryTests {
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(request)
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         var categoryOpt = repository.findById(categoryId);
         assertTrue(categoryOpt.isEmpty());

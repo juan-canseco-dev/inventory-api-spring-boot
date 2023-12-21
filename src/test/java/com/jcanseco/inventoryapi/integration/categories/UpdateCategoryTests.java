@@ -13,7 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.hamcrest.Matchers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -53,10 +52,7 @@ public class UpdateCategoryTests {
                 .content(mapper.writeValueAsString(updateCategory));
 
         mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.id").value(categoryId))
-                .andExpect(jsonPath("$.name").value(updateCategory.getName()));
+                .andExpect(status().isNoContent());
     }
 
     @Test

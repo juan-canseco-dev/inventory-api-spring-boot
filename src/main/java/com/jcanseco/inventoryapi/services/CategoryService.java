@@ -8,8 +8,8 @@ import com.jcanseco.inventoryapi.dtos.categories.UpdateCategoryDto;
 import java.util.List;
 
 public interface CategoryService {
-    CategoryDto createCategory(CreateCategoryDto dto);
-    CategoryDto updateCategory(UpdateCategoryDto dto);
+    Long createCategory(CreateCategoryDto dto);
+    void updateCategory(UpdateCategoryDto dto);
     void deleteCategory(Long categoryId);
     CategoryDto getCategoryById(Long categoryId);
     List<CategoryDto> getCategories(GetCategoriesRequest request);

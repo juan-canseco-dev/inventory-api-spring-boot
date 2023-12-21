@@ -11,7 +11,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.hamcrest.Matchers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -42,9 +41,7 @@ public class CreateCategoryTests {
                 .content(mapper.writeValueAsString(createdDto));
 
         mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.name").value(createdDto.getName()));
+                .andExpect(status().isCreated());
     }
 
     @Test
