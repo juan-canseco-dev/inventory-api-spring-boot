@@ -62,7 +62,7 @@ public class DeleteCustomerTests {
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(request)
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         var customerOpt = repository.findById(customerId);
         assertTrue(customerOpt.isEmpty());

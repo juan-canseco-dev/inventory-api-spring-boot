@@ -1,10 +1,7 @@
 package com.jcanseco.inventoryapi.services.impl;
 
 import com.jcanseco.inventoryapi.dtos.PagedList;
-import com.jcanseco.inventoryapi.dtos.customers.CreateCustomerDto;
-import com.jcanseco.inventoryapi.dtos.customers.CustomerDto;
-import com.jcanseco.inventoryapi.dtos.customers.GetCustomersRequest;
-import com.jcanseco.inventoryapi.dtos.customers.UpdateCustomerDto;
+import com.jcanseco.inventoryapi.dtos.customers.*;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.CustomerMapper;
 import com.jcanseco.inventoryapi.repositories.CustomerRepository;
@@ -23,14 +20,14 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerMapper mapper;
 
     @Override
-    public CustomerDto createCustomer(CreateCustomerDto dto) {
+    public Long createCustomer(CreateCustomerDto dto) {
         var customer = mapper.createDtoToEntity(dto);
         var newCustomer = repository.saveAndFlush(customer);
-        return  mapper.entityToDto(newCustomer);
+        return newCustomer.getId();
     }
 
     @Override
-    public CustomerDto updateCustomer(UpdateCustomerDto dto) {
+    public void updateCustomer(UpdateCustomerDto dto) {
 
         var customer = repository
                 .findById(dto.getCustomerId())
@@ -41,9 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setFullName(dto.getFullName());
         customer.setAddress(mapper.dtoToAddress(dto.getAddress()));
 
-        var updatedSupplier = repository.saveAndFlush(customer);
-
-        return mapper.entityToDto(updatedSupplier);
+        repository.saveAndFlush(customer);
     }
 
     @Override
@@ -56,10 +51,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerDto getCustomerById(Long customerId) {
+    public CustomerDetailsDto getCustomerById(Long customerId) {
         return repository
                 .findById(customerId)
-                .map(mapper::entityToDto)
+                .map(mapper::entityToDetailsDto)
                 .orElseThrow(() -> new NotFoundException(String.format("Customer with the Id {%d} was not found.", customerId)));
     }
 

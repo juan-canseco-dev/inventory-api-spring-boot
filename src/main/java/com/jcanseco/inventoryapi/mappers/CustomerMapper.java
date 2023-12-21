@@ -2,6 +2,7 @@ package com.jcanseco.inventoryapi.mappers;
 
 import com.jcanseco.inventoryapi.dtos.AddressDto;
 import com.jcanseco.inventoryapi.dtos.customers.CreateCustomerDto;
+import com.jcanseco.inventoryapi.dtos.customers.CustomerDetailsDto;
 import com.jcanseco.inventoryapi.dtos.customers.CustomerDto;
 import com.jcanseco.inventoryapi.entities.Customer;
 import com.jcanseco.inventoryapi.entities.CustomerAddress;
@@ -12,6 +13,8 @@ import org.mapstruct.Mapping;
 public interface CustomerMapper {
 
     CustomerDto entityToDto(Customer customer);
+
+    CustomerDetailsDto entityToDetailsDto(Customer customer);
 
     @Mapping(target = "id", ignore = true)
     Customer createDtoToEntity(CreateCustomerDto dto);

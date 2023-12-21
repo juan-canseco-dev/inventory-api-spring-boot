@@ -3,6 +3,7 @@ package com.jcanseco.inventoryapi.integration.customers;
 import com.jcanseco.inventoryapi.dtos.AddressDto;
 import com.jcanseco.inventoryapi.dtos.customers.CreateCustomerDto;
 import com.jcanseco.inventoryapi.repositories.CustomerRepository;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.hamcrest.Matchers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -57,12 +57,9 @@ public class CreateCustomerTests {
                 .content(mapper.writeValueAsString(createDto));
 
         mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.dni", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.phone", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.fullName", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.address", Matchers.notNullValue()));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$", Matchers.notNullValue()))
+                .andExpect(jsonPath("$").isNumber());
     }
 
     @Test

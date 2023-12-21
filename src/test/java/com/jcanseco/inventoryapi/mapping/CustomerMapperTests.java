@@ -7,7 +7,6 @@ import com.jcanseco.inventoryapi.entities.CustomerAddress;
 import com.jcanseco.inventoryapi.mappers.CustomerMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -121,12 +120,42 @@ public class CustomerMapperTests {
         assertEquals(customer.getDni(), dto.getDni());
         assertEquals(customer.getPhone(), dto.getPhone());
         assertEquals(customer.getFullName(), dto.getFullName());
+    }
+
+    @Test
+    public void entityToDetailsDto() {
+
+        var customerId = 1L;
+
+        var address = CustomerAddress
+                .builder()
+                .country("Mexico")
+                .state("Sonora")
+                .city("Hermosillo")
+                .zipCode("83200")
+                .street("Center")
+                .build();
+
+        var customer = Customer.builder()
+                .id(customerId)
+                .dni("X1Y9Z3A7B2C8D6E0F5G4")
+                .fullName("John Doe")
+                .phone("555-1234-1")
+                .address(address)
+                .build();
+
+        var dto = mapper.entityToDetailsDto(customer);
+        assertNotNull(dto);
+
+        assertEquals(customer.getId(), dto.getId());
+        assertEquals(customer.getDni(), dto.getDni());
+        assertEquals(customer.getPhone(), dto.getPhone());
+        assertEquals(customer.getFullName(), dto.getFullName());
 
         assertEquals(address.getCountry(), dto.getAddress().getCountry());
         assertEquals(address.getState(), dto.getAddress().getState());
         assertEquals(address.getCity(), dto.getAddress().getCity());
         assertEquals(address.getZipCode(), dto.getAddress().getZipCode());
         assertEquals(address.getStreet(), dto.getAddress().getStreet());
-
     }
 }
