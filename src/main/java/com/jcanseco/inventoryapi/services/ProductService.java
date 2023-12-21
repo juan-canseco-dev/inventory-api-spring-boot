@@ -1,5 +1,6 @@
 package com.jcanseco.inventoryapi.services;
 
+import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.dtos.products.*;
 
 import java.util.List;
@@ -10,5 +11,5 @@ public interface ProductService {
     void deleteProduct(Long productId);
     ProductDetailsDto getProductById(Long productId);
     List<ProductDto> getProducts(GetProductsRequest request);
-    List<ProductDto> getProductsPaged(GetProductsRequest request);
+    PagedList<ProductDto> getProductsPaged(GetProductsRequest request);
 }
