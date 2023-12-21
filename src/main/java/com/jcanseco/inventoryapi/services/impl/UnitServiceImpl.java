@@ -24,22 +24,21 @@ public class UnitServiceImpl implements UnitService {
     private final UnitOfMeasurementMapper mapper;
 
     @Override
-    public UnitOfMeasurementDto createUnit(CreateUnitOfMeasurementDto dto) {
+    public Long createUnit(CreateUnitOfMeasurementDto dto) {
         var unit = mapper.createDtoToEntity(dto);
         var newUnit = repository.saveAndFlush(unit);
-        return mapper.entityToDto(newUnit);
+        return newUnit.getId();
     }
 
     @Override
-    public UnitOfMeasurementDto updateUnit(UpdateUnitOfMeasurementDto dto) {
+    public void updateUnit(UpdateUnitOfMeasurementDto dto) {
         var unit = repository
                 .findById(dto.getUnitOfMeasurementId())
                 .orElseThrow(() -> new NotFoundException(String.format("UnitOfMeasurement with the Id {%d} was not found.", dto.getUnitOfMeasurementId())));
 
         unit.setName(dto.getName());
 
-        var updatedUnit = repository.saveAndFlush(unit);
-        return mapper.entityToDto(updatedUnit);
+        repository.saveAndFlush(unit);
     }
 
     @Override

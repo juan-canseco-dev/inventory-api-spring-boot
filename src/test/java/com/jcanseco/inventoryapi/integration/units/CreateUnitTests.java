@@ -29,7 +29,7 @@ public class CreateUnitTests {
     }
 
     @Test
-    public void createUnitWhenModelIsValidStatusShouldBeOk() throws Exception {
+    public void createUnitWhenModelIsValidStatusShouldBeCreated() throws Exception {
 
         var createdDto = new CreateUnitOfMeasurementDto("Kilogram");
 
@@ -40,9 +40,7 @@ public class CreateUnitTests {
                 .content(mapper.writeValueAsString(createdDto));
 
         mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.name").value(createdDto.getName()));
+                .andExpect(status().isCreated());
     }
 
     @Test

@@ -1,4 +1,5 @@
 package com.jcanseco.inventoryapi.integration.units;
+
 import com.jcanseco.inventoryapi.dtos.units.UpdateUnitOfMeasurementDto;
 import com.jcanseco.inventoryapi.entities.UnitOfMeasurement;
 import com.jcanseco.inventoryapi.repositories.UnitOfMeasurementRepository;
@@ -12,7 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.hamcrest.Matchers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -38,7 +38,7 @@ public class UpdateUnitTests {
     }
 
     @Test
-    public void updateUnitWhenUnitExistsAndModelIsValidStatusShouldBeOk() throws Exception {
+    public void updateUnitWhenUnitExistsAndModelIsValidStatusShouldBeNoContent() throws Exception {
 
         var unitId = savedUnit.getId();
         var updatedUnit = new UpdateUnitOfMeasurementDto(unitId, "Kilo");
@@ -51,10 +51,7 @@ public class UpdateUnitTests {
                 .content(mapper.writeValueAsString(updatedUnit));
 
         mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.id").value(unitId))
-                .andExpect(jsonPath("$.name").value(updatedUnit.getName()));
+                .andExpect(status().isNoContent());
     }
 
     @Test

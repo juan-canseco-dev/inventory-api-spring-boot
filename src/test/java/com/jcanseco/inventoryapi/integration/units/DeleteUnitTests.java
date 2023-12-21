@@ -35,7 +35,7 @@ public class DeleteUnitTests {
     }
 
     @Test
-    public void deleteUnitWhenUnitExistsStatusShouldBeOk() throws Exception {
+    public void deleteUnitWhenUnitExistsStatusShouldBeNoContent() throws Exception {
 
         var unitId = savedUnit.getId();
 
@@ -44,7 +44,7 @@ public class DeleteUnitTests {
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(request)
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         var unitOpt = repository.findById(unitId);
         assertTrue(unitOpt.isEmpty());

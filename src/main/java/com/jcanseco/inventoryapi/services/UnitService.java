@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface UnitService {
     UnitOfMeasurementDto getUnitById(Long unitId);
-    UnitOfMeasurementDto createUnit(CreateUnitOfMeasurementDto dto);
-    UnitOfMeasurementDto updateUnit(UpdateUnitOfMeasurementDto dto);
+    Long createUnit(CreateUnitOfMeasurementDto dto);
+    void updateUnit(UpdateUnitOfMeasurementDto dto);
     void deleteUnit(Long unitId);
     List<UnitOfMeasurementDto> getUnits(GetUnitsOfMeasurementRequest request);
     PagedList<UnitOfMeasurementDto> getUnitsPage(GetUnitsOfMeasurementRequest request);
