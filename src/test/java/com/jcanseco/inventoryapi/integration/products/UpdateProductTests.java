@@ -37,11 +37,8 @@ public class UpdateProductTests {
     private UnitOfMeasurementRepository unitRepository;
     @Autowired
     private ProductRepository productRepository;
-    private Supplier savedSupplier;
     private Supplier updateSupplier;
-    private Category savedCategory;
     private Category updateCategory;
-    private UnitOfMeasurement savedUnit;
     private UnitOfMeasurement updateUnit;
     private Product savedProduct;
 
@@ -56,20 +53,23 @@ public class UpdateProductTests {
                 .street("Center")
                 .build();
 
-        var supplier = Supplier.builder()
+        var supplier = supplierRepository.saveAndFlush(Supplier.builder()
                 .companyName("ABC Corp")
                 .contactName("John Doe")
                 .contactPhone("555-1234-1")
                 .address(address)
-                .build();
+                .build()
+        );
 
-        var category = Category.builder()
+        var category = categoryRepository.saveAndFlush(Category.builder()
                 .name("Electronics")
-                .build();
+                .build()
+        );
 
-        var unit = UnitOfMeasurement.builder()
+        var unit = unitRepository.saveAndFlush(UnitOfMeasurement.builder()
                 .name("Piece")
-                .build();
+                .build()
+        );
 
 
         var product = Product.builder()
@@ -82,9 +82,6 @@ public class UpdateProductTests {
                 .salePrice(BigDecimal.valueOf(20.99))
                 .build();
 
-        savedSupplier = supplierRepository.saveAndFlush(supplier);
-        savedCategory = categoryRepository.saveAndFlush(category);
-        savedUnit = unitRepository.saveAndFlush(unit);
         savedProduct = productRepository.saveAndFlush(product);
     }
 
