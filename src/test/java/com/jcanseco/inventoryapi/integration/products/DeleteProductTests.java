@@ -87,7 +87,7 @@ public class DeleteProductTests {
     }
 
     @Test
-    public void deleteProductWhenProductExistsStatusShouldBeOk() throws Exception {
+    public void deleteProductWhenProductExistsStatusShouldBeNoContent() throws Exception {
         var productId = savedProduct.getId();
 
         var request = MockMvcRequestBuilders
@@ -96,7 +96,7 @@ public class DeleteProductTests {
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(request)
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test

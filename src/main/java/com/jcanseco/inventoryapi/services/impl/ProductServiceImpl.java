@@ -31,7 +31,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional
     @Override
-    public ProductDto createProduct(CreateProductDto dto) {
+    public Long createProduct(CreateProductDto dto) {
 
         var supplier = supplierRepository
                 .findById(dto.getSupplierId())
@@ -62,12 +62,13 @@ public class ProductServiceImpl implements ProductService {
                 .build();
 
         var newProduct = productRepository.saveAndFlush(product);
-        return mapper.entityToDto(newProduct);
+
+        return newProduct.getId();
     }
 
     @Transactional
     @Override
-    public ProductDto updateProduct(UpdateProductDto dto) {
+    public void updateProduct(UpdateProductDto dto) {
 
         var product = productRepository
                 .findById(dto.getProductId())
@@ -103,9 +104,7 @@ public class ProductServiceImpl implements ProductService {
         product.setPurchasePrice(BigDecimal.valueOf(dto.getPurchasePrice()));
         product.setSalePrice(BigDecimal.valueOf(dto.getSalePrice()));
 
-        var updatedProduct = productRepository.saveAndFlush(product);
-
-        return mapper.entityToDto(updatedProduct);
+        productRepository.saveAndFlush(product);
     }
 
     @Override

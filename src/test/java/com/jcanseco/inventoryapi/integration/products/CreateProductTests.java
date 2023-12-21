@@ -82,7 +82,7 @@ public class CreateProductTests {
     }
 
     @Test
-    public void createProductWhenModelIsValidStatusShouldBeOk() throws Exception {
+    public void createProductWhenModelIsValidStatusShouldBeCreated() throws Exception {
 
         var createDto = CreateProductDto.builder()
                 .name("Laptop")
@@ -100,7 +100,7 @@ public class CreateProductTests {
                 .content(mapper.writeValueAsString(createDto));
 
         mockMvc.perform(request)
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test

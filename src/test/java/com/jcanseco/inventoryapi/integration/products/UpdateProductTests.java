@@ -133,7 +133,7 @@ public class UpdateProductTests {
     }
 
     @Test
-    public void updateProductWhenModelIsValidStatusShouldBeOk() throws Exception {
+    public void updateProductWhenModelIsValidStatusShouldBeNoContent() throws Exception {
 
         var productId = savedProduct.getId();
         var supplierId = updateSupplier.getId();
@@ -157,7 +157,7 @@ public class UpdateProductTests {
                 .content(mapper.writeValueAsString(updateDto));
 
         mockMvc.perform(request)
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test
