@@ -94,6 +94,7 @@ public class PurchasesTests {
 
     private PurchaseItem productToItem(Product product) {
         return PurchaseItem.builder()
+                .product(product)
                 .productName(product.getName())
                 .productUnit(product.getUnit().getName())
                 .quantity(10L)

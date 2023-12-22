@@ -1,5 +1,6 @@
 package com.jcanseco.inventoryapi.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -16,6 +17,9 @@ public class PurchaseItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
+
+    @Column(name = "product_id", insertable = false, updatable = false)
+    private Long productId;
 
     @Column(nullable = false, length = 50)
     private String productName;
@@ -35,4 +39,9 @@ public class PurchaseItem {
     @ManyToOne
     @JoinColumn(name = "purchase_id", referencedColumnName = "id")
     private Purchase purchase;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    @JsonIgnore
+    private Product product;
 }
