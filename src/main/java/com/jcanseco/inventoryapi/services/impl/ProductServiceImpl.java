@@ -2,7 +2,10 @@ package com.jcanseco.inventoryapi.services.impl;
 
 import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.dtos.products.*;
+import com.jcanseco.inventoryapi.entities.Category;
 import com.jcanseco.inventoryapi.entities.Product;
+import com.jcanseco.inventoryapi.entities.Supplier;
+import com.jcanseco.inventoryapi.entities.UnitOfMeasurement;
 import com.jcanseco.inventoryapi.exceptions.DomainException;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.ProductMapper;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -151,21 +155,29 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDto> getProducts(GetProductsRequest request) {
 
-        var supplier = supplierRepository
-                .findById(request.getSupplierId())
-                .orElse(null);
+        Supplier supplier = null;
+        Category category = null;
+        UnitOfMeasurement unit = null;
 
-        var category = categoryRepository
-                .findById(request.getCategoryId())
-                .orElse(null);
+        if (request.getSupplierId() != null) {
+            supplier = supplierRepository
+                    .findById(request.getSupplierId())
+                    .orElse(null);
+        }
 
-        var unit = unitRepository
-                .findById(request.getUnitId())
-                .orElse(null);
+        if (request.getCategoryId() != null) {
+            category = categoryRepository
+                    .findById(request.getCategoryId())
+                    .orElse(null);
+        }
+
+        if (request.getUnitId() != null) {
+            unit = unitRepository
+                    .findById(request.getUnitId())
+                    .orElse(null);
+        }
 
         var sort = getSortOrder(request);
-
-
         var specification = ProductRepository.Specs.byAllFilters(
                 supplier,
                 category,
@@ -193,17 +205,27 @@ public class ProductServiceImpl implements ProductService {
         var pageNumber = request.getPageNumber() > 0? request.getPageNumber() - 1 : request.getPageNumber();
         var pageSize = request.getPageSize();
 
-        var supplier = supplierRepository
-                .findById(request.getSupplierId())
-                .orElse(null);
+        Supplier supplier = null;
+        Category category = null;
+        UnitOfMeasurement unit = null;
 
-        var category = categoryRepository
-                .findById(request.getCategoryId())
-                .orElse(null);
+        if (request.getSupplierId() != null) {
+            supplier = supplierRepository
+                    .findById(request.getSupplierId())
+                    .orElse(null);
+        }
 
-        var unit = unitRepository
-                .findById(request.getUnitId())
-                .orElse(null);
+        if (request.getCategoryId() != null) {
+            category = categoryRepository
+                    .findById(request.getCategoryId())
+                    .orElse(null);
+        }
+
+        if (request.getUnitId() != null) {
+            unit = unitRepository
+                    .findById(request.getUnitId())
+                    .orElse(null);
+        }
 
         var sort = getSortOrder(request);
         var pageRequest = PageRequest.of(pageNumber, pageSize, sort);
