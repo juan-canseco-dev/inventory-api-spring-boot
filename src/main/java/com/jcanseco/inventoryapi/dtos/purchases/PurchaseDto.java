@@ -1,6 +1,5 @@
 package com.jcanseco.inventoryapi.dtos.purchases;
 
-import com.jcanseco.inventoryapi.dtos.suppliers.SupplierDto;
 import lombok.*;
 import java.math.BigDecimal;
 
@@ -11,6 +10,6 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class PurchaseDto {
     private Long id;
-    private SupplierDto supplier;
+    private String supplier;
     private BigDecimal total;
 }
