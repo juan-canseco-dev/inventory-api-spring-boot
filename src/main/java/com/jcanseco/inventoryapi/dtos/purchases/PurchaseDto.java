@@ -2,6 +2,7 @@ package com.jcanseco.inventoryapi.dtos.purchases;
 
 import lombok.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Builder
 @Setter
@@ -12,4 +13,5 @@ public class PurchaseDto {
     private Long id;
     private String supplier;
     private BigDecimal total;
+    private LocalDateTime createdAt;
 }

@@ -2,7 +2,9 @@ package com.jcanseco.inventoryapi.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @EqualsAndHashCode
@@ -26,4 +28,8 @@ public class Purchase {
 
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL)
     private List<PurchaseItem> items;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 }

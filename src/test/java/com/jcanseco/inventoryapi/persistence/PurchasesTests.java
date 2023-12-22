@@ -135,5 +135,6 @@ public class PurchasesTests {
         assertEquals(total, newPurchase.getTotal());
         assertEquals(supplier.getId(), purchase.getSupplier().getId());
         assertNotNull(newPurchase.getItems());
+        assertNotNull(newPurchase.getCreatedAt());
     }
 }

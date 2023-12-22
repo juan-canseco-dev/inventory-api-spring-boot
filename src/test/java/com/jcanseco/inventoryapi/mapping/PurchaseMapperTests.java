@@ -7,6 +7,7 @@ import com.jcanseco.inventoryapi.mappers.PurchaseMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,6 +55,7 @@ public class PurchaseMapperTests {
                 .supplier(supplier)
                 .items(items)
                 .total(total)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
@@ -67,6 +69,7 @@ public class PurchaseMapperTests {
         assertEquals(purchase.getId(), dto.getId());
         assertEquals(purchase.getSupplier().getCompanyName(), dto.getSupplier());
         assertEquals(purchase.getTotal(), dto.getTotal());
+        assertEquals(purchase.getCreatedAt(), dto.getCreatedAt());
     }
 
     @Test
@@ -84,6 +87,7 @@ public class PurchaseMapperTests {
 
         assertNotNull(dto.getItems());
         assertEqualsItems(purchase.getItems(), dto.getItems());
+        assertEquals(purchase.getCreatedAt(), dto.getCreatedAt());
     }
 
     private void assertEqualsSupplier(Supplier expected, SupplierDto actual) {
