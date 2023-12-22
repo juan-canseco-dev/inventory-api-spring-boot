@@ -34,6 +34,7 @@ public class PurchaseMapperTests {
         var items = List.of(
                 PurchaseItem.builder()
                         .id(1L)
+                        .productId(78L)
                         .productName("Laptop")
                         .productUnit("Box")
                         .quantity(10L)
@@ -94,6 +95,7 @@ public class PurchaseMapperTests {
 
     private void assertEqualsItem(PurchaseItem expected, PurchaseItemDto actual) {
         assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getProductId(), actual.getProductId());
         assertEquals(expected.getProductName(), actual.getProductName());
         assertEquals(expected.getProductUnit(), actual.getProductUnit());
         assertEquals(expected.getQuantity(), actual.getQuantity());
