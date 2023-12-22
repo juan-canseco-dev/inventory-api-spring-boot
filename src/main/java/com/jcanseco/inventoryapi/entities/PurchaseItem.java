@@ -27,7 +27,10 @@ public class PurchaseItem {
     private Long quantity;
 
     @Column(nullable = false, precision = 8, scale = 2)
-    BigDecimal total;
+    private BigDecimal price;
+
+    @Column(nullable = false, precision = 8, scale = 2)
+    private BigDecimal total;
 
     @ManyToOne
     @JoinColumn(name = "purchase_id", referencedColumnName = "id")

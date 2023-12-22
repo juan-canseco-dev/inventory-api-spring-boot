@@ -24,6 +24,6 @@ public class Purchase {
     @JoinColumn(name = "supplier_id", referencedColumnName = "id")
     private Supplier supplier;
 
-    @OneToMany(mappedBy = "purchases", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL)
     private List<PurchaseItem> items;
 }
