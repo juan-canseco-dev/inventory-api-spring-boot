@@ -5,8 +5,12 @@ import com.jcanseco.inventoryapi.dtos.customers.CreateCustomerDto;
 import com.jcanseco.inventoryapi.entities.Customer;
 import com.jcanseco.inventoryapi.entities.CustomerAddress;
 import com.jcanseco.inventoryapi.mappers.CustomerMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.newCustomer;
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.newCustomerAddress;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -39,14 +43,13 @@ public class CustomerMapperTests {
     @Test
     public void addressEntityToDto() {
 
-        var address = CustomerAddress
-                .builder()
-                .country("Mexico")
-                .state("Sonora")
-                .city("Hermosillo")
-                .zipCode("83200")
-                .street("Center")
-                .build();
+        var address = newCustomerAddress(
+                "Mexico",
+                "Sonora",
+                "Hermosillo",
+                "83200",
+                "Center"
+        );
 
         var dto = mapper.addressToDto(address);
         assertNotNull(dto);
@@ -94,24 +97,19 @@ public class CustomerMapperTests {
     @Test
     public void entityToDto() {
 
-        var customerId = 1L;
-
-        var address = CustomerAddress
-                .builder()
-                .country("Mexico")
-                .state("Sonora")
-                .city("Hermosillo")
-                .zipCode("83200")
-                .street("Center")
-                .build();
-
-        var customer = Customer.builder()
-                .id(customerId)
-                .dni("X1Y9Z3A7B2C8D6E0F5G4")
-                .fullName("John Doe")
-                .phone("555-1234-1")
-                .address(address)
-                .build();
+        var customer = newCustomer(
+                1L,
+                "X1Y9Z3A7B2C8D6E0F5G4",
+                "John Doe",
+                "555-1234-1",
+                newCustomerAddress(
+                        "Mexico",
+                        "Sonora",
+                        "Hermosillo",
+                        "83200",
+                        "Center"
+                )
+        );
 
         var dto = mapper.entityToDto(customer);
         assertNotNull(dto);
@@ -125,24 +123,21 @@ public class CustomerMapperTests {
     @Test
     public void entityToDetailsDto() {
 
-        var customerId = 1L;
+        var address = newCustomerAddress(
+                "Mexico",
+                "Sonora",
+                "Hermosillo",
+                "83200",
+                "Center"
+        );
 
-        var address = CustomerAddress
-                .builder()
-                .country("Mexico")
-                .state("Sonora")
-                .city("Hermosillo")
-                .zipCode("83200")
-                .street("Center")
-                .build();
-
-        var customer = Customer.builder()
-                .id(customerId)
-                .dni("X1Y9Z3A7B2C8D6E0F5G4")
-                .fullName("John Doe")
-                .phone("555-1234-1")
-                .address(address)
-                .build();
+        var customer = newCustomer(
+                1L,
+                "X1Y9Z3A7B2C8D6E0F5G4",
+                "John Doe",
+                "555-1234-1",
+                address
+        );
 
         var dto = mapper.entityToDetailsDto(customer);
         assertNotNull(dto);

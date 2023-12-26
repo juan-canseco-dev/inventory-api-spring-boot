@@ -2,11 +2,11 @@ package com.jcanseco.inventoryapi.mapping;
 
 import com.jcanseco.inventoryapi.dtos.AddressDto;
 import com.jcanseco.inventoryapi.dtos.suppliers.CreateSupplierDto;
-import com.jcanseco.inventoryapi.entities.Supplier;
-import com.jcanseco.inventoryapi.entities.SupplierAddress;
 import com.jcanseco.inventoryapi.mappers.SupplierMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.newSupplier;
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.newSupplierAddress;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SupplierMapperTests {
@@ -37,14 +37,13 @@ public class SupplierMapperTests {
     @Test
     public void addressEntityToDto() {
 
-        var address = SupplierAddress
-                .builder()
-                .country("Mexico")
-                .state("Sonora")
-                .city("Hermosillo")
-                .zipCode("83200")
-                .street("Center")
-                .build();
+        var address = newSupplierAddress(
+                "Mexico",
+                "Sonora",
+                "Hermosillo",
+                "83200",
+                "Center"
+        );
 
         var dto = mapper.addressToDto(address);
         assertNotNull(dto);
@@ -90,24 +89,20 @@ public class SupplierMapperTests {
 
     @Test
     public void entityToDto() {
-        var supplierId = 1L;
 
-        var address = SupplierAddress
-                .builder()
-                .country("Mexico")
-                .state("Sonora")
-                .city("Hermosillo")
-                .zipCode("83200")
-                .street("Center")
-                .build();
-
-        var supplier = Supplier.builder()
-                .id(supplierId)
-                .companyName("ABC Corp")
-                .contactName("John Doe")
-                .contactPhone("555-1234-1")
-                .address(address)
-                .build();
+        var supplier = newSupplier(
+                1L,
+                "ABC Corp",
+                "John Doe",
+                "555-1234-1",
+                newSupplierAddress(
+                        "Mexico",
+                        "Sonora",
+                        "Hermosillo",
+                        "83200",
+                        "Center"
+                )
+        );
 
         var dto = mapper.entityToDto(supplier);
         assertNotNull(dto);
@@ -120,24 +115,22 @@ public class SupplierMapperTests {
 
     @Test
     public void entityToDetailsDto() {
-        var supplierId = 1L;
 
-        var address = SupplierAddress
-                .builder()
-                .country("Mexico")
-                .state("Sonora")
-                .city("Hermosillo")
-                .zipCode("83200")
-                .street("Center")
-                .build();
+        var address = newSupplierAddress(
+                "Mexico",
+                "Sonora",
+                "Hermosillo",
+                "83200",
+                "Center"
+        );
 
-        var supplier = Supplier.builder()
-                .id(supplierId)
-                .companyName("ABC Corp")
-                .contactName("John Doe")
-                .contactPhone("555-1234-1")
-                .address(address)
-                .build();
+        var supplier = newSupplier(
+                1L,
+                "ABC Corp",
+                "John Doe",
+                "555-1234-1",
+                address
+        );
 
         var dto = mapper.entityToDetailsDto(supplier);
         assertNotNull(dto);

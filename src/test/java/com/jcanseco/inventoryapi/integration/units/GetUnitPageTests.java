@@ -1,6 +1,5 @@
 package com.jcanseco.inventoryapi.integration.units;
 
-import com.jcanseco.inventoryapi.entities.UnitOfMeasurement;
 import com.jcanseco.inventoryapi.repositories.UnitOfMeasurementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,36 +13,29 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.List;
 import org.hamcrest.Matchers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 public class GetUnitPageTests {
-
-
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private UnitOfMeasurementRepository repository;
 
-    private UnitOfMeasurement createUnit(String name) {
-        return UnitOfMeasurement.builder()
-                .name(name)
-                .build();
-    }
-
     @BeforeEach
     public void setup() {
         var units = List.of(
-                createUnit("Meter"),
-                createUnit("Kilogram"),
-                createUnit("Liter"),
-                createUnit("Gram"),
-                createUnit("Millimeter"),
-                createUnit("Centimeter"),
-                createUnit("Inch"),
-                createUnit("Pound"),
-                createUnit("Gallon"),
-                createUnit("Ounce")
+                newUnit("Meter"),
+                newUnit("Kilogram"),
+                newUnit("Liter"),
+                newUnit("Gram"),
+                newUnit("Millimeter"),
+                newUnit("Centimeter"),
+                newUnit("Inch"),
+                newUnit("Pound"),
+                newUnit("Gallon"),
+                newUnit("Ounce")
         );
         repository.saveAllAndFlush(units);
     }

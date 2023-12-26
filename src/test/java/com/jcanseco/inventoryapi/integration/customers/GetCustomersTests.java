@@ -14,6 +14,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.hamcrest.Matchers;
 import java.util.List;
+
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.newCustomer;
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.newCustomerAddress;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -24,38 +27,19 @@ public class GetCustomersTests {
     private MockMvc mockMvc;
     @Autowired
     private CustomerRepository repository;
-    private Customer createCustomer(String dni, String phone, String fullName, CustomerAddress address) {
-        return Customer.builder()
-                .dni(dni)
-                .phone(phone)
-                .fullName(fullName)
-                .address(address)
-                .build();
-    }
-
-    private CustomerAddress createCustomerAddress(String country, String state, String city, String zipCode, String street) {
-        return CustomerAddress.builder()
-                .country(country)
-                .state(state)
-                .city(city)
-                .zipCode(zipCode)
-                .street(street)
-                .build();
-    }
-
     @BeforeEach
     public void setup() {
         var customers = List.of(
-                createCustomer("123456789", "555-1234-1", "John Doe", createCustomerAddress("United States", "California", "San Francisco", "94105", "123 Main St")),
-                createCustomer("987654321", "555-1234-2", "Jane Smith", createCustomerAddress("United Kingdom", "England", "London", "EC1A 1BB", "456 High St")),
-                createCustomer("456789012", "555-1234-3", "Bob Johnson", createCustomerAddress("Canada", "Ontario", "Toronto", "M5V 2A8", "789 Maple Ave")),
-                createCustomer("789012345", "555-1234-4", "Alice Brown", createCustomerAddress("Australia", "New South Wales", "Sydney", "2000", "101 Tech Blvd")),
-                createCustomer("234567890", "555-1234-5", "David Wilson", createCustomerAddress("Germany", "Bavaria", "Munich", "80331", "234 Innovation Strasse")),
-                createCustomer("567890123", "555-1234-6", "Linda Miller", createCustomerAddress("Brazil", "Sao Paulo", "Sao Paulo", "01310-200", "345 Sunny Ave")),
-                createCustomer("890123456", "555-1234-7", "Chris Taylor", createCustomerAddress("China", "Shanghai", "Shanghai", "200000", "456 Eco Street")),
-                createCustomer("345678901", "555-1234-8", "Emily White", createCustomerAddress("South Africa", "Gauteng", "Johannesburg", "2000", "567 Summit Road")),
-                createCustomer("678901234", "555-1234-9", "Michael Lee", createCustomerAddress("India", "Maharashtra", "Mumbai", "400001", "678 Urban Lane")),
-                createCustomer("901234567", "555-1234-10", "Olivia Garcia", createCustomerAddress("New Zealand", "Auckland", "Auckland", "1010", "789 Ocean View"))
+                newCustomer("123456789", "555-1234-1", "John Doe", newCustomerAddress("United States", "California", "San Francisco", "94105", "123 Main St")),
+                newCustomer("987654321", "555-1234-2", "Jane Smith", newCustomerAddress("United Kingdom", "England", "London", "EC1A 1BB", "456 High St")),
+                newCustomer("456789012", "555-1234-3", "Bob Johnson", newCustomerAddress("Canada", "Ontario", "Toronto", "M5V 2A8", "789 Maple Ave")),
+                newCustomer("789012345", "555-1234-4", "Alice Brown", newCustomerAddress("Australia", "New South Wales", "Sydney", "2000", "101 Tech Blvd")),
+                newCustomer("234567890", "555-1234-5", "David Wilson", newCustomerAddress("Germany", "Bavaria", "Munich", "80331", "234 Innovation Strasse")),
+                newCustomer("567890123", "555-1234-6", "Linda Miller", newCustomerAddress("Brazil", "Sao Paulo", "Sao Paulo", "01310-200", "345 Sunny Ave")),
+                newCustomer("890123456", "555-1234-7", "Chris Taylor", newCustomerAddress("China", "Shanghai", "Shanghai", "200000", "456 Eco Street")),
+                newCustomer("345678901", "555-1234-8", "Emily White", newCustomerAddress("South Africa", "Gauteng", "Johannesburg", "2000", "567 Summit Road")),
+                newCustomer("678901234", "555-1234-9", "Michael Lee", newCustomerAddress("India", "Maharashtra", "Mumbai", "400001", "678 Urban Lane")),
+                newCustomer("901234567", "555-1234-10", "Olivia Garcia", newCustomerAddress("New Zealand", "Auckland", "Auckland", "1010", "789 Ocean View"))
         );
         repository.saveAllAndFlush(customers);
     }

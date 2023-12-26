@@ -6,57 +6,44 @@ import com.jcanseco.inventoryapi.entities.*;
 import com.jcanseco.inventoryapi.mappers.PurchaseMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 
 public class PurchaseMapperTests {
     private final PurchaseMapper mapper = Mappers.getMapper(PurchaseMapper.class);
 
     private Purchase buildPurchase() {
 
-        var address = SupplierAddress.builder()
-                .country("Mexico")
-                .state("Sonora")
-                .city("Hermosillo")
-                .zipCode("83200")
-                .street("Center")
-                .build();
-
-        var supplier = Supplier.builder()
-                .id(3L)
-                .companyName("ABC Corp")
-                .contactName("John Doe")
-                .contactPhone("555-1234-1")
-                .address(address)
-                .build();
-
-        var items = List.of(
-                PurchaseItem.builder()
-                        .id(1L)
-                        .productId(78L)
-                        .productName("Laptop")
-                        .productUnit("Box")
-                        .quantity(10L)
-                        .price(BigDecimal.valueOf(10))
-                        .total(BigDecimal.valueOf(100))
-                        .build()
-
+        var supplier = newSupplier(
+                1L,
+                "ABC Corp",
+                "John Doe",
+                "555-1234-1",
+                newSupplierAddress(
+                 "Mexico",
+                 "Sonora",
+                 "Hermosillo",
+                 "83200",
+                 "Center"
+                )
         );
 
+        var items = List.of(
+                newPurchaseItem(
+                        1L,
+                        70L,
+                        "Laptop",
+                        "Box",
+                        10L,
+                        9.99
+                )
+        );
 
-        var total = items.stream()
-                .map(PurchaseItem::getTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        var createdAt = LocalDateTime.now();
 
-        return Purchase.builder()
-                .id(5L)
-                .supplier(supplier)
-                .items(items)
-                .total(total)
-                .createdAt(LocalDateTime.now())
-                .build();
+        return newPurchase(5L,supplier, items, createdAt);
     }
 
     @Test

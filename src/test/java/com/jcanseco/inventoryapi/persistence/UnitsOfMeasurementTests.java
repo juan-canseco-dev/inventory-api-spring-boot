@@ -1,6 +1,5 @@
 package com.jcanseco.inventoryapi.persistence;
 
-import com.jcanseco.inventoryapi.entities.UnitOfMeasurement;
 import com.jcanseco.inventoryapi.repositories.UnitOfMeasurementRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,10 +7,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 
 @DisplayName("Units Of Measurement Tests")
 @SpringBootTest
@@ -23,16 +22,16 @@ public class UnitsOfMeasurementTests {
     @BeforeEach
     public void setup() {
         var units = List.of(
-                createUnit("Meter"),
-                createUnit("Kilogram"),
-                createUnit("Liter"),
-                createUnit("Gram"),
-                createUnit("Millimeter"),
-                createUnit("Centimeter"),
-                createUnit("Inch"),
-                createUnit("Pound"),
-                createUnit("Gallon"),
-                createUnit("Ounce")
+                newUnit("Meter"),
+                newUnit("Kilogram"),
+                newUnit("Liter"),
+                newUnit("Gram"),
+                newUnit("Millimeter"),
+                newUnit("Centimeter"),
+                newUnit("Inch"),
+                newUnit("Pound"),
+                newUnit("Gallon"),
+                newUnit("Ounce")
         );
         repository.saveAllAndFlush(units);
     }
@@ -42,15 +41,10 @@ public class UnitsOfMeasurementTests {
         repository.deleteAll();
     }
 
-    private UnitOfMeasurement createUnit(String name) {
-        return UnitOfMeasurement.builder()
-                .name(name)
-                .build();
-    }
     @Test
     public void createUnitWhenValidUnitReturnSavedUnitWithGeneratedId() {
 
-        var unit = createUnit("New Unit");
+        var unit = newUnit("New Unit");
         var newUnit = repository.saveAndFlush(unit);
 
         assertTrue(newUnit.getId() > 0);
@@ -72,25 +66,4 @@ public class UnitsOfMeasurementTests {
         var foundUnits = repository.findAllByNameContaining("oun", Sort.by("name").ascending());
         assertEquals(2, foundUnits.size());
     }
-
-    @Test
-    public void findAllPagedUnitsByNameWhenInputIsValidShouldReturnValidPage() {
-        var request = PageRequest.of(0, 2);
-        var page = repository.findAllByNameContaining("l", request);
-
-        assertNotNull(page.getContent());
-        assertEquals(2, page.getContent().size());
-        assertEquals(2, page.getTotalPages());
-        assertEquals(4, page.getTotalElements());
-    }
-
-    @Test
-    public void findAllPagedUnitsWhenNameIsEmptyShouldReturnValidPageWithAllItems() {
-        var request = PageRequest.of(0, 10);
-        var page = repository.findAllByNameContaining("", request);
-
-        assertNotNull(page.getContent());
-        assertEquals(10, page.getContent().size());
-    }
-
 }

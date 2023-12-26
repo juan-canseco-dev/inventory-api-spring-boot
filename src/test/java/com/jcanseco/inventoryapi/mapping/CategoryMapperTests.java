@@ -1,10 +1,11 @@
 package com.jcanseco.inventoryapi.mapping;
 
 import com.jcanseco.inventoryapi.dtos.categories.CreateCategoryDto;
-import com.jcanseco.inventoryapi.entities.Category;
 import com.jcanseco.inventoryapi.mappers.CategoryMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.newCategory;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CategoryMapperTests {
@@ -12,9 +13,10 @@ public class CategoryMapperTests {
 
     @Test
     public void entityToDto() {
+
         assertNotNull(mapper);
 
-        var entity = Category.builder().id(1L).name("Electronics").build();
+        var entity = newCategory(1L, "Electronics");
         var dto = mapper.entityToDto(entity);
 
         assertEquals(entity.getId(), dto.getId());

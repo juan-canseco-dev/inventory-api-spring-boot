@@ -1,6 +1,5 @@
 package com.jcanseco.inventoryapi.persistence;
 
-import com.jcanseco.inventoryapi.entities.Category;
 import com.jcanseco.inventoryapi.repositories.CategoryRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,10 +7,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 
 @DisplayName("Categories Repository Tests")
 @SpringBootTest
@@ -20,25 +19,20 @@ public class CategoriesTests {
     @Autowired
     private CategoryRepository repository;
 
-    private Category createCategory(String name) {
-        return Category.builder()
-                .name(name)
-                .build();
-    }
 
     @BeforeEach
     public void setup() {
         var categories = List.of(
-                createCategory("Electronics"),
-                createCategory("Clothing"),
-                createCategory("Home and Garden"),
-                createCategory("Books"),
-                createCategory("Sports and Outdoors"),
-                createCategory("Health and Beauty"),
-                createCategory("Toys and Games"),
-                createCategory("Automotive"),
-                createCategory("Furniture"),
-                createCategory("Music")
+                newCategory("Electronics"),
+                newCategory("Clothing"),
+                newCategory("Home and Garden"),
+                newCategory("Books"),
+                newCategory("Sports and Outdoors"),
+                newCategory("Health and Beauty"),
+                newCategory("Toys and Games"),
+                newCategory("Automotive"),
+                newCategory("Furniture"),
+                newCategory("Music")
         );
         this.repository.saveAllAndFlush(categories);
     }
@@ -51,7 +45,7 @@ public class CategoriesTests {
     @Test
     public void createCategoryWhenValidCategoryReturnSavedCategoryWithGeneratedId() {
 
-        var category = createCategory("New category");
+        var category = newCategory("New category");
         var newCategory = repository.saveAndFlush(category);
 
         assertTrue(newCategory.getId() > 0);
@@ -73,25 +67,5 @@ public class CategoriesTests {
     public void findAllCategoriesByNameContainingWhenContains() {
         var foundCategories = repository.findAllByNameContaining("v", Sort.by("name").ascending());
         assertEquals(1, foundCategories.size());
-    }
-
-    @Test
-    public void findAllPagedCategoriesByNameWhenInputIsValidShouldReturnValidPage() {
-        var request = PageRequest.of(0, 3);
-        var page = repository.findAllByNameContaining("e", request);
-
-        assertNotNull(page.getContent());
-        assertEquals(3, page.getContent().size());
-        assertEquals(2, page.getTotalPages());
-        assertEquals(6, page.getTotalElements());
-    }
-
-    @Test
-    public void findAllPagedCategoriesWhenNameIsEmptyShouldReturnValidPageWithAllItems() {
-        var request = PageRequest.of(0, 10);
-        var page = repository.findAllByNameContaining("", request);
-
-        assertNotNull(page.getContent());
-        assertEquals(10, page.getContent().size());
     }
 }

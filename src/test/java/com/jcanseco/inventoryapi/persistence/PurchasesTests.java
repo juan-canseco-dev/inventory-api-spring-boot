@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.math.BigDecimal;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 
 @DisplayName("Purchases Repository Tests")
 @SpringBootTest
@@ -38,54 +39,49 @@ public class PurchasesTests {
     public void setup() {
 
         var unit = unitRepository.saveAndFlush(
-                UnitOfMeasurement.builder()
-                        .name("Box")
-                        .build()
+                newUnit("Box")
         );
 
         var category = categoryRepository.saveAndFlush(
-                Category.builder()
-                        .name("Video Games")
-                        .build()
+                newCategory("Video Games")
         );
 
-        var supplierAddress = SupplierAddress.builder()
-                .country("Mexico")
-                .state("Sonora")
-                .city("Hermosillo")
-                .zipCode("83200")
-                .street("Center")
-                .build();
-
-        supplier = supplierRepository.saveAndFlush(Supplier
-                .builder()
-                .companyName("Pika Games")
-                .contactName("Perla Lopez")
-                .contactPhone("555-1234-1")
-                .address(supplierAddress)
-                .build()
+        supplier = supplierRepository.saveAndFlush(
+                newSupplier(
+                        "Pika Games",
+                        "Perla Lopez",
+                        "555-1234-1",
+                        newSupplierAddress(
+                                "Mexico",
+                                "Sonora",
+                                "Hermosillo",
+                                "83200",
+                                "Center"
+                        )
+                )
         );
 
-        var product1 = productRepository.saveAndFlush(Product.builder()
-                .name("Halo 3")
-                .supplier(supplier)
-                .category(category)
-                .unit(unit)
-                .quantity(0L)
-                .purchasePrice(BigDecimal.valueOf(5.99))
-                .salePrice(BigDecimal.valueOf(9.99))
-                .build()
+        var product1 = productRepository.saveAndFlush(
+                newProduct(
+                        supplier,
+                        category,
+                        unit,
+                        "Halo 3",
+                        5.99,
+                        9.99
+                )
         );
 
-        var product2 = productRepository.saveAndFlush(Product.builder()
-                .name("Halo Infinite")
-                .supplier(supplier)
-                .category(category)
-                .unit(unit)
-                .quantity(0L)
-                .purchasePrice(BigDecimal.valueOf(39.99))
-                .salePrice(BigDecimal.valueOf(59.99))
-                .build()
+        var product2 = productRepository.saveAndFlush(
+
+                newProduct(
+                        supplier,
+                        category,
+                        unit,
+                        "Halo Infinite",
+                        39.99,
+                        59.99
+                )
         );
 
         products = List.of(product1, product2);
@@ -93,14 +89,7 @@ public class PurchasesTests {
 
 
     private PurchaseItem productToItem(Product product) {
-        return PurchaseItem.builder()
-                .product(product)
-                .productName(product.getName())
-                .productUnit(product.getUnit().getName())
-                .quantity(10L)
-                .price(product.getPurchasePrice())
-                .total(product.getPurchasePrice().multiply(BigDecimal.valueOf(10L)))
-                .build();
+        return newPurchaseItem(product, 10L);
     }
 
     @AfterEach
@@ -123,17 +112,15 @@ public class PurchasesTests {
                 .map(PurchaseItem::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        var purchase = Purchase.builder()
-                .supplier(supplier)
-                .items(items)
-                .total(total)
-                .build();
-
+        var purchase = newPurchase(supplier, items);
         var newPurchase = purchaseRepository.save(purchase);
+
         assertNotNull(newPurchase);
         assertNotNull(newPurchase.getId());
+
         assertEquals(total, newPurchase.getTotal());
         assertEquals(supplier.getId(), purchase.getSupplier().getId());
+
         assertNotNull(newPurchase.getItems());
         assertNotNull(newPurchase.getCreatedAt());
     }

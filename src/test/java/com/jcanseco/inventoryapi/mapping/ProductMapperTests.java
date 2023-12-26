@@ -4,49 +4,41 @@ import com.jcanseco.inventoryapi.entities.*;
 import com.jcanseco.inventoryapi.mappers.ProductMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 
 public class ProductMapperTests {
     private final ProductMapper mapper = Mappers.getMapper(ProductMapper.class);
 
     private Product buildProduct() {
-        var category = Category.builder()
-                .id(1L)
-                .name("Electronics")
-                .build();
 
-        var unit = UnitOfMeasurement.builder()
-                .id(2L)
-                .name("Piece")
-                .build();
+        var category = newCategory(1L, "Electronics");
+        var unit = newUnit(2L, "Piece");
 
+        var supplier = newSupplier(
+                3L,
+                "ABC Corp",
+                "John Doe",
+                "555-1234-1",
+                newSupplierAddress(
+                        "Mexico",
+                        "Sonora",
+                        "Hermosillo",
+                        "83200",
+                        "Center"
+                )
+        );
 
-        var address = SupplierAddress.builder()
-                .country("Mexico")
-                .state("Sonora")
-                .city("Hermosillo")
-                .zipCode("83200")
-                .street("Center")
-                .build();
-
-        var supplier = Supplier.builder()
-                .id(3L)
-                .companyName("ABC Corp")
-                .contactName("John Doe")
-                .contactPhone("555-1234-1")
-                .address(address)
-                .build();
-
-        return Product.builder()
-                .id(4L)
-                .name("Laptop")
-                .supplier(supplier)
-                .category(category)
-                .unit(unit)
-                .quantity(10L)
-                .purchasePrice(BigDecimal.valueOf(20.99))
-                .salePrice(BigDecimal.valueOf(30.99)).build();
+        return newProduct(
+               4L,
+                supplier,
+                category,
+                unit,
+                "Laptop",
+                10L,
+                20.99,
+                30.99
+        );
     }
 
     @Test
