@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.persistence;
+package com.jcanseco.inventoryapi.persistence.suppliers;
 
 import com.jcanseco.inventoryapi.repositories.SupplierRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -12,12 +12,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 
-@DisplayName("Suppliers Repository Tests")
+@DisplayName("Get Suppliers By Specifications Persistence Tests")
 @SpringBootTest
-public class SuppliersTests {
+public class GetSuppliersBySpecificationsTests {
 
     @Autowired
     private SupplierRepository repository;
+
     @BeforeEach
     public void setup() {
         var suppliers = List.of(
@@ -38,28 +39,6 @@ public class SuppliersTests {
     @AfterEach
     public void cleanUp() {
         repository.deleteAll();
-    }
-
-    @Test
-    public void createSupplierWhenValidSupplierShouldReturnSavedSupplierWithGeneratedId() {
-
-        var supplier = newSupplier(
-                "ABC Electronics",
-                "John Doe",
-                "+12222222",
-                newSupplierAddress(
-                        "Mexico",
-                        "Sonora",
-                        "Hermosillo",
-                        "83200",
-                        "Center"
-                )
-        );
-
-        var newSupplier = repository.saveAndFlush(supplier);
-        assertTrue(newSupplier.getId() > 0);
-        assertNotNull(newSupplier.getAddress());
-        assertTrue(newSupplier.getAddress().getId() > 0);
     }
 
     @Test
@@ -151,4 +130,5 @@ public class SuppliersTests {
         assertEquals(3, foundSuppliers.size());
 
     }
+
 }

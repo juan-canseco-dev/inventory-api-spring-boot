@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.persistence;
+package com.jcanseco.inventoryapi.persistence.purchases;
 
 import com.jcanseco.inventoryapi.entities.*;
 import com.jcanseco.inventoryapi.repositories.*;
@@ -13,9 +13,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 
-@DisplayName("Purchases Repository Tests")
+@DisplayName("Create Purchase Persistence Tests")
 @SpringBootTest
-public class PurchasesTests {
+public class CreatePurchaseTests {
 
     @Autowired
     private SupplierRepository supplierRepository;

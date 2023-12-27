@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.persistence;
+package com.jcanseco.inventoryapi.persistence.units;
 
 import com.jcanseco.inventoryapi.repositories.UnitOfMeasurementRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -12,9 +12,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 
-@DisplayName("Units Of Measurement Tests")
+@DisplayName("Get Units Of Measurement By Specifications Persistence Tests")
 @SpringBootTest
-public class UnitsOfMeasurementTests {
+public class GetUnitsBySpecificationsTests {
 
     @Autowired
     private UnitOfMeasurementRepository repository;
@@ -39,19 +39,6 @@ public class UnitsOfMeasurementTests {
     @AfterEach
     public void cleanup() {
         repository.deleteAll();
-    }
-
-    @Test
-    public void createUnitWhenValidUnitReturnSavedUnitWithGeneratedId() {
-
-        var unit = newUnit("New Unit");
-        var newUnit = repository.saveAndFlush(unit);
-
-        assertTrue(newUnit.getId() > 0);
-        assertEquals(unit.getName(), newUnit.getName());
-
-        var unitOtp = repository.findById(newUnit.getId());
-        assertTrue(unitOtp.isPresent());
     }
 
     @Test

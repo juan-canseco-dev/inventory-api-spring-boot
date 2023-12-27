@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.persistence;
+package com.jcanseco.inventoryapi.persistence.products;
 
 import com.jcanseco.inventoryapi.entities.*;
 import com.jcanseco.inventoryapi.repositories.CategoryRepository;
@@ -12,16 +12,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
-
 import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 
-@DisplayName("Products Repository Tests")
+@DisplayName("Get Products By Specifications Persistence Tests")
 @SpringBootTest
-public class ProductTests {
+public class GetProductsBySpecificationsTests {
 
     @Autowired
     private SupplierRepository supplierRepository;
@@ -35,8 +33,6 @@ public class ProductTests {
     @Autowired
     private ProductRepository productRepository;
 
-
-
     private Supplier supplier1;
     private Supplier supplier2;
     private Category category1;
@@ -49,11 +45,11 @@ public class ProductTests {
     public void setup() {
 
         unit1 = this.unitRepository.saveAndFlush(
-          newUnit("Piece")
+                newUnit("Piece")
         );
 
         unit2 = this.unitRepository.saveAndFlush(
-          newUnit("Set")
+                newUnit("Set")
         );
 
         category1 = this.categoryRepository.saveAndFlush(
@@ -82,20 +78,20 @@ public class ProductTests {
 
 
         var supplier2Address =
-        supplier2 = this.supplierRepository.saveAndFlush(
-                newSupplier(
-                        "Tech Solutions Inc",
-                        "Alice Brown",
-                        "555-1234-4",
-                        newSupplierAddress(
-                                "Australia",
-                                "New South Wales",
-                                "Sydney",
-                                "2000",
-                                "101 Tech Blvd"
+                supplier2 = this.supplierRepository.saveAndFlush(
+                        newSupplier(
+                                "Tech Solutions Inc",
+                                "Alice Brown",
+                                "555-1234-4",
+                                newSupplierAddress(
+                                        "Australia",
+                                        "New South Wales",
+                                        "Sydney",
+                                        "2000",
+                                        "101 Tech Blvd"
+                                )
                         )
-                )
-        );
+                );
 
         var products = List.of(
                 newProduct(supplier1, category1, unit1, "Laptop",  800.00, 1200.00),
@@ -130,25 +126,6 @@ public class ProductTests {
         supplierRepository.deleteAll();
         categoryRepository.deleteAll();
         unitRepository.deleteAll();
-    }
-
-    @Test
-    public void createProductShouldGenerateId() {
-
-        var product = Product.builder()
-                .name("New Product")
-                .supplier(supplier1)
-                .category(category1)
-                .unit(unit1)
-                .quantity(0L)
-                .purchasePrice(BigDecimal.valueOf(19.99))
-                .salePrice(BigDecimal.valueOf(20.99))
-                .build();
-
-        var newProduct = productRepository.saveAndFlush(product);
-        assertNotNull(newProduct);
-
-        assertTrue(newProduct.getId() > 0);
     }
 
     @Test
@@ -201,4 +178,5 @@ public class ProductTests {
         assertNotNull(products);
         assertEquals(6, products.size());
     }
+
 }
