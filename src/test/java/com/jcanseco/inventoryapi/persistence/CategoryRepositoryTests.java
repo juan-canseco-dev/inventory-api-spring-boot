@@ -1,25 +1,20 @@
-package com.jcanseco.inventoryapi.persistence.categories;
+package com.jcanseco.inventoryapi.persistence;
 
 import com.jcanseco.inventoryapi.repositories.CategoryRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Sort;
+import org.springframework.test.context.jdbc.Sql;
 import static com.jcanseco.inventoryapi.utils.TestModelFactory.newCategory;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Create Category Persistence Tests")
-@SpringBootTest
-public class CreateCategoryTests {
-
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+public class CategoryRepositoryTests {
     @Autowired
     private CategoryRepository repository;
-
-    @AfterEach
-    public void cleanup() {
-        repository.deleteAll();
-    }
 
     @Test
     public void createCategoryShouldGenerateId() {
@@ -33,4 +28,12 @@ public class CreateCategoryTests {
         var createdCategory = repository.findById(newCategory.getId());
         assertTrue(createdCategory.isPresent());
     }
+
+    @Test
+    @Sql("/multiple-categories.sql")
+    public void findCategoriesByNameContainingShouldReturnList() {
+        var foundCategories = repository.findAllByNameContaining("v", Sort.by("name").ascending());
+        assertEquals(1, foundCategories.size());
+    }
+
 }
