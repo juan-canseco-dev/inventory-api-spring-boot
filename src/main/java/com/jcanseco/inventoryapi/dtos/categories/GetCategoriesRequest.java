@@ -3,11 +3,9 @@ package com.jcanseco.inventoryapi.dtos.categories;
 import com.jcanseco.inventoryapi.validators.orderBy.OrderBy;
 import com.jcanseco.inventoryapi.validators.sortorder.SortOrder;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+@Builder
 @Setter
 @Getter
 @AllArgsConstructor
