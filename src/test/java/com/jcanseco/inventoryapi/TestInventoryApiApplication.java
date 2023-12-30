@@ -8,7 +8,6 @@ import org.testcontainers.containers.MySQLContainer;
 
 @TestConfiguration(proxyBeanMethods = false)
 class TestInventoryApiApplication {
-
 	@Bean
 	@ServiceConnection
 	MySQLContainer<?> mysqlContainer() {
@@ -18,5 +17,4 @@ class TestInventoryApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.from(InventoryApiApplication::main).with(TestInventoryApiApplication.class).run(args);
 	}
-
 }
