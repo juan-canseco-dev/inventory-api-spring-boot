@@ -11,30 +11,26 @@ import lombok.*;
 @Setter
 @Getter
 public class AddressDto {
+
     @NotEmpty
-    @NotNull
     @Size(max = 50)
     private String country;
 
     @NotEmpty
-    @NotNull
     @Size(max = 50)
     private String state;
 
     @NotEmpty
-    @NotNull
     @Size(max = 50)
     private String city;
 
 
     @NotEmpty
-    @NotNull
     @Size(max = 10)
     private String zipCode;
 
 
     @NotEmpty
-    @NotNull
     @Size(max = 75)
     private String street;
 }
