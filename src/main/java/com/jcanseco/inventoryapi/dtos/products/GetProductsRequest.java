@@ -3,11 +3,9 @@ package com.jcanseco.inventoryapi.dtos.products;
 import com.jcanseco.inventoryapi.validators.orderBy.OrderBy;
 import com.jcanseco.inventoryapi.validators.sortorder.SortOrder;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+@Builder
 @Setter
 @Getter
 @AllArgsConstructor
@@ -30,7 +28,13 @@ public class GetProductsRequest {
     private String sortOrder;
 
     private String name;
+
+    @Min(1)
     private Long supplierId;
+
+    @Min(1)
     private Long categoryId;
+
+    @Min(1)
     private Long unitId;
 }
