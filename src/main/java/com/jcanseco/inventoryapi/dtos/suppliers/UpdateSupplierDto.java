@@ -1,10 +1,8 @@
 package com.jcanseco.inventoryapi.dtos.suppliers;
 
 import com.jcanseco.inventoryapi.dtos.AddressDto;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Builder
@@ -13,26 +11,26 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateSupplierDto {
-
     @Min(1)
+    @NotNull
     private Long supplierId;
 
     @Size(max = 50)
     @NotEmpty
-    @NotNull
+    @NotBlank
     private String companyName;
 
     @Size(max = 50)
     @NotEmpty
-    @NotNull
+    @NotBlank
     private String contactName;
 
     @Size(max =  20)
     @NotEmpty
-    @NotNull
+    @NotBlank
     private String contactPhone;
 
     @NotNull
+    @Valid
     private AddressDto address;
-
 }
