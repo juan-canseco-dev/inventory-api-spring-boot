@@ -1,10 +1,8 @@
 package com.jcanseco.inventoryapi.dtos.customers;
 
 import com.jcanseco.inventoryapi.dtos.AddressDto;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Builder
@@ -13,24 +11,27 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateCustomerDto {
+
     @Min(1)
+    @NotNull
     private Long customerId;
 
     @Size(max = 20)
     @NotEmpty
-    @NotNull
+    @NotBlank
     private String dni;
 
     @Size(max =  20)
     @NotEmpty
-    @NotNull
+    @NotBlank
     private String phone;
 
     @Size(max = 50)
     @NotEmpty
-    @NotNull
+    @NotBlank
     private String fullName;
 
     @NotNull
+    @Valid
     private AddressDto address;
 }
