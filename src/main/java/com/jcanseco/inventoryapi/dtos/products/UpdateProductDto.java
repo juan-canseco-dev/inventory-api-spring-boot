@@ -1,8 +1,6 @@
 package com.jcanseco.inventoryapi.dtos.products;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Builder
@@ -29,12 +27,15 @@ public class UpdateProductDto {
     private Long unitId;
 
     @NotEmpty
-    @NotNull
+    @NotBlank
+    @Size(max = 50)
     private String name;
 
+    @DecimalMin(value = "0.01")
     @NotNull
     private Double purchasePrice;
 
+    @DecimalMin(value = "0.01")
     @NotNull
     private Double salePrice;
 }
