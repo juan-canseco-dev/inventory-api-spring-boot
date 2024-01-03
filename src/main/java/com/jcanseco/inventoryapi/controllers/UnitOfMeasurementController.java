@@ -6,7 +6,7 @@ import com.jcanseco.inventoryapi.dtos.units.UnitOfMeasurementDto;
 import com.jcanseco.inventoryapi.dtos.units.UpdateUnitOfMeasurementDto;
 import com.jcanseco.inventoryapi.services.UnitService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,15 +14,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 @Validated
-@AllArgsConstructor
 @RestControllerAdvice
 @RequestMapping("api/units")
 @RestController
-public class UnitsController {
-    private final UnitService service;
+@RequiredArgsConstructor
+public class UnitOfMeasurementController {
+
+    private final UnitService unitService;
     @PostMapping
     public ResponseEntity<Long> create(@RequestBody @Valid CreateUnitOfMeasurementDto dto) throws URISyntaxException {
-        var unitId = service.createUnit(dto);
+        var unitId = unitService.createUnit(dto);
         var location = new URI("/api/units/" + unitId);
         return ResponseEntity.created(location).body(unitId);
     }
@@ -32,28 +33,28 @@ public class UnitsController {
         if (!dto.getUnitOfMeasurementId().equals(unitId)) {
             return ResponseEntity.badRequest().build();
         }
-        service.updateUnit(dto);
+        unitService.updateUnit(dto);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("{unitId}")
     public ResponseEntity<?> delete(@PathVariable Long unitId) {
-        service.deleteUnit(unitId);
+        unitService.deleteUnit(unitId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("{unitId}")
     public ResponseEntity<UnitOfMeasurementDto> getById(@PathVariable Long unitId) {
-        return ResponseEntity.ok(service.getUnitById(unitId));
+        return ResponseEntity.ok(unitService.getUnitById(unitId));
     }
 
     @GetMapping
     public ResponseEntity<?> getAll(@Valid GetUnitsOfMeasurementRequest request) {
         if (request.getPageSize() == null || request.getPageNumber() == null) {
-            var response = service.getUnits(request);
+            var response = unitService.getUnits(request);
             return ResponseEntity.ok(response);
         }
-        var response = service.getUnitsPage(request);
+        var response = unitService.getUnitsPage(request);
         return ResponseEntity.ok(response);
     }
 }

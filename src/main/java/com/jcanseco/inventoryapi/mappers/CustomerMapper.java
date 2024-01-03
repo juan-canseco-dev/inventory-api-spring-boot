@@ -20,6 +20,7 @@ public interface CustomerMapper {
     Customer createDtoToEntity(CreateCustomerDto dto);
 
     AddressDto addressToDto(CustomerAddress address);
-
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "customer", ignore = true)
     CustomerAddress dtoToAddress(AddressDto dto);
 }

@@ -16,5 +16,7 @@ public interface SupplierMapper {
     @Mapping(target = "id", ignore = true)
     Supplier createDtoToEntity(CreateSupplierDto dto);
     AddressDto addressToDto(SupplierAddress address);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "supplier", ignore = true)
     SupplierAddress dtoToAddress(AddressDto dto);
 }
