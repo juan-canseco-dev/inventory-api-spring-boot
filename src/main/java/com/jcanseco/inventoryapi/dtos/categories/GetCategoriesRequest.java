@@ -4,6 +4,7 @@ import com.jcanseco.inventoryapi.validators.orderBy.OrderBy;
 import com.jcanseco.inventoryapi.validators.sortorder.SortOrder;
 import jakarta.validation.constraints.Min;
 import lombok.*;
+@EqualsAndHashCode
 
 @Builder
 @Setter

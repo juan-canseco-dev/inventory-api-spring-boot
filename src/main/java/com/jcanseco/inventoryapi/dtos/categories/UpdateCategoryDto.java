@@ -3,6 +3,7 @@ package com.jcanseco.inventoryapi.dtos.categories;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+@EqualsAndHashCode
 @Builder
 @Setter
 @Getter
