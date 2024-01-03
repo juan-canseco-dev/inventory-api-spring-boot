@@ -1,12 +1,10 @@
 package com.jcanseco.inventoryapi.dtos.customers;
 
 import com.jcanseco.inventoryapi.dtos.AddressDto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Setter
+@EqualsAndHashCode
+@Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

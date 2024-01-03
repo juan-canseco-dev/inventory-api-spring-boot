@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+@EqualsAndHashCode
 @Builder
 @Setter
 @Getter
