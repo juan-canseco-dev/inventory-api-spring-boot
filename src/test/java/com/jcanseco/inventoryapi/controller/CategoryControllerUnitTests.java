@@ -10,7 +10,6 @@ import com.jcanseco.inventoryapi.dtos.categories.UpdateCategoryDto;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.services.*;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -48,11 +47,6 @@ class CategoryControllerUnitTests {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper mapper;
-
-    @BeforeEach
-    public void setup() {
-
-    }
 
     @Test
     public void createCategoryWhenModelIsValidStatusShouldBeCreated() throws Exception {
@@ -310,8 +304,7 @@ class CategoryControllerUnitTests {
                 .build();
 
         var categories = List.of(
-                CategoryDto.builder().id(1L).name("Electronics").build(),
-                CategoryDto.builder().id(2L).name("Home & Garden").build()
+                CategoryDto.builder().id(1L).name("Electronics").build()
         );
 
         var pagedList = new PagedList<>(categories, 1, 1, 2, 2);

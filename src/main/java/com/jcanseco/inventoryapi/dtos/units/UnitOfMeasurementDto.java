@@ -2,6 +2,8 @@ package com.jcanseco.inventoryapi.dtos.units;
 
 import lombok.*;
 
+
+@EqualsAndHashCode
 @Builder
 @Setter
 @Getter
