@@ -8,9 +8,9 @@ import com.jcanseco.inventoryapi.dtos.categories.UpdateCategoryDto;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.CategoryMapper;
 import com.jcanseco.inventoryapi.repositories.CategoryRepository;
+import com.jcanseco.inventoryapi.utils.IndexUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -18,9 +18,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
+    
+    private static final String NOT_FOUND_CATEGORY_MESSAGE = "Category with the Id {%d} was not found.";
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final IndexUtility indexUtility;
 
     public Long createCategory(CreateCategoryDto dto) {
         var category = categoryMapper.createDtoToEntity(dto);
@@ -32,7 +35,7 @@ public class CategoryService {
 
         var category = categoryRepository
                 .findById(dto.getCategoryId())
-                .orElseThrow(() -> new NotFoundException(String.format("Category with the Id {%d} was not found.", dto.getCategoryId())));
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_CATEGORY_MESSAGE, dto.getCategoryId())));
 
         category.setName(dto.getName());
 
@@ -42,7 +45,7 @@ public class CategoryService {
     public void deleteCategory(Long categoryId) {
         var category = categoryRepository
                 .findById(categoryId)
-                .orElseThrow(() -> new NotFoundException(String.format("Category with the Id {%d} was not found.", categoryId)));
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_CATEGORY_MESSAGE, categoryId)));
 
         categoryRepository.delete(category);
     }
@@ -52,51 +55,42 @@ public class CategoryService {
         return categoryRepository
                 .findById(categoryId)
                 .map(categoryMapper::entityToDto)
-                .orElseThrow(() -> new NotFoundException(String.format("Category with the Id {%d} was not found.", categoryId)));
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_CATEGORY_MESSAGE, categoryId)));
     }
 
-    private boolean sortOrderIsAscending(GetCategoriesRequest request) {
-        if (request.getSortOrder() == null) {
-            return true;
-        }
-        return request.getSortOrder().equals("asc") || request.getSortOrder().equals("ascending");
-    }
-
-
-    private String getOrderBy(GetCategoriesRequest request) {
-        if (request.getOrderBy() == null) {
-            return "name";
-        }
-        return request.getOrderBy();
-    }
-
-    private Sort getSortOrder(GetCategoriesRequest request) {
-        var ascending = sortOrderIsAscending(request);
-        var orderBy = getOrderBy(request);
-        if (ascending) {
-            return Sort.by(orderBy).ascending();
-        }
-        return Sort.by(orderBy).descending();
-    }
 
     public List<CategoryDto> getCategories(GetCategoriesRequest request) {
 
-        var filterName = request.getName() == null? "" : request.getName();
-        var sort = getSortOrder(request);
-        return categoryRepository.findAllByNameContaining(filterName, sort)
+        var isAscendingOrder = indexUtility.isAscendingOrder(request.getSortOrder());
+
+        var specification = CategoryRepository.Specs.composeSpecification(
+                request.getName(),
+                request.getOrderBy(),
+                isAscendingOrder
+        );
+
+        return categoryRepository.findAll(specification)
                 .stream()
                 .map(categoryMapper::entityToDto).
                 toList();
     }
 
     public PagedList<CategoryDto> getCategoriesPaged(GetCategoriesRequest request) {
-        var pageNumber = request.getPageNumber() > 0? request.getPageNumber() - 1 : request.getPageNumber();
-        var pageSize = request.getPageSize();
-        var filterName = request.getName() == null? "" : request.getName();
 
-        var sort = getSortOrder(request);
-        var pageRequest = PageRequest.of(pageNumber, pageSize, sort);
-        var page = categoryRepository.findAllByNameContaining(filterName, pageRequest);
+        var pageNumber = indexUtility.toZeroBasedIndex(request.getPageNumber());
+        var pageSize = request.getPageSize();
+
+        var isAscendingOrder = indexUtility.isAscendingOrder(request.getSortOrder());
+
+        var specification = CategoryRepository.Specs.composeSpecification(
+                request.getName(),
+                request.getOrderBy(),
+                isAscendingOrder
+        );
+
+        var pageRequest = PageRequest.of(pageNumber, pageSize);
+
+        var page = categoryRepository.findAll(specification, pageRequest);
 
         var items = page.get().map(categoryMapper::entityToDto).toList();
         var totalPages = page.getTotalPages();
