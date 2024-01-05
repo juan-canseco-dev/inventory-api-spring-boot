@@ -21,6 +21,7 @@ repositories {
 
 ext {
 	set('mapStructVersion', '1.5.3.Final')
+	set('assertJVersion', '3.25.1')
 }
 
 dependencies {
@@ -36,6 +37,7 @@ dependencies {
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
 	annotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
+	testImplementation "org.assertj:assertj-core:${assertJVersion}"
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 	testImplementation 'org.springframework.security:spring-security-test'

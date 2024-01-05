@@ -92,16 +92,6 @@ public class CategoryService {
 
         var page = categoryRepository.findAll(specification, pageRequest);
 
-        var items = page.get().map(categoryMapper::entityToDto).toList();
-        var totalPages = page.getTotalPages();
-        var totalElements = page.getTotalElements();
-
-        return new PagedList<>(
-                items,
-                request.getPageNumber(),
-                pageSize,
-                totalPages,
-                totalElements
-        );
+        return categoryMapper.pageToPagedList(page);
     }
 }
