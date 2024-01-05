@@ -8,19 +8,21 @@ import com.jcanseco.inventoryapi.dtos.units.UpdateUnitOfMeasurementDto;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.UnitOfMeasurementMapper;
 import com.jcanseco.inventoryapi.repositories.UnitOfMeasurementRepository;
+import com.jcanseco.inventoryapi.utils.IndexUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UnitService {
 
+    private static final String NOT_FOUND_MESSAGE = "UnitOfMeasurement with the Id {%d} was not found.";
+
     private final UnitOfMeasurementRepository unitOfMeasurementRepository;
     private final UnitOfMeasurementMapper unitOfMeasurementMapper;
+    private final IndexUtility indexUtility;
 
     public Long createUnit(CreateUnitOfMeasurementDto dto) {
         var unit = unitOfMeasurementMapper.createDtoToEntity(dto);
@@ -31,7 +33,7 @@ public class UnitService {
     public void updateUnit(UpdateUnitOfMeasurementDto dto) {
         var unit = unitOfMeasurementRepository
                 .findById(dto.getUnitOfMeasurementId())
-                .orElseThrow(() -> new NotFoundException(String.format("UnitOfMeasurement with the Id {%d} was not found.", dto.getUnitOfMeasurementId())));
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, dto.getUnitOfMeasurementId())));
 
         unit.setName(dto.getName());
 
@@ -41,7 +43,7 @@ public class UnitService {
     public void deleteUnit(Long unitId) {
         var unit = unitOfMeasurementRepository
                 .findById(unitId)
-                .orElseThrow(() -> new NotFoundException(String.format("UnitOfMeasurement with the Id {%d} was not found.", unitId)));
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, unitId)));
 
         unitOfMeasurementRepository.delete(unit);
     }
@@ -50,37 +52,20 @@ public class UnitService {
         return unitOfMeasurementRepository
                 .findById(unitId)
                 .map(unitOfMeasurementMapper::entityToDto)
-                .orElseThrow(() -> new NotFoundException(String.format("UnitOfMeasurement with the Id {%d} was not found.", unitId)));
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, unitId)));
     }
 
-    private boolean sortOrderIsAscending(GetUnitsOfMeasurementRequest request) {
-        if (request.getSortOrder() == null) {
-            return true;
-        }
-        return request.getSortOrder().equals("asc") || request.getSortOrder().equals("ascending");
-    }
-
-
-    private String getOrderBy(GetUnitsOfMeasurementRequest request) {
-        if (request.getOrderBy() == null) {
-            return "name";
-        }
-        return request.getOrderBy();
-    }
-
-    private Sort getSortOrder(GetUnitsOfMeasurementRequest request) {
-        var ascending = sortOrderIsAscending(request);
-        var orderBy = getOrderBy(request);
-        if (ascending) {
-            return Sort.by(orderBy).ascending();
-        }
-        return Sort.by(orderBy).descending();
-    }
 
     public List<UnitOfMeasurementDto> getUnits(GetUnitsOfMeasurementRequest request) {
-        var filterName = request.getName() == null? "" : request.getName();
-        var sort = getSortOrder(request);
-        return unitOfMeasurementRepository.findAllByNameContaining(filterName, sort)
+        var isAscendingOrder = indexUtility.isAscendingOrder(request.getSortOrder());
+
+        var specification = UnitOfMeasurementRepository.Specs.composeSpecification(
+                request.getName(),
+                request.getOrderBy(),
+                isAscendingOrder
+        );
+
+        return unitOfMeasurementRepository.findAll(specification)
                 .stream()
                 .map(unitOfMeasurementMapper::entityToDto).
                 toList();
@@ -88,23 +73,21 @@ public class UnitService {
 
     public PagedList<UnitOfMeasurementDto> getUnitsPage(GetUnitsOfMeasurementRequest request) {
 
-        var pageNumber = request.getPageNumber() > 0? request.getPageNumber() - 1 : request.getPageNumber();
+        var pageNumber = indexUtility.toZeroBasedIndex(request.getPageNumber());
         var pageSize = request.getPageSize();
-        var filterName = request.getName() == null? "" : request.getName();
-        var sort = getSortOrder(request);
-        var pageRequest = PageRequest.of(pageNumber, pageSize, sort);
-        var page = unitOfMeasurementRepository.findAllByNameContaining(filterName, pageRequest);
 
-        var items = page.get().map(unitOfMeasurementMapper::entityToDto).toList();
-        var totalPages = page.getTotalPages();
-        var totalElements = page.getTotalElements();
+        var isAscendingOrder = indexUtility.isAscendingOrder(request.getSortOrder());
 
-        return new PagedList<>(
-                items,
-                request.getPageNumber(),
-                pageSize,
-                totalPages,
-                totalElements
+        var specification = UnitOfMeasurementRepository.Specs.composeSpecification(
+                request.getName(),
+                request.getOrderBy(),
+                isAscendingOrder
         );
+
+        var pageRequest = PageRequest.of(pageNumber, pageSize);
+
+        var page = unitOfMeasurementRepository.findAll(specification, pageRequest);
+
+        return unitOfMeasurementMapper.pageToPagedList(page);
     }
 }
