@@ -30,7 +30,7 @@ public class UnitOfMeasurementController {
     }
 
     @PutMapping("{unitId}")
-    public ResponseEntity<UnitOfMeasurementDto> update(@PathVariable Long unitId, @RequestBody @Valid UpdateUnitOfMeasurementDto dto) {
+    public ResponseEntity<Void> update(@PathVariable Long unitId, @RequestBody @Valid UpdateUnitOfMeasurementDto dto) {
         if (!dto.getUnitOfMeasurementId().equals(unitId)) {
             return ResponseEntity.badRequest().build();
         }
@@ -39,7 +39,7 @@ public class UnitOfMeasurementController {
     }
 
     @DeleteMapping("{unitId}")
-    public ResponseEntity<?> delete(@PathVariable Long unitId) {
+    public ResponseEntity<Void> delete(@PathVariable Long unitId) {
         unitService.deleteUnit(unitId);
         return ResponseEntity.noContent().build();
     }

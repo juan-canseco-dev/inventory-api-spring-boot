@@ -9,4 +9,3 @@ INSERT INTO categories (id, name) VALUES
                                   (8,'Automotive'),
                                   (9,'Furniture'),
                                   (10,'Music');
-
