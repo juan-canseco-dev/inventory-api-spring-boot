@@ -1,6 +1,7 @@
 package com.jcanseco.inventoryapi.persistence;
 
 import com.jcanseco.inventoryapi.repositories.UnitOfMeasurementRepository;
+import com.jcanseco.inventoryapi.specifications.UnitOfMeasurementSpecifications;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -33,8 +34,8 @@ public class UnitOfMeasurementRepositoryTests {
     @Sql("/multiple-units_of_measurement.sql")
     public void findUnitsByNameLikeSpecificationShouldReturnList() {
         var expectedUnitName = "Gram";
-        var specification = UnitOfMeasurementRepository.Specs.orderBy(
-                UnitOfMeasurementRepository.Specs.byNameLike("gr"),
+        var specification = UnitOfMeasurementSpecifications.orderBy(
+                UnitOfMeasurementSpecifications.byNameLike("gr"),
                 "name",
                 true
         );
@@ -44,53 +45,6 @@ public class UnitOfMeasurementRepositoryTests {
         var firstUnit = foundUnits.get(0);
         assertEquals(expectedUnitName, firstUnit.getName());
         assertEquals(2, foundUnits.size());
-    }
-
-    @Test
-    @Sql("/multiple-units_of_measurement.sql")
-    public void findUnitsByComposeSpecificationWhenNameAndOrderByAreNotPresentShouldReturnList() {
-        var firstUnitId = 1L;
-        var spec = UnitOfMeasurementRepository.Specs.composeSpecification(
-                "",
-                "",
-                true
-        );
-        var foundUnits = repository.findAll(spec);
-        assertNotNull(foundUnits);
-        assertEquals(foundUnits.size(), 10);
-        var firstUnit = foundUnits.get(0);
-        assertEquals(firstUnitId, firstUnit.getId());
-    }
-
-
-
-    @Test
-    @Sql("/multiple-units_of_measurement.sql")
-    public void composeSpecificationWhenNameIsNullOrEmptyShouldReturnList() {
-        var firstUnitId = 10L;
-        var spec = UnitOfMeasurementRepository.Specs.composeSpecification(
-                "",
-                "id",
-                false
-        );
-        var foundUnits = repository.findAll(spec);
-        assertNotNull(foundUnits);
-        assertEquals(10, foundUnits.size());
-        var firstUnit = foundUnits.get(0);
-        assertEquals(firstUnitId, firstUnit.getId());
-    }
-
-    @Test
-    @Sql("/multiple-units_of_measurement.sql")
-    public void composeSpecificationWhenNameIsPresentShouldReturnExpectedList() {
-        var spec = UnitOfMeasurementRepository.Specs.composeSpecification(
-                "a",
-                "name",
-                true
-        );
-        var foundUnits = repository.findAll(spec);
-        assertNotNull(foundUnits);
-        assertEquals(3, foundUnits.size());
     }
 
 }

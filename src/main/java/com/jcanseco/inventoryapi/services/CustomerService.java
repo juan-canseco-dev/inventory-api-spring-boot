@@ -2,22 +2,28 @@ package com.jcanseco.inventoryapi.services;
 
 import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.dtos.customers.*;
+import com.jcanseco.inventoryapi.entities.Customer;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.CustomerMapper;
 import com.jcanseco.inventoryapi.repositories.CustomerRepository;
+import com.jcanseco.inventoryapi.specifications.CustomerSpecifications;
+import com.jcanseco.inventoryapi.utils.IndexUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
+    private static final String NOT_FOUND_MESSAGE = "Customer with the Id {%d} was not found.";
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final IndexUtility indexUtility;
 
     public Long createCustomer(CreateCustomerDto dto) {
         var customer = customerMapper.createDtoToEntity(dto);
@@ -29,7 +35,7 @@ public class CustomerService {
 
         var customer = customerRepository
                 .findById(dto.getCustomerId())
-                .orElseThrow(() -> new NotFoundException(String.format("Customer with the Id {%d} was not found.", dto.getCustomerId())));
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, dto.getCustomerId())));
 
         customer.setDni(dto.getDni());
         customer.setPhone(dto.getPhone());
@@ -43,7 +49,7 @@ public class CustomerService {
     public void deleteCustomer(Long customerId) {
         var customer = customerRepository
                 .findById(customerId)
-                .orElseThrow(() -> new NotFoundException(String.format("Customer with the Id {%d} was not found.", customerId)));
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, customerId)));
 
         customerRepository.delete(customer);
     }
@@ -52,52 +58,39 @@ public class CustomerService {
         return customerRepository
                 .findById(customerId)
                 .map(customerMapper::entityToDetailsDto)
-                .orElseThrow(() -> new NotFoundException(String.format("Customer with the Id {%d} was not found.", customerId)));
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, customerId)));
     }
 
 
-    private boolean sortOrderIsAscending(GetCustomersRequest request) {
-        if (request.getSortOrder() == null) {
-            return true;
-        }
-        return request.getSortOrder().equals("asc") || request.getSortOrder().equals("ascending");
-    }
+    private Specification<Customer> composeSpecification(GetCustomersRequest request) {
 
-    private String getOrderBy(GetCustomersRequest request) {
-        if (request.getOrderBy() == null) {
-            return "fullName";
+        Specification<Customer> specification = Specification.where(null);
+        if (StringUtils.hasText(request.getDni())) {
+            specification = specification.and(CustomerSpecifications.byDniLike(request.getDni()));
         }
-        return request.getOrderBy();
-    }
+        if (StringUtils.hasText(request.getPhone())) {
+            specification = specification.and(CustomerSpecifications.byPhoneLike(request.getPhone()));
+        }
+        if (StringUtils.hasText(request.getFullName())) {
+            specification = specification.and(CustomerSpecifications.byFullNameLike(request.getFullName()));
+        }
 
-    private Sort getSortOrder(GetCustomersRequest request) {
-        var ascending = sortOrderIsAscending(request);
-        var orderBy = getOrderBy(request);
-        if (ascending) {
-            return Sort.by(orderBy).ascending();
-        }
-        return Sort.by(orderBy).descending();
+        var isAscendingOrder = indexUtility.isAscendingOrder(request.getSortOrder());
+        var orderByField = !StringUtils.hasText(request.getOrderBy())? "id" : request.getOrderBy();
+
+        return CustomerSpecifications.orderBy(
+                specification,
+                orderByField,
+                isAscendingOrder
+        );
     }
 
     public List<CustomerDto> getCustomers(GetCustomersRequest request) {
 
-        var sort = getSortOrder(request);
-
-        var specification = CustomerRepository.Specs.byDniOrPhoneOrFullName(
-                request.getDni(),
-                request.getPhone(),
-                request.getFullName()
-        );
-
-        if (specification == null) {
-            return customerRepository.findAll(sort)
-                    .stream()
-                    .map(customerMapper::entityToDto)
-                    .toList();
-        }
+        var specification = composeSpecification(request);
 
         return customerRepository
-                .findAll(specification, sort)
+                .findAll(specification)
                 .stream()
                 .map(customerMapper::entityToDto)
                 .toList();
@@ -105,30 +98,14 @@ public class CustomerService {
 
     public PagedList<CustomerDto> getCustomersPaged(GetCustomersRequest request) {
 
-        var pageNumber = request.getPageNumber() > 0 ? request.getPageNumber() - 1 : request.getPageNumber();
+        var pageNumber = indexUtility.toZeroBasedIndex(request.getPageNumber());
         var pageSize = request.getPageSize();
 
-        var specification = CustomerRepository.Specs.byDniOrPhoneOrFullName(
-                request.getDni(),
-                request.getPhone(),
-                request.getFullName()
-        );
+        var specification = composeSpecification(request);
+        var pageRequest = PageRequest.of(pageNumber, pageSize);
 
-        var sort = getSortOrder(request);
-        var pageRequest = PageRequest.of(pageNumber, pageSize, sort);
+        var page = customerRepository.findAll(specification, pageRequest);
 
-        var page = specification == null ? customerRepository.findAll(pageRequest) : customerRepository.findAll(specification, pageRequest);
-
-        var items = page.get().map(customerMapper::entityToDto).toList();
-        var totalPages = page.getTotalPages();
-        var totalElements = page.getTotalElements();
-
-        return new PagedList<>(
-                items,
-                request.getPageNumber(),
-                pageSize,
-                totalPages,
-                totalElements
-        );
+        return customerMapper.pageToPagedList(page);
     }
 }

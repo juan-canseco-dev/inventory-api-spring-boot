@@ -5,13 +5,18 @@ import com.jcanseco.inventoryapi.dtos.categories.CategoryDto;
 import com.jcanseco.inventoryapi.dtos.categories.CreateCategoryDto;
 import com.jcanseco.inventoryapi.dtos.categories.GetCategoriesRequest;
 import com.jcanseco.inventoryapi.dtos.categories.UpdateCategoryDto;
+import com.jcanseco.inventoryapi.entities.Category;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.CategoryMapper;
 import com.jcanseco.inventoryapi.repositories.CategoryRepository;
+import com.jcanseco.inventoryapi.specifications.CategorySpecifications;
 import com.jcanseco.inventoryapi.utils.IndexUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import java.util.List;
 
 
@@ -59,15 +64,27 @@ public class CategoryService {
     }
 
 
+    private Specification<Category> composeSpecification(GetCategoriesRequest request) {
+
+        Specification<Category> specification = Specification.where(null);
+
+        if (StringUtils.hasText(request.getName())) {
+            specification = specification.and(CategorySpecifications.byNameLike(request.getName()));
+        }
+
+        var orderByField = !StringUtils.hasText(request.getOrderBy())? "id" : request.getOrderBy();
+        var isAscending = indexUtility.isAscendingOrder(request.getSortOrder());
+
+        return CategorySpecifications.orderBy(
+                specification,
+                orderByField,
+                isAscending
+        );
+    }
+
     public List<CategoryDto> getCategories(GetCategoriesRequest request) {
 
-        var isAscendingOrder = indexUtility.isAscendingOrder(request.getSortOrder());
-
-        var specification = CategoryRepository.Specs.composeSpecification(
-                request.getName(),
-                request.getOrderBy(),
-                isAscendingOrder
-        );
+        var specification = composeSpecification(request);
 
         return categoryRepository.findAll(specification)
                 .stream()
@@ -80,13 +97,7 @@ public class CategoryService {
         var pageNumber = indexUtility.toZeroBasedIndex(request.getPageNumber());
         var pageSize = request.getPageSize();
 
-        var isAscendingOrder = indexUtility.isAscendingOrder(request.getSortOrder());
-
-        var specification = CategoryRepository.Specs.composeSpecification(
-                request.getName(),
-                request.getOrderBy(),
-                isAscendingOrder
-        );
+        var specification = composeSpecification(request);
 
         var pageRequest = PageRequest.of(pageNumber, pageSize);
 

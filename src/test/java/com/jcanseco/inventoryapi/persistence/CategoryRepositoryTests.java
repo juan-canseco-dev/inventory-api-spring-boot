@@ -1,6 +1,7 @@
 package com.jcanseco.inventoryapi.persistence;
 
 import com.jcanseco.inventoryapi.repositories.CategoryRepository;
+import com.jcanseco.inventoryapi.specifications.CategorySpecifications;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -32,8 +33,8 @@ public class CategoryRepositoryTests {
     @Sql("/multiple-categories.sql")
     public void findCategoriesByNameLikeSpecificationShouldReturnList() {
         var expectedCategoryName = "Automotive";
-        var specification = CategoryRepository.Specs.orderBy(
-                CategoryRepository.Specs.byNameLike("au"),
+        var specification = CategorySpecifications.orderBy(
+                CategorySpecifications.byNameLike("au"),
                 "name",
                 true
         );
@@ -44,53 +45,4 @@ public class CategoryRepositoryTests {
         assertEquals(expectedCategoryName, firstCategory.getName());
         assertEquals(2, foundCategories.size());
     }
-
-    @Test
-    @Sql("/multiple-categories.sql")
-    public void findCategoriesByComposeSpecificationWhenNameAndOrderByAreNotPresentShouldReturnList() {
-        var firstCategoryId = 1L;
-        var spec = CategoryRepository.Specs.composeSpecification(
-                "",
-                "",
-                true
-        );
-        var foundCategories = repository.findAll(spec);
-        assertNotNull(foundCategories);
-        assertEquals(foundCategories.size(), 10);
-        var firstCategory = foundCategories.get(0);
-        assertEquals(firstCategoryId, firstCategory.getId());
-    }
-
-
-
-    @Test
-    @Sql("/multiple-categories.sql")
-    public void composeSpecificationWhenNameIsNullOrEmptyShouldReturnList() {
-        var firstCategoryId = 10L;
-        var spec = CategoryRepository.Specs.composeSpecification(
-                "",
-                "id",
-                false
-        );
-        var foundCategories = repository.findAll(spec);
-        assertNotNull(foundCategories);
-        assertEquals(10, foundCategories.size());
-        var firstCategory = foundCategories.get(0);
-        assertEquals(firstCategoryId, firstCategory.getId());
-    }
-
-    @Test
-    @Sql("/multiple-categories.sql")
-    public void composeSpecificationWhenNameIsPresentShouldReturnExpectedList() {
-        var spec = CategoryRepository.Specs.composeSpecification(
-                "a",
-                "name",
-                true
-        );
-        var foundCategories = repository.findAll(spec);
-        assertNotNull(foundCategories);
-        assertEquals(5, foundCategories.size());
-    }
-
-
 }

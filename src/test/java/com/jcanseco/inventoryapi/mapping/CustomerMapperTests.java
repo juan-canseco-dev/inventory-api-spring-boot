@@ -3,16 +3,17 @@ package com.jcanseco.inventoryapi.mapping;
 import com.jcanseco.inventoryapi.dtos.AddressDto;
 import com.jcanseco.inventoryapi.dtos.customers.CreateCustomerDto;
 import com.jcanseco.inventoryapi.entities.Customer;
-import com.jcanseco.inventoryapi.entities.CustomerAddress;
 import com.jcanseco.inventoryapi.mappers.CustomerMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.newCustomer;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.newCustomerAddress;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import java.util.List;
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CustomerMapperTests {
 
@@ -152,5 +153,53 @@ public class CustomerMapperTests {
         assertEquals(address.getCity(), dto.getAddress().getCity());
         assertEquals(address.getZipCode(), dto.getAddress().getZipCode());
         assertEquals(address.getStreet(), dto.getAddress().getStreet());
+    }
+
+    @Test
+    public void pageToPagedList() {
+
+        var pageNumber = 1;
+        var totalElementsInDb = 4;
+        var totalPages = 2;
+        var pageSize = 2;
+
+        var customers = List.of(
+                newCustomer(1L,
+                        "123456789",
+                        "555-1234-1",
+                        "John Doe",
+                        newCustomerAddress(
+                                "United States",
+                                "California",
+                                "San Francisco",
+                                "94105",
+                                "123 Main St")
+                ),
+                newCustomer(2L,
+                        "987654321",
+                        "555-1234-2",
+                        "Jane Smith",
+                        newCustomerAddress("United Kingdom",
+                                "England",
+                                "London",
+                                "EC1A 1BB",
+                                "456 High St")
+                )
+        );
+
+        var customersDto = customers.stream().map(mapper::entityToDto).toList();
+
+        Page<Customer> page = new PageImpl<>(customers, Pageable.ofSize(pageSize), totalElementsInDb);
+        var pagedList = mapper.pageToPagedList(page);
+
+        assertNotNull(pagedList);
+        assertEquals(pageNumber, pagedList.getPageNumber());
+        assertEquals(pageSize, pagedList.getPageSize());
+        assertEquals(totalElementsInDb, pagedList.getTotalElements());
+        assertEquals(totalPages, pagedList.getTotalPages());
+        assertFalse(pagedList.hasPreviousPage());
+        assertTrue(pagedList.hasNextPage());
+        assertThat(pagedList.getItems()).hasSameElementsAs(customersDto);
+
     }
 }
