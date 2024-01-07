@@ -2,22 +2,28 @@ package com.jcanseco.inventoryapi.services;
 
 import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.dtos.suppliers.*;
+import com.jcanseco.inventoryapi.entities.Supplier;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.SupplierMapper;
 import com.jcanseco.inventoryapi.repositories.SupplierRepository;
+import com.jcanseco.inventoryapi.specifications.SupplierSpecifications;
+import com.jcanseco.inventoryapi.utils.IndexUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
+import org.springframework.util.StringUtils;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class SupplierService {
 
+    private static final String NOT_FOUND_MESSAGE = "Supplier with the Id {%d} was not found.";
+
     private final SupplierRepository supplierRepository;
     private final SupplierMapper supplierMapper;
+    private final IndexUtility indexUtility;
 
     public Long createSupplier(CreateSupplierDto dto) {
         var supplier = supplierMapper.createDtoToEntity(dto);
@@ -29,7 +35,7 @@ public class SupplierService {
 
         var supplier = supplierRepository
                 .findById(dto.getSupplierId())
-                .orElseThrow(() -> new NotFoundException(String.format("Supplier with the Id {%d} was not found.", dto.getSupplierId())));
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, dto.getSupplierId())));
 
         supplier.setCompanyName(dto.getCompanyName());
         supplier.setContactName(dto.getContactName());
@@ -43,7 +49,7 @@ public class SupplierService {
 
         var supplier = supplierRepository
                 .findById(supplierId)
-                .orElseThrow(() -> new NotFoundException(String.format("Supplier with the Id {%d} was not found.", supplierId)));
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, supplierId)));
 
         supplierRepository.delete(supplier);
     }
@@ -52,51 +58,40 @@ public class SupplierService {
         return supplierRepository
                 .findById(supplierId)
                 .map(supplierMapper::entityToDetailsDto)
-                .orElseThrow(() -> new NotFoundException(String.format("Supplier with the Id {%d} was not found.", supplierId)));
+                .orElseThrow(() -> new NotFoundException(String.format(NOT_FOUND_MESSAGE, supplierId)));
     }
 
-    private boolean sortOrderIsAscending(GetSuppliersRequest request) {
-        if (request.getSortOrder() == null) {
-            return true;
+    private Specification<Supplier> composeSpecification(GetSuppliersRequest request) {
+
+        Specification<Supplier> specification = Specification.where(null);
+
+        if (StringUtils.hasText(request.getCompanyName())) {
+            specification = specification.and(SupplierSpecifications.byCompanyNameLike(request.getCompanyName()));
         }
-        return request.getSortOrder().equals("asc") || request.getSortOrder().equals("ascending");
+        if (StringUtils.hasText(request.getContactName())) {
+            specification = specification.and(SupplierSpecifications.byContactNameLike(request.getContactName()));
+        }
+        if (StringUtils.hasText(request.getContactPhone())) {
+            specification = specification.and(SupplierSpecifications.byContactPhoneLike(request.getContactPhone()));
+        }
+
+        var orderByField = !StringUtils.hasText(request.getOrderBy())? "id" : request.getOrderBy();
+        var isAscending = indexUtility.isAscendingOrder(request.getSortOrder());
+
+        return SupplierSpecifications.orderBy(
+                specification,
+                orderByField,
+                isAscending
+        );
     }
 
-    private String getOrderBy(GetSuppliersRequest request) {
-        if (request.getOrderBy() == null) {
-            return "companyName";
-        }
-        return request.getOrderBy();
-    }
-
-    private Sort getSortOrder(GetSuppliersRequest request) {
-        var ascending = sortOrderIsAscending(request);
-        var orderBy = getOrderBy(request);
-        if (ascending) {
-            return Sort.by(orderBy).ascending();
-        }
-        return Sort.by(orderBy).descending();
-    }
 
     public List<SupplierDto> getSuppliers(GetSuppliersRequest request) {
 
-        var sort = getSortOrder(request);
-
-        var specification = SupplierRepository.Specs.byCompanyAndContactInfo(
-                request.getCompanyName(),
-                request.getContactName(),
-                request.getContactPhone()
-        );
-
-        if (specification == null) {
-            return supplierRepository.findAll(sort)
-                    .stream()
-                    .map(supplierMapper::entityToDto)
-                    .toList();
-        }
+        var specification = composeSpecification(request);
 
         return supplierRepository
-                .findAll(specification, sort)
+                .findAll(specification)
                 .stream()
                 .map(supplierMapper::entityToDto)
                 .toList();
@@ -104,30 +99,13 @@ public class SupplierService {
 
     public PagedList<SupplierDto> getSuppliersPaged(GetSuppliersRequest request) {
 
-        var pageNumber = request.getPageNumber() > 0? request.getPageNumber() - 1 : request.getPageNumber();
+        var pageNumber = indexUtility.toZeroBasedIndex(request.getPageNumber());
         var pageSize = request.getPageSize();
 
-        var specification = SupplierRepository.Specs.byCompanyAndContactInfo(
-                request.getCompanyName(),
-                request.getContactName(),
-                request.getContactPhone()
-        );
+        var specification = composeSpecification(request);
+        var pageRequest = PageRequest.of(pageNumber, pageSize);
 
-        var sort = getSortOrder(request);
-        var pageRequest = PageRequest.of(pageNumber, pageSize, sort);
-
-        var page = specification == null? supplierRepository.findAll(pageRequest) : supplierRepository.findAll(specification, pageRequest);
-
-        var items = page.get().map(supplierMapper::entityToDto).toList();
-        var totalPages = page.getTotalPages();
-        var totalElements = page.getTotalElements();
-
-        return new PagedList<>(
-                items,
-                request.getPageNumber(),
-                pageSize,
-                totalPages,
-                totalElements
-        );
+        var page = supplierRepository.findAll(specification, pageRequest);
+        return supplierMapper.pageToPagedList(page);
     }
 }

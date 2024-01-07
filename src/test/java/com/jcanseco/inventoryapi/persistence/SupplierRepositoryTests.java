@@ -1,13 +1,12 @@
 package com.jcanseco.inventoryapi.persistence;
 
 import com.jcanseco.inventoryapi.repositories.SupplierRepository;
+import com.jcanseco.inventoryapi.specifications.SupplierSpecifications;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.context.jdbc.Sql;
-
 import static com.jcanseco.inventoryapi.utils.TestModelFactory.newSupplier;
 import static com.jcanseco.inventoryapi.utils.TestModelFactory.newSupplierAddress;
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,96 +43,40 @@ public class SupplierRepositoryTests {
 
     @Test
     @Sql("/multiple-suppliers.sql")
-    public void findSuppliersByCompanyNameSpecificationShouldReturnList() {
-
-        var companyName = "a";
-        var contactName = "";
-        var contactPhone = "";
-
-        var sort = Sort.by("companyName").ascending();
-
-        var criteria = SupplierRepository.Specs.byCompanyAndContactInfo(
-                companyName,
-                contactName,
-                contactPhone
+    public void findSuppliersByCompanyNameLikeSpecificationShouldReturnList() {
+        var specification = SupplierSpecifications.orderBy(
+                SupplierSpecifications.byCompanyNameLike("a"),
+                "id",
+                true
         );
-
-        assertNotNull(criteria);
-        var foundSuppliers = repository.findAll(criteria, sort);
-
+        var foundSuppliers = repository.findAll(specification);
         assertNotNull(foundSuppliers);
         assertEquals(4, foundSuppliers.size());
     }
 
     @Test
     @Sql("/multiple-suppliers.sql")
-    public void findSupplierByContactNameSpecificationShouldReturnList() {
-        var companyName = "";
-        var contactName = "j";
-        var contactPhone = "";
-
-        var sort = Sort.by("companyName").ascending();
-
-        var criteria = SupplierRepository.Specs.byCompanyAndContactInfo(
-                companyName,
-                contactName,
-                contactPhone
+    public void findSuppliersByContactNameLikeSpecificationShouldReturnList() {
+        var specification = SupplierSpecifications.orderBy(
+                SupplierSpecifications.byContactNameLike("j"),
+                "id",
+                true
         );
-
-        assertNotNull(criteria);
-
-        var foundSuppliers = repository.findAll(criteria, sort);
-
+        var foundSuppliers = repository.findAll(specification);
         assertNotNull(foundSuppliers);
         assertEquals(3, foundSuppliers.size());
     }
 
     @Test
     @Sql("/multiple-suppliers.sql")
-    public void findSupplierByContactPhoneSpecificationShouldReturnList() {
-        var companyName = "";
-        var contactName = "";
-        var contactPhone = "9";
-
-        var sort = Sort.by("companyName").ascending();
-
-        var criteria = SupplierRepository.Specs.byCompanyAndContactInfo(
-                companyName,
-                contactName,
-                contactPhone
+    public void findSuppliersByContactPhoneLikeSpecificationShouldReturnList() {
+        var specification = SupplierSpecifications.orderBy(
+                SupplierSpecifications.byContactPhoneLike("9"),
+                "id",
+                true
         );
-
-        assertNotNull(criteria);
-
-        var foundSuppliers = repository.findAll(criteria, sort);
-
+        var foundSuppliers = repository.findAll(specification);
         assertNotNull(foundSuppliers);
         assertEquals(1, foundSuppliers.size());
     }
-
-    @Test
-    @Sql("/multiple-suppliers.sql")
-    public void findSupplierByAllSpecificationsShouldReturnList() {
-
-        var companyName = "a";
-        var contactName = "l";
-        var contactPhone = "5";
-
-        var sort = Sort.by("companyName").ascending();
-
-        var criteria = SupplierRepository.Specs.byCompanyAndContactInfo(
-                companyName,
-                contactName,
-                contactPhone
-        );
-
-        assertNotNull(criteria);
-
-        var foundSuppliers = repository.findAll(criteria, sort);
-
-        assertNotNull(foundSuppliers);
-        assertEquals(3, foundSuppliers.size());
-
-    }
-
 }
