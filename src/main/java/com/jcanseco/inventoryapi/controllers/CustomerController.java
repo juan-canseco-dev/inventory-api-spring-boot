@@ -17,7 +17,6 @@ import java.net.URISyntaxException;
 @RequiredArgsConstructor
 public class CustomerController {
 
-
     private final CustomerService customerService;
     @PostMapping
     public ResponseEntity<Long> create(@RequestBody @Valid CreateCustomerDto dto) throws URISyntaxException {
@@ -27,7 +26,7 @@ public class CustomerController {
     }
 
     @PutMapping("{customerId}")
-    public ResponseEntity<?> update(@PathVariable Long customerId, @RequestBody @Valid UpdateCustomerDto dto) {
+    public ResponseEntity<Void> update(@PathVariable Long customerId, @RequestBody @Valid UpdateCustomerDto dto) {
         if (!dto.getCustomerId().equals(customerId)) {
             return ResponseEntity.badRequest().build();
         }
@@ -36,7 +35,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("{customerId}")
-    public ResponseEntity<?> delete(@PathVariable Long customerId) {
+    public ResponseEntity<Void> delete(@PathVariable Long customerId) {
         customerService.deleteCustomer(customerId);
         return ResponseEntity.noContent().build();
     }
