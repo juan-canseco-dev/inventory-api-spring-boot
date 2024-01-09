@@ -2,6 +2,7 @@ package com.jcanseco.inventoryapi.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jcanseco.inventoryapi.dtos.AddressDto;
+import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.dtos.customers.CreateCustomerDto;
 import com.jcanseco.inventoryapi.dtos.customers.CustomerDetailsDto;
 import com.jcanseco.inventoryapi.dtos.customers.CustomerDto;
@@ -154,10 +155,11 @@ public class CustomerApiIntegrationTests {
         assertEquals(expected, result);
     }
 
-    @Sql("/multiple-customers.sql")
+    @Sql(value = "/multiple-customers.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(statements = "DELETE FROM customers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     public void getCustomersStatusShouldBeOk() {
-        var url = baseUrl() + "?orderBy=companyName&sortOrder=asc&dni=1&phone=555&fullName=o";
+        var url = baseUrl() + "?orderBy=fullName&sortOrder=asc&dni=1&phone=555&fullName=o";
         var responseType = new ParameterizedTypeReference<List<CustomerDto>>() {};
         var response = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
@@ -166,10 +168,20 @@ public class CustomerApiIntegrationTests {
         assertEquals(5, suppliers.size());
     }
 
-    @Sql("/multiple-customers.sql")
+    @Sql(value = "/multiple-customers.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(statements = "DELETE FROM customers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     public void getCustomersPageShouldBeOk() {
-
+        var url = baseUrl() + "?pageNumber=1&pageSize=2&orderBy=fullName&sortOrder=asc&dni=1&phone=555&fullName=o";
+        var responseType = new ParameterizedTypeReference<PagedList<CustomerDto>>() {};
+        var response = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        assertNotNull(response.getBody());
+        var pagedList = response.getBody();
+        assertEquals(1, pagedList.getPageNumber());
+        assertEquals(2, pagedList.getPageSize());
+        assertEquals(3, pagedList.getTotalPages());
+        assertEquals(5, pagedList.getTotalElements());
     }
 
     private String baseUrl() {
