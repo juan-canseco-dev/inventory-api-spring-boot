@@ -1,7 +1,7 @@
 package com.jcanseco.inventoryapi.integration.customers;
 
+import com.jcanseco.inventoryapi.entities.Address;
 import com.jcanseco.inventoryapi.entities.Customer;
-import com.jcanseco.inventoryapi.entities.CustomerAddress;
 import com.jcanseco.inventoryapi.repositories.CustomerRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
@@ -28,7 +28,7 @@ public class GetCustomerTests {
     @BeforeEach
     public void setup() {
 
-        var address = CustomerAddress
+        var address = Address
                 .builder()
                 .country("Mexico")
                 .state("Sonora")

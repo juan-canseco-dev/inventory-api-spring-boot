@@ -32,10 +32,8 @@ public class TestModelFactory {
                 .build();
     }
 
-
-
-    public static CustomerAddress newCustomerAddress(String country, String state, String city, String zipCode, String street) {
-        return CustomerAddress.builder()
+    public static Address newAddress(String country, String state, String city, String zipCode, String street) {
+        return Address.builder()
                 .country(country)
                 .state(state)
                 .city(city)
@@ -44,10 +42,8 @@ public class TestModelFactory {
                 .build();
     }
 
-
-
-    private static CustomerAddress defaultCustomerAddress() {
-        return CustomerAddress.builder()
+    private static Address defaultCustomerAddress() {
+        return Address.builder()
                 .country("Mexico")
                 .state("Sonora")
                 .city("Hermosillo")
@@ -66,7 +62,7 @@ public class TestModelFactory {
                 .build();
     }
 
-    public static Customer newCustomer(String dni, String phone, String fullName, CustomerAddress address) {
+    public static Customer newCustomer(String dni, String phone, String fullName, Address address) {
         return Customer.builder()
                 .dni(dni)
                 .phone(phone)
@@ -75,7 +71,7 @@ public class TestModelFactory {
                 .build();
     }
 
-    public static Customer newCustomer(Long customerId, String dni, String phone, String fullName, CustomerAddress address) {
+    public static Customer newCustomer(Long customerId, String dni, String phone, String fullName, Address address) {
         return Customer.builder()
                 .id(customerId)
                 .dni(dni)

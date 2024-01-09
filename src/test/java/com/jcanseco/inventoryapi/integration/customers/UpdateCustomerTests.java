@@ -2,8 +2,8 @@ package com.jcanseco.inventoryapi.integration.customers;
 
 import com.jcanseco.inventoryapi.dtos.AddressDto;
 import com.jcanseco.inventoryapi.dtos.customers.UpdateCustomerDto;
+import com.jcanseco.inventoryapi.entities.Address;
 import com.jcanseco.inventoryapi.entities.Customer;
-import com.jcanseco.inventoryapi.entities.CustomerAddress;
 import com.jcanseco.inventoryapi.repositories.CustomerRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ public class UpdateCustomerTests {
     @BeforeEach
     public void setup() {
 
-        var address = CustomerAddress
+        var address = Address
                 .builder()
                 .country("MX")
                 .state("SON")

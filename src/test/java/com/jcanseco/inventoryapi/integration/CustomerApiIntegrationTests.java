@@ -2,16 +2,12 @@ package com.jcanseco.inventoryapi.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jcanseco.inventoryapi.dtos.AddressDto;
-import com.jcanseco.inventoryapi.dtos.PagedList;
-import com.jcanseco.inventoryapi.dtos.categories.CategoryDto;
 import com.jcanseco.inventoryapi.dtos.customers.CreateCustomerDto;
 import com.jcanseco.inventoryapi.dtos.customers.CustomerDetailsDto;
 import com.jcanseco.inventoryapi.dtos.customers.CustomerDto;
 import com.jcanseco.inventoryapi.dtos.customers.UpdateCustomerDto;
-import com.jcanseco.inventoryapi.dtos.suppliers.SupplierDto;
-import com.jcanseco.inventoryapi.entities.CustomerAddress;
+import com.jcanseco.inventoryapi.entities.Address;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,7 +30,7 @@ public class CustomerApiIntegrationTests {
     @Autowired
     private ObjectMapper mapper;
     private static HttpHeaders httpHeaders;
-    private static CustomerAddress defaultAddress;
+    private static Address defaultAddress;
     private static AddressDto defaultAddressDto;
 
     @BeforeAll
@@ -49,8 +45,7 @@ public class CustomerApiIntegrationTests {
                 .street("Center")
                 .build();
 
-        defaultAddress = CustomerAddress.builder()
-                .id(1L)
+        defaultAddress = Address.builder()
                 .country("Mexico")
                 .state("Sonora")
                 .city("Hermosillo")
@@ -60,7 +55,7 @@ public class CustomerApiIntegrationTests {
     }
 
 
-    @Sql(statements = "DELETE FROM customers; DELETE FROM customer_address;", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(statements = "DELETE FROM customers;", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     public void createCustomerStatusShouldBeCreated() throws JsonProcessingException {
         var dto = CreateCustomerDto.builder()
@@ -76,12 +71,13 @@ public class CustomerApiIntegrationTests {
         assertTrue(response.getBody() > 0L);
     }
 
-
-    @Sql(statements = "INSERT INTO customer_address (id, country, state, city, zip_code, street) VALUES\n" +
-                      "(11, 'United States', 'California', 'San Francisco', '94105', '123 Main St');\n" +
-                      "INSERT INTO customers (id, dni, phone, full_name, address_id) VALUES\n" +
-                      "(11,'123456789', '555-1234-1', 'John Doe', 11)",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    @Sql(statements = "INSERT INTO customers (id, dni, phone, full_name, " +
+                      "customer_address_country, customer_address_state, " +
+                      "customer_address_city, customer_address_zip_code, " +
+                      "customer_address_street) " +
+                      "VALUES (11,'123456789', '555-1234-1', 'John Doe', " +
+                      "'United States', 'California', 'San Francisco', '94105', '123 Main St')",
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(statements = "DELETE FROM customers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -103,15 +99,17 @@ public class CustomerApiIntegrationTests {
     }
 
 
-    @Sql(statements = "INSERT INTO customer_address (id, country, state, city, zip_code, street) VALUES\n" +
-            "(12, 'United States', 'California', 'San Francisco', '94105', '123 Main St');\n" +
-            "INSERT INTO customers (id, dni, phone, full_name, address_id) VALUES\n" +
-            "(12,'123456783339', '555-1234-1', 'John Doe', 12)",
+    @Sql(statements = "INSERT INTO customers (id, dni, phone, full_name, " +
+            "customer_address_country, customer_address_state, " +
+            "customer_address_city, customer_address_zip_code, " +
+            "customer_address_street) " +
+            "VALUES (12,'123456789', '555-1234-1', 'John Doe', " +
+            "'United States', 'California', 'San Francisco', '94105', '123 Main St')",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(statements = "DELETE FROM customers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    public void deleteCustomerStatusShouldBeNoContent() {
+    public void deleteCustomerStatusShouldBeNoContent()  {
         var customerId = 12L;
         var url = baseUrl() + "/" + customerId;
         var response = restTemplate.exchange(url, HttpMethod.DELETE, null, Void.class);
@@ -119,10 +117,12 @@ public class CustomerApiIntegrationTests {
     }
 
 
-    @Sql(statements = "INSERT INTO customer_address (id, country, state, city, zip_code, street) VALUES\n" +
-            "(13, 'United States', 'California', 'San Francisco', '94105', '123 Main St');\n" +
-            "INSERT INTO customers (id, dni, phone, full_name, address_id) VALUES\n" +
-            "(13,'123456783339', '555-1234-1', 'John Doe', 13)",
+    @Sql(statements = "INSERT INTO customers (id, dni, phone, full_name, " +
+            "customer_address_country, customer_address_state, " +
+            "customer_address_city, customer_address_zip_code, " +
+            "customer_address_street) " +
+            "VALUES (13,'123456789', '555-1234-1', 'John Doe', " +
+            "'United States', 'California', 'San Francisco', '94105', '123 Main St')",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(statements = "DELETE FROM customers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -133,7 +133,7 @@ public class CustomerApiIntegrationTests {
 
         var expected = CustomerDetailsDto.builder()
                 .id(customerId)
-                .dni("123456783339")
+                .dni("123456789")
                 .phone("555-1234-1")
                 .fullName("John Doe")
                 .address(
@@ -164,6 +164,12 @@ public class CustomerApiIntegrationTests {
         assertNotNull(response.getBody());
         var suppliers = response.getBody();
         assertEquals(5, suppliers.size());
+    }
+
+    @Sql("/multiple-customers.sql")
+    @Test
+    public void getCustomersPageShouldBeOk() {
+
     }
 
     private String baseUrl() {

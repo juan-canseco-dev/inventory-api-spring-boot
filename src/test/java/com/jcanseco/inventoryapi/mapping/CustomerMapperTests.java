@@ -44,7 +44,7 @@ public class CustomerMapperTests {
     @Test
     public void addressEntityToDto() {
 
-        var address = newCustomerAddress(
+        var address = newAddress(
                 "Mexico",
                 "Sonora",
                 "Hermosillo",
@@ -103,7 +103,7 @@ public class CustomerMapperTests {
                 "X1Y9Z3A7B2C8D6E0F5G4",
                 "John Doe",
                 "555-1234-1",
-                newCustomerAddress(
+                newAddress(
                         "Mexico",
                         "Sonora",
                         "Hermosillo",
@@ -124,7 +124,7 @@ public class CustomerMapperTests {
     @Test
     public void entityToDetailsDto() {
 
-        var address = newCustomerAddress(
+        var address = newAddress(
                 "Mexico",
                 "Sonora",
                 "Hermosillo",
@@ -168,7 +168,7 @@ public class CustomerMapperTests {
                         "123456789",
                         "555-1234-1",
                         "John Doe",
-                        newCustomerAddress(
+                        newAddress(
                                 "United States",
                                 "California",
                                 "San Francisco",
@@ -179,7 +179,7 @@ public class CustomerMapperTests {
                         "987654321",
                         "555-1234-2",
                         "Jane Smith",
-                        newCustomerAddress("United Kingdom",
+                        newAddress("United Kingdom",
                                 "England",
                                 "London",
                                 "EC1A 1BB",

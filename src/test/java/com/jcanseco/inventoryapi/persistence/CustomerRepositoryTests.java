@@ -9,7 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.jdbc.Sql;
 import static com.jcanseco.inventoryapi.utils.TestModelFactory.newCustomer;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.newCustomerAddress;
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.newAddress;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -26,7 +26,7 @@ public class CustomerRepositoryTests {
                 "X1Y9Z3A7B2C8D6E0F5G4",
                 "555-1234-1",
                 "Smith Powell Johnson",
-                newCustomerAddress(
+                newAddress(
                         "Mexico",
                         "Sonora",
                         "Hermosillo",
@@ -37,8 +37,6 @@ public class CustomerRepositoryTests {
 
         var newCustomer = repository.saveAndFlush(customer);
         assertTrue(newCustomer.getId() > 0);
-        assertNotNull(newCustomer.getAddress());
-        assertTrue(newCustomer.getAddress().getId() > 0);
     }
 
 
@@ -49,7 +47,7 @@ public class CustomerRepositoryTests {
                         "901234567",
                         "555-1234-1",
                         "John Troll",
-                        newCustomerAddress(
+                        newAddress(
                                 "Mexico",
                                 "Sonora",
                                 "Hermosillo",
@@ -63,7 +61,7 @@ public class CustomerRepositoryTests {
                 "901234567",
                 "555-1234-9",
                 "Jane Troll",
-                newCustomerAddress(
+                newAddress(
                         "Mexico",
                         "Sonora",
                         "Hermosillo",
