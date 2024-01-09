@@ -3,9 +3,12 @@ package com.jcanseco.inventoryapi.integration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jcanseco.inventoryapi.dtos.AddressDto;
 import com.jcanseco.inventoryapi.dtos.PagedList;
+import com.jcanseco.inventoryapi.dtos.categories.CategoryDto;
 import com.jcanseco.inventoryapi.dtos.customers.CreateCustomerDto;
 import com.jcanseco.inventoryapi.dtos.customers.CustomerDetailsDto;
+import com.jcanseco.inventoryapi.dtos.customers.CustomerDto;
 import com.jcanseco.inventoryapi.dtos.customers.UpdateCustomerDto;
+import com.jcanseco.inventoryapi.dtos.suppliers.SupplierDto;
 import com.jcanseco.inventoryapi.entities.CustomerAddress;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,8 +59,9 @@ public class CustomerApiIntegrationTests {
                 .build();
     }
 
+
+    @Sql(statements = "DELETE FROM customers; DELETE FROM customer_address;", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    @Sql(statements = "DELETE FROM customers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void createCustomerStatusShouldBeCreated() throws JsonProcessingException {
         var dto = CreateCustomerDto.builder()
                 .dni("12345678912")
@@ -72,16 +76,18 @@ public class CustomerApiIntegrationTests {
         assertTrue(response.getBody() > 0L);
     }
 
-    @Test
+
     @Sql(statements = "INSERT INTO customer_address (id, country, state, city, zip_code, street) VALUES\n" +
-                      "(1, 'United States', 'California', 'San Francisco', '94105', '123 Main St');\n" +
+                      "(11, 'United States', 'California', 'San Francisco', '94105', '123 Main St');\n" +
                       "INSERT INTO customers (id, dni, phone, full_name, address_id) VALUES\n" +
-                      "(1,'123456789', '555-1234-1', 'John Doe', 1)",
+                      "(11,'123456789', '555-1234-1', 'John Doe', 11)",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
+    @Sql(statements = "DELETE FROM customers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
     public void updateCustomerStatusShouldBeNoContent() throws JsonProcessingException {
 
-        var customerId = 1L;
+        var customerId = 11L;
         var url = baseUrl() + "/" + customerId;
         var dto = UpdateCustomerDto.builder()
                 .customerId(customerId)
@@ -96,29 +102,33 @@ public class CustomerApiIntegrationTests {
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
     }
 
-    @Test
+
     @Sql(statements = "INSERT INTO customer_address (id, country, state, city, zip_code, street) VALUES\n" +
-            "(11, 'United States', 'California', 'San Francisco', '94105', '123 Main St');\n" +
+            "(12, 'United States', 'California', 'San Francisco', '94105', '123 Main St');\n" +
             "INSERT INTO customers (id, dni, phone, full_name, address_id) VALUES\n" +
-            "(11,'123456783339', '555-1234-1', 'John Doe', 11)",
+            "(12,'123456783339', '555-1234-1', 'John Doe', 12)",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
+    @Sql(statements = "DELETE FROM customers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
     public void deleteCustomerStatusShouldBeNoContent() {
-        var customerId = 11L;
+        var customerId = 12L;
         var url = baseUrl() + "/" + customerId;
         var response = restTemplate.exchange(url, HttpMethod.DELETE, null, Void.class);
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
     }
 
-    @Test
+
     @Sql(statements = "INSERT INTO customer_address (id, country, state, city, zip_code, street) VALUES\n" +
-            "(11, 'United States', 'California', 'San Francisco', '94105', '123 Main St');\n" +
+            "(13, 'United States', 'California', 'San Francisco', '94105', '123 Main St');\n" +
             "INSERT INTO customers (id, dni, phone, full_name, address_id) VALUES\n" +
-            "(11,'123456783339', '555-1234-1', 'John Doe', 11)",
+            "(13,'123456783339', '555-1234-1', 'John Doe', 13)",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
+    @Sql(statements = "DELETE FROM customers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
     public void getCustomerByIdStatusShouldBeNoContent() {
-        var customerId = 11L;
+        var customerId = 13L;
         var url = baseUrl() + "/" + customerId;
 
         var expected = CustomerDetailsDto.builder()
@@ -147,13 +157,13 @@ public class CustomerApiIntegrationTests {
     @Sql("/multiple-customers.sql")
     @Test
     public void getCustomersStatusShouldBeOk() {
-
-    }
-
-    @Sql("/multiple-customers.sql")
-    @Test
-    public void getCustomersPageStatusShouldBeOk() {
-
+        var url = baseUrl() + "?orderBy=companyName&sortOrder=asc&dni=1&phone=555&fullName=o";
+        var responseType = new ParameterizedTypeReference<List<CustomerDto>>() {};
+        var response = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        assertNotNull(response.getBody());
+        var suppliers = response.getBody();
+        assertEquals(5, suppliers.size());
     }
 
     private String baseUrl() {
