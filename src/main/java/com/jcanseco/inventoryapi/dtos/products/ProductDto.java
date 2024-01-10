@@ -3,6 +3,7 @@ package com.jcanseco.inventoryapi.dtos.products;
 import lombok.*;
 import java.math.BigDecimal;
 
+@EqualsAndHashCode
 @Builder
 @Setter
 @Getter

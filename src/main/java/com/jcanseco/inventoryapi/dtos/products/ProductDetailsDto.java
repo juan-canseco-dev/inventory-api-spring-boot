@@ -6,6 +6,7 @@ import com.jcanseco.inventoryapi.dtos.units.UnitOfMeasurementDto;
 import lombok.*;
 import java.math.BigDecimal;
 
+@EqualsAndHashCode
 @Builder
 @Setter
 @Getter
