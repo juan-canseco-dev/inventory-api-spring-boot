@@ -103,17 +103,6 @@ public class TestModelFactory {
                 .build();
     }
 
-    public static Supplier newSupplier(String companyName,
-                                    String contactName,
-                                    String contactPhone) {
-        return Supplier.builder()
-                .companyName(companyName)
-                .contactName(contactName)
-                .contactPhone(contactPhone)
-                .address(defaultAddress())
-                .build();
-    }
-
     public static Supplier newSupplier(Long supplierId,
                                     String companyName,
                                     String contactName,
