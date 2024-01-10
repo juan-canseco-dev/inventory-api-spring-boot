@@ -21,7 +21,7 @@ public class PurchaseMapperTests {
                 "ABC Corp",
                 "John Doe",
                 "555-1234-1",
-                newSupplierAddress(
+                newAddress(
                  "Mexico",
                  "Sonora",
                  "Hermosillo",

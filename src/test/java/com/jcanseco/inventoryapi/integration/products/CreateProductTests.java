@@ -1,9 +1,9 @@
 package com.jcanseco.inventoryapi.integration.products;
 
 import com.jcanseco.inventoryapi.dtos.products.CreateProductDto;
+import com.jcanseco.inventoryapi.entities.Address;
 import com.jcanseco.inventoryapi.entities.Category;
 import com.jcanseco.inventoryapi.entities.Supplier;
-import com.jcanseco.inventoryapi.entities.SupplierAddress;
 import com.jcanseco.inventoryapi.entities.UnitOfMeasurement;
 import com.jcanseco.inventoryapi.repositories.CategoryRepository;
 import com.jcanseco.inventoryapi.repositories.ProductRepository;
@@ -44,7 +44,7 @@ public class CreateProductTests {
     @BeforeEach
     public void setup() {
 
-        var address = SupplierAddress
+        var address = Address
                 .builder()
                 .country("Mexico")
                 .state("Sonora")

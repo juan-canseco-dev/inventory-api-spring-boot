@@ -27,16 +27,16 @@ public class GetSuppliersPageTests {
     @BeforeEach
     public void setup() {
         var suppliers = List.of(
-                newSupplier("ABC Corp", "John Doe", "555-1234-1", newSupplierAddress("United States", "California", "San Francisco", "94105", "123 Main St")),
-                newSupplier("XYZ Ltd", "Jane Smith", "555-1234-2",  newSupplierAddress("United Kingdom", "England", "London", "EC1A 1BB", "456 High St")),
-                newSupplier("123 Enterprises", "Bob Johnson", "555-1234-3", newSupplierAddress("Canada", "Ontario", "Toronto", "M5V 2A8", "789 Maple Ave")),
-                newSupplier("Tech Solutions Inc", "Alice Brown", "555-1234-4", newSupplierAddress("Australia", "New South Wales", "Sydney", "2000", "101 Tech Blvd")),
-                newSupplier("Global Innovations", "David Wilson", "555-1234-5", newSupplierAddress("Germany", "Bavaria", "Munich", "80331", "234 Innovation Strasse")),
-                newSupplier("Sunshine Foods", "Linda Miller", "555-1234-6", newSupplierAddress("Brazil", "Sao Paulo", "Sao Paulo", "01310-200", "345 Sunny Ave")),
-                newSupplier("Green Energy Co", "Chris Taylor", "555-1234-7", newSupplierAddress("China", "Shanghai", "Shanghai", "200000", "456 Eco Street")),
-                newSupplier("Peak Performance", "Emily White", "555-1234-8", newSupplierAddress("South Africa", "Gauteng", "Johannesburg", "2000", "567 Summit Road")),
-                newSupplier("City Builders", "Michael Lee", "555-1234-9", newSupplierAddress("India", "Maharashtra", "Mumbai", "400001", "678 Urban Lane")),
-                newSupplier("Oceanic Ventures", "Olivia Garcia", "555-1234-10", newSupplierAddress("New Zealand", "Auckland", "Auckland", "1010", "789 Ocean View"))
+                newSupplier("ABC Corp", "John Doe", "555-1234-1", newAddress("United States", "California", "San Francisco", "94105", "123 Main St")),
+                newSupplier("XYZ Ltd", "Jane Smith", "555-1234-2",  newAddress("United Kingdom", "England", "London", "EC1A 1BB", "456 High St")),
+                newSupplier("123 Enterprises", "Bob Johnson", "555-1234-3", newAddress("Canada", "Ontario", "Toronto", "M5V 2A8", "789 Maple Ave")),
+                newSupplier("Tech Solutions Inc", "Alice Brown", "555-1234-4", newAddress("Australia", "New South Wales", "Sydney", "2000", "101 Tech Blvd")),
+                newSupplier("Global Innovations", "David Wilson", "555-1234-5", newAddress("Germany", "Bavaria", "Munich", "80331", "234 Innovation Strasse")),
+                newSupplier("Sunshine Foods", "Linda Miller", "555-1234-6", newAddress("Brazil", "Sao Paulo", "Sao Paulo", "01310-200", "345 Sunny Ave")),
+                newSupplier("Green Energy Co", "Chris Taylor", "555-1234-7", newAddress("China", "Shanghai", "Shanghai", "200000", "456 Eco Street")),
+                newSupplier("Peak Performance", "Emily White", "555-1234-8", newAddress("South Africa", "Gauteng", "Johannesburg", "2000", "567 Summit Road")),
+                newSupplier("City Builders", "Michael Lee", "555-1234-9", newAddress("India", "Maharashtra", "Mumbai", "400001", "678 Urban Lane")),
+                newSupplier("Oceanic Ventures", "Olivia Garcia", "555-1234-10", newAddress("New Zealand", "Auckland", "Auckland", "1010", "789 Ocean View"))
         );
         repository.saveAllAndFlush(suppliers);
     }

@@ -20,7 +20,7 @@ public class ProductMapperTests {
                 "ABC Corp",
                 "John Doe",
                 "555-1234-1",
-                newSupplierAddress(
+                newAddress(
                         "Mexico",
                         "Sonora",
                         "Hermosillo",

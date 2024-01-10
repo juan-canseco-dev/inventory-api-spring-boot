@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.newSupplier;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.newSupplierAddress;
+
+import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -26,7 +26,7 @@ public class SupplierRepositoryTests {
                 "ABC Electronics",
                 "John Doe",
                 "+12222222",
-                newSupplierAddress(
+                newAddress(
                         "Mexico",
                         "Sonora",
                         "Hermosillo",
@@ -37,8 +37,6 @@ public class SupplierRepositoryTests {
 
         var newSupplier = repository.saveAndFlush(supplier);
         assertTrue(newSupplier.getId() > 0);
-        assertNotNull(newSupplier.getAddress());
-        assertTrue(newSupplier.getAddress().getId() > 0);
     }
 
     @Test

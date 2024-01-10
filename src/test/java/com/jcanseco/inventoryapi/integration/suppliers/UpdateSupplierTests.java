@@ -2,8 +2,8 @@ package com.jcanseco.inventoryapi.integration.suppliers;
 
 import com.jcanseco.inventoryapi.dtos.AddressDto;
 import com.jcanseco.inventoryapi.dtos.suppliers.UpdateSupplierDto;
+import com.jcanseco.inventoryapi.entities.Address;
 import com.jcanseco.inventoryapi.entities.Supplier;
-import com.jcanseco.inventoryapi.entities.SupplierAddress;
 import com.jcanseco.inventoryapi.repositories.SupplierRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ public class UpdateSupplierTests {
     @BeforeEach
     public void setup() {
 
-        var address = SupplierAddress
+        var address = Address
                 .builder()
                 .country("MX")
                 .state("SON")

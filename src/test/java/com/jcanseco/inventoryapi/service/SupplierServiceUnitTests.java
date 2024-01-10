@@ -5,8 +5,8 @@ import com.jcanseco.inventoryapi.dtos.suppliers.CreateSupplierDto;
 import com.jcanseco.inventoryapi.dtos.suppliers.GetSuppliersRequest;
 import com.jcanseco.inventoryapi.dtos.suppliers.SupplierDetailsDto;
 import com.jcanseco.inventoryapi.dtos.suppliers.UpdateSupplierDto;
+import com.jcanseco.inventoryapi.entities.Address;
 import com.jcanseco.inventoryapi.entities.Supplier;
-import com.jcanseco.inventoryapi.entities.SupplierAddress;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.SupplierMapper;
 import com.jcanseco.inventoryapi.repositories.SupplierRepository;
@@ -47,7 +47,7 @@ public class SupplierServiceUnitTests {
     private SupplierService supplierService;
     private List<Supplier> suppliers;
     private AddressDto defaultAddressDto;
-    private SupplierAddress defaultAddress;
+    private Address defaultAddress;
 
     @BeforeEach
     public void setup() {
@@ -56,7 +56,7 @@ public class SupplierServiceUnitTests {
                         "ABC Corp",
                         "John Doe",
                         "555-1234-1",
-                        newSupplierAddress(
+                        newAddress(
                                 "United States",
                                 "California",
                                 "San Francisco",
@@ -67,7 +67,7 @@ public class SupplierServiceUnitTests {
                         "XYZ Ltd",
                         "Jane Smith",
                         "555-1234-2",
-                        newSupplierAddress("United Kingdom",
+                        newAddress("United Kingdom",
                                 "England",
                                 "London",
                                 "EC1A 1BB",
@@ -82,8 +82,7 @@ public class SupplierServiceUnitTests {
                 .street("Center")
                 .build();
 
-        defaultAddress = SupplierAddress.builder()
-                .id(1L)
+        defaultAddress = Address.builder()
                 .country("Mexico")
                 .state("Sonora")
                 .city("Hermosillo")

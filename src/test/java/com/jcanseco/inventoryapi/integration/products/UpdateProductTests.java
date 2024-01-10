@@ -44,7 +44,7 @@ public class UpdateProductTests {
 
     private void setupSavedEntities() {
 
-        var address = SupplierAddress
+        var address = Address
                 .builder()
                 .country("Mexico")
                 .state("Sonora")
@@ -86,7 +86,7 @@ public class UpdateProductTests {
     }
 
     private void setupEntitiesForUpdate() {
-        var address = SupplierAddress
+        var address = Address
                 .builder()
                 .country("Mexico")
                 .state("Sonora")

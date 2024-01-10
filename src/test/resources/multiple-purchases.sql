@@ -4,14 +4,14 @@ VALUES (1, 'Piece');
 INSERT INTO categories (id, name)
 VALUES (1, 'Electronics');
 
-INSERT INTO supplier_address (id, country, state, city, zip_code, street)
-VALUES
-    (1, 'United States', 'California', 'San Francisco', '94105', '123 Main St'),
-    (2, 'Australia', 'New South Wales', 'Sydney', '2000', '101 Tech Blvd');
-
-INSERT INTO suppliers (id, company_name, contact_name, contact_phone, address_id)
-VALUES (1, 'ABC Corp', 'John Doe', '555-1234-1', 1),
-       (2, 'Tech Solutions Inc', 'Alice Brown', '555-1234-4', 2);
+INSERT INTO suppliers (id, company_name, contact_name, contact_phone,
+                       supplier_address_country,
+                       supplier_address_state,
+                       supplier_address_city,
+                       supplier_address_zip_code,
+                       supplier_address_street)
+VALUES (1, 'ABC Corp', 'John Doe', '555-1234-1', 'United States', 'California', 'San Francisco', '94105', '123 Main St'),
+       (2, 'Tech Solutions Inc', 'Alice Brown', '555-1234-4', 'Australia', 'New South Wales', 'Sydney', '2000', '101 Tech Blvd');
 
 INSERT INTO products (id, supplier_id, category_id, unit_id, name, quantity, purchase_price, sale_price)
 VALUES (1,1,1,1,'Laptop', 0, 800.00, 1200.00),

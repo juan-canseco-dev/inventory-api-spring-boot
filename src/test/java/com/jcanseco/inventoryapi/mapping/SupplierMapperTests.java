@@ -42,7 +42,7 @@ public class SupplierMapperTests {
     @Test
     public void addressEntityToDto() {
 
-        var address = newSupplierAddress(
+        var address = newAddress(
                 "Mexico",
                 "Sonora",
                 "Hermosillo",
@@ -100,7 +100,7 @@ public class SupplierMapperTests {
                 "ABC Corp",
                 "John Doe",
                 "555-1234-1",
-                newSupplierAddress(
+                newAddress(
                         "Mexico",
                         "Sonora",
                         "Hermosillo",
@@ -121,7 +121,7 @@ public class SupplierMapperTests {
     @Test
     public void entityToDetailsDto() {
 
-        var address = newSupplierAddress(
+        var address = newAddress(
                 "Mexico",
                 "Sonora",
                 "Hermosillo",
@@ -164,7 +164,7 @@ public class SupplierMapperTests {
                         "ABC Corp",
                         "John Doe",
                         "555-1234-1",
-                        newSupplierAddress(
+                        newAddress(
                                 "United States",
                                 "California",
                                 "San Francisco",
@@ -175,7 +175,7 @@ public class SupplierMapperTests {
                         "XYZ Ltd",
                         "Jane Smith",
                         "555-1234-2",
-                        newSupplierAddress("United Kingdom",
+                        newAddress("United Kingdom",
                                 "England",
                                 "London",
                                 "EC1A 1BB",

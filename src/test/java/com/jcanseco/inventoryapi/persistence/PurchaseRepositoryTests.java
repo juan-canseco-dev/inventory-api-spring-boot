@@ -49,7 +49,7 @@ public class PurchaseRepositoryTests {
                         "Pika Games",
                         "Perla Lopez",
                         "555-1234-1",
-                        newSupplierAddress(
+                        newAddress(
                                 "Mexico",
                                 "Sonora",
                                 "Hermosillo",

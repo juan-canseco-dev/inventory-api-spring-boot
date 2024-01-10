@@ -42,7 +42,7 @@ public class TestModelFactory {
                 .build();
     }
 
-    private static Address defaultCustomerAddress() {
+    private static Address defaultAddress() {
         return Address.builder()
                 .country("Mexico")
                 .state("Sonora")
@@ -58,7 +58,7 @@ public class TestModelFactory {
                 .dni(dni)
                 .phone(phone)
                 .fullName(fullName)
-                .address(defaultCustomerAddress())
+                .address(defaultAddress())
                 .build();
     }
 
@@ -87,39 +87,14 @@ public class TestModelFactory {
                 .dni(dni)
                 .phone(phone)
                 .fullName(fullName)
-                .address(defaultCustomerAddress())
-                .build();
-    }
-
-
-    public static SupplierAddress newSupplierAddress(String country,
-                                                     String state,
-                                                     String city,
-                                                     String zipCode,
-                                                     String street) {
-        return SupplierAddress.builder()
-                .country(country)
-                .state(state)
-                .city(city)
-                .zipCode(zipCode)
-                .street(street)
-                .build();
-    }
-
-    private static SupplierAddress defaultSupplierAddress() {
-        return SupplierAddress.builder()
-                .country("Mexico")
-                .state("Sonora")
-                .city("Hermosillo")
-                .zipCode("83200")
-                .street("Center")
+                .address(defaultAddress())
                 .build();
     }
 
     public static Supplier newSupplier(String companyName,
                                     String contactName,
                                     String contactPhone,
-                                    SupplierAddress address) {
+                                    Address address) {
         return Supplier.builder()
                 .companyName(companyName)
                 .contactName(contactName)
@@ -135,7 +110,7 @@ public class TestModelFactory {
                 .companyName(companyName)
                 .contactName(contactName)
                 .contactPhone(contactPhone)
-                .address(defaultSupplierAddress())
+                .address(defaultAddress())
                 .build();
     }
 
@@ -143,7 +118,7 @@ public class TestModelFactory {
                                     String companyName,
                                     String contactName,
                                     String contactPhone,
-                                    SupplierAddress address) {
+                                    Address address) {
         return Supplier.builder()
                 .id(supplierId)
                 .companyName(companyName)
@@ -162,7 +137,7 @@ public class TestModelFactory {
                 .companyName(companyName)
                 .contactName(contactName)
                 .contactPhone(contactPhone)
-                .address(defaultSupplierAddress())
+                .address(defaultAddress())
                 .build();
     }
 

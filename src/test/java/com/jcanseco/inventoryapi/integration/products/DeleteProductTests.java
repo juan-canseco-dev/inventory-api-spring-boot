@@ -36,7 +36,7 @@ public class DeleteProductTests {
     @BeforeEach
     public void setup() {
 
-        var address = SupplierAddress
+        var address = Address
                 .builder()
                 .country("Mexico")
                 .state("Sonora")

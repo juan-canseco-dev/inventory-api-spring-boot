@@ -1,7 +1,7 @@
 package com.jcanseco.inventoryapi.integration.suppliers;
 
+import com.jcanseco.inventoryapi.entities.Address;
 import com.jcanseco.inventoryapi.entities.Supplier;
-import com.jcanseco.inventoryapi.entities.SupplierAddress;
 import com.jcanseco.inventoryapi.repositories.SupplierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,7 +27,7 @@ public class GetSupplierTests {
     @BeforeEach
     public void setup() {
 
-        var address = SupplierAddress
+        var address = Address
                 .builder()
                 .country("MX")
                 .state("SON")

@@ -73,7 +73,7 @@ public class GetProductsPageTests {
                         "ABC Corp",
                         "John Doe",
                         "555-1234-1",
-                newSupplierAddress(
+                newAddress(
                         "United States",
                         "California",
                         "San Francisco",
@@ -88,7 +88,7 @@ public class GetProductsPageTests {
                         "Alice Brown",
                         "555-1234-4",
 
-                newSupplierAddress("Australia",
+                newAddress("Australia",
                         "New South Wales",
                         "Sydney",
                         "2000",
