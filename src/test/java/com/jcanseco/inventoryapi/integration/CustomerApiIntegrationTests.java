@@ -7,7 +7,6 @@ import com.jcanseco.inventoryapi.dtos.customers.CreateCustomerDto;
 import com.jcanseco.inventoryapi.dtos.customers.CustomerDetailsDto;
 import com.jcanseco.inventoryapi.dtos.customers.CustomerDto;
 import com.jcanseco.inventoryapi.dtos.customers.UpdateCustomerDto;
-import com.jcanseco.inventoryapi.entities.Address;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,6 @@ public class CustomerApiIntegrationTests {
     @Autowired
     private ObjectMapper mapper;
     private static HttpHeaders httpHeaders;
-    private static Address defaultAddress;
     private static AddressDto defaultAddressDto;
 
     @BeforeAll
@@ -39,14 +37,6 @@ public class CustomerApiIntegrationTests {
         httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         defaultAddressDto = AddressDto.builder()
-                .country("Mexico")
-                .state("Sonora")
-                .city("Hermosillo")
-                .zipCode("83200")
-                .street("Center")
-                .build();
-
-        defaultAddress = Address.builder()
                 .country("Mexico")
                 .state("Sonora")
                 .city("Hermosillo")
@@ -164,8 +154,8 @@ public class CustomerApiIntegrationTests {
         var response = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertNotNull(response.getBody());
-        var suppliers = response.getBody();
-        assertEquals(5, suppliers.size());
+        var customers = response.getBody();
+        assertEquals(5, customers.size());
     }
 
     @Sql(value = "/multiple-customers.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

@@ -28,7 +28,7 @@ public class SupplierController {
     }
 
     @PutMapping("{supplierId}")
-    public ResponseEntity<?> update(@PathVariable Long supplierId, @RequestBody @Valid UpdateSupplierDto dto) {
+    public ResponseEntity<Void> update(@PathVariable Long supplierId, @RequestBody @Valid UpdateSupplierDto dto) {
         if (!dto.getSupplierId().equals(supplierId)) {
             return ResponseEntity.badRequest().build();
         }
@@ -37,7 +37,7 @@ public class SupplierController {
     }
 
     @DeleteMapping("{supplierId}")
-    public ResponseEntity<?> delete(@PathVariable Long supplierId) {
+    public ResponseEntity<Void> delete(@PathVariable Long supplierId) {
         supplierService.deleteSupplier(supplierId);
         return ResponseEntity.noContent().build();
     }
