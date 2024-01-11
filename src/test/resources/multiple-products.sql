@@ -1,3 +1,8 @@
+DELETE FROM products;
+DELETE FROM units_of_measurement;
+DELETE FROM categories;
+DELETE FROM suppliers;
+
 INSERT INTO units_of_measurement (id, name)
 VALUES (1, 'Piece'), (2, 'Set');
 
