@@ -13,6 +13,10 @@ import com.jcanseco.inventoryapi.repositories.SupplierRepository;
 import com.jcanseco.inventoryapi.repositories.UnitOfMeasurementRepository;
 import com.jcanseco.inventoryapi.services.ProductService;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.jcanseco.inventoryapi.utils.IndexUtility;
@@ -468,11 +472,9 @@ public class ProductServiceUnitTests {
         assertThrows(NotFoundException.class, () -> productService.getProductById(productId));
     }
 
-    // TODO: Refactor Products Specification
-    // TODO: Refactor Get Products and Get Products Page
     @Test
     public void getProductsShouldReturnList() {
-        // Not passing
+
         var expectedResult = products.stream()
                 .map(productMapper::entityToDto)
                 .toList();
@@ -488,6 +490,38 @@ public class ProductServiceUnitTests {
 
     @Test
     public void getProductsPageShouldReturnList() {
+        var totalProductsInDb = 4;
 
+        var totalPages = 2;
+
+        var expectedItems = products.stream()
+                .map(productMapper::entityToDto)
+                .toList();
+
+
+        var request = GetProductsRequest.builder()
+                .pageNumber(1)
+                .pageSize(2)
+                .build();
+
+        Specification<Product> mockSpec = any();
+        PageRequest mockPageRequest = any();
+        Page<Product> mockPage = new PageImpl<>(
+                products,
+                Pageable.ofSize(2),
+                totalProductsInDb
+        );
+
+        when(productRepository.findAll(mockSpec, mockPageRequest)).thenReturn(mockPage);
+
+        var pagedList = productService.getProductsPaged(request);
+        assertNotNull(pagedList);
+        assertEquals(request.getPageNumber(), pagedList.getPageNumber());
+        assertEquals(request.getPageSize(), pagedList.getPageSize());
+        assertEquals(totalProductsInDb, pagedList.getTotalElements());
+        assertEquals(totalPages, pagedList.getTotalPages());
+        assertFalse(pagedList.hasPreviousPage());
+        assertTrue(pagedList.hasNextPage());
+        assertThat(pagedList.getItems()).hasSameElementsAs(expectedItems);
     }
 }

@@ -2,10 +2,7 @@ package com.jcanseco.inventoryapi.services;
 
 import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.dtos.products.*;
-import com.jcanseco.inventoryapi.entities.Category;
 import com.jcanseco.inventoryapi.entities.Product;
-import com.jcanseco.inventoryapi.entities.Supplier;
-import com.jcanseco.inventoryapi.entities.UnitOfMeasurement;
 import com.jcanseco.inventoryapi.exceptions.DomainException;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.ProductMapper;
@@ -13,15 +10,16 @@ import com.jcanseco.inventoryapi.repositories.CategoryRepository;
 import com.jcanseco.inventoryapi.repositories.ProductRepository;
 import com.jcanseco.inventoryapi.repositories.SupplierRepository;
 import com.jcanseco.inventoryapi.repositories.UnitOfMeasurementRepository;
+import static com.jcanseco.inventoryapi.specifications.ProductSpecifications.*;
+import com.jcanseco.inventoryapi.utils.IndexUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -31,6 +29,7 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final UnitOfMeasurementRepository unitRepository;
     private final ProductMapper productMapper;
+    private final IndexUtility indexUtility;
 
     @Transactional
     public Long createProduct(CreateProductDto dto) {
@@ -108,6 +107,7 @@ public class ProductService {
         productRepository.saveAndFlush(product);
     }
 
+    @Transactional
     public void deleteProduct(Long productId) {
         var product = productRepository
                 .findById(productId)
@@ -116,6 +116,7 @@ public class ProductService {
         productRepository.delete(product);
     }
 
+    @Transactional(readOnly = true)
     public ProductDetailsDto getProductById(Long productId) {
         return productRepository
                 .findById(productId)
@@ -124,125 +125,65 @@ public class ProductService {
     }
 
 
-    private boolean sortOrderIsAscending(GetProductsRequest request) {
-        if (request.getSortOrder() == null) {
-            return true;
-        }
-        return request.getSortOrder().equals("asc") || request.getSortOrder().equals("ascending");
+    private Specification<Product> orderBySpecification(Specification<Product> spec, GetProductsRequest request) {
+        var orderBy = !StringUtils.hasText(request.getOrderBy())? "" : request.getOrderBy();
+        var isAscending = indexUtility.isAscendingOrder(request.getSortOrder());
+        return switch (orderBy) {
+            case "id" -> isAscending? orderByIdAsc(spec) : orderByIdDesc(spec);
+            case "name" -> isAscending? orderByNameAsc(spec) : orderByNameDesc(spec);
+            case "supplier" -> isAscending? orderBySupplierAsc(spec) : orderBySupplierDesc(spec);
+            case "category" -> isAscending? orderByCategoryAsc(spec) : orderByCategoryDesc(spec);
+            case "unit" -> isAscending? orderByUnitAsc(spec) : orderByUnitDesc(spec);
+            default -> isAscending? orderByNameAsc(spec) : orderByNameDesc(spec);
+        };
     }
 
-    private String getOrderBy(GetProductsRequest request) {
-        if (request.getOrderBy() == null) {
-            return "name";
+
+    private Specification<Product> composeSpecification(GetProductsRequest request) {
+
+        Specification<Product> spec = Specification.where(null);
+
+        if (StringUtils.hasText(request.getName())) {
+            spec = spec.and(byNameLike(request.getName()));
         }
-        return request.getOrderBy();
-    }
-
-    private Sort getSortOrder(GetProductsRequest request) {
-        var ascending = sortOrderIsAscending(request);
-        var orderBy = getOrderBy(request);
-        if (ascending) {
-            return Sort.by(orderBy).ascending();
-        }
-        return Sort.by(orderBy).descending();
-    }
-
-    public List<ProductDto> getProducts(GetProductsRequest request) {
-
-        Supplier supplier = null;
-        Category category = null;
-        UnitOfMeasurement unit = null;
 
         if (request.getSupplierId() != null) {
-            supplier = supplierRepository
-                    .findById(request.getSupplierId())
-                    .orElse(null);
+            var supplier = supplierRepository.findById(request.getSupplierId()).orElse(null);
+            spec = spec.and(bySupplier(supplier));
         }
 
         if (request.getCategoryId() != null) {
-            category = categoryRepository
-                    .findById(request.getCategoryId())
-                    .orElse(null);
+            var category = categoryRepository.findById(request.getCategoryId()).orElse(null);
+            spec = spec.and(byCategory(category));
         }
 
         if (request.getUnitId() != null) {
-            unit = unitRepository
-                    .findById(request.getUnitId())
-                    .orElse(null);
+            var unit = unitRepository.findById(request.getUnitId()).orElse(null);
+            spec = spec.and(byUnit(unit));
         }
 
-        var sort = getSortOrder(request);
-        var specification = ProductRepository.Specs.byAllFilters(
-                supplier,
-                category,
-                unit,
-                request.getName()
-        );
+        return orderBySpecification(spec, request);
+    }
 
-        if (specification == null) {
-            return productRepository.findAll(sort)
-                    .stream()
-                    .map(productMapper::entityToDto)
-                    .toList();
-        }
-
-        return productRepository
-                .findAll(specification, sort)
+    @Transactional(readOnly = true)
+    public List<ProductDto> getProducts(GetProductsRequest request) {
+        var spec = composeSpecification(request);
+        return productRepository.findAll(spec)
                 .stream()
                 .map(productMapper::entityToDto)
                 .toList();
     }
 
-
+    @Transactional(readOnly = true)
     public PagedList<ProductDto> getProductsPaged(GetProductsRequest request) {
 
-        var pageNumber = request.getPageNumber() > 0? request.getPageNumber() - 1 : request.getPageNumber();
+        var pageNumber = indexUtility.toZeroBasedIndex(request.getPageNumber());
         var pageSize = request.getPageSize();
 
-        Supplier supplier = null;
-        Category category = null;
-        UnitOfMeasurement unit = null;
+        var specification = composeSpecification(request);
+        var pageRequest = PageRequest.of(pageNumber, pageSize);
+        var page = productRepository.findAll(specification, pageRequest);
 
-        if (request.getSupplierId() != null) {
-            supplier = supplierRepository
-                    .findById(request.getSupplierId())
-                    .orElse(null);
-        }
-
-        if (request.getCategoryId() != null) {
-            category = categoryRepository
-                    .findById(request.getCategoryId())
-                    .orElse(null);
-        }
-
-        if (request.getUnitId() != null) {
-            unit = unitRepository
-                    .findById(request.getUnitId())
-                    .orElse(null);
-        }
-
-        var sort = getSortOrder(request);
-        var pageRequest = PageRequest.of(pageNumber, pageSize, sort);
-
-        var specification = ProductRepository.Specs.byAllFilters(
-                supplier,
-                category,
-                unit,
-                request.getName()
-        );
-
-        var page = specification == null? productRepository.findAll(pageRequest) : productRepository.findAll(specification, pageRequest);
-
-        var items = page.get().map(productMapper::entityToDto).toList();
-        var totalPages = page.getTotalPages();
-        var totalElements = page.getTotalElements();
-
-        return new PagedList<>(
-                items,
-                request.getPageNumber(),
-                pageSize,
-                totalPages,
-                totalElements
-        );
+        return productMapper.pageToPagedList(page);
     }
 }

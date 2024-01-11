@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -260,6 +261,7 @@ public class GetProductsPageTests {
                 .param("pageSize", "3");
 
         mockMvc.perform(request)
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.items", Matchers.notNullValue()))

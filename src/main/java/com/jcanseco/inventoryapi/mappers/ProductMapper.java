@@ -1,5 +1,6 @@
 package com.jcanseco.inventoryapi.mappers;
 
+import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.dtos.products.ProductDetailsDto;
 import com.jcanseco.inventoryapi.dtos.products.ProductDto;
 import com.jcanseco.inventoryapi.entities.Category;
@@ -7,6 +8,7 @@ import com.jcanseco.inventoryapi.entities.Product;
 import com.jcanseco.inventoryapi.entities.Supplier;
 import com.jcanseco.inventoryapi.entities.UnitOfMeasurement;
 import org.mapstruct.Mapper;
+import org.springframework.data.domain.Page;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
@@ -23,4 +25,13 @@ public interface ProductMapper {
         return unit.getName();
     }
     ProductDetailsDto entityToDetailsDto(Product product);
+    default PagedList<ProductDto> pageToPagedList(Page<Product> page) {
+        return new PagedList<>(
+                page.get().map(this::entityToDto).toList(),
+                page.getPageable().getPageNumber() + 1,
+                page.getPageable().getPageSize(),
+                page.getTotalPages(),
+                page.getTotalElements()
+        );
+    }
 }
