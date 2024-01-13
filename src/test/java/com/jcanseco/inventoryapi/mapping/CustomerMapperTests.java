@@ -2,28 +2,28 @@ package com.jcanseco.inventoryapi.mapping;
 
 import com.jcanseco.inventoryapi.dtos.AddressDto;
 import com.jcanseco.inventoryapi.dtos.customers.CreateCustomerDto;
+import com.jcanseco.inventoryapi.entities.Address;
 import com.jcanseco.inventoryapi.entities.Customer;
 import com.jcanseco.inventoryapi.mappers.CustomerMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CustomerMapperTests {
-
     private final CustomerMapper mapper = Mappers.getMapper(CustomerMapper.class);
+    private Address defaultAddress;
+    private AddressDto defaultAddressDto;
 
-    @Test
-    public void addressDtoToEntity() {
-
-        var dto = AddressDto
-                .builder()
+    @BeforeEach
+    public void setup() {
+        defaultAddress = Address.builder()
                 .country("Mexico")
                 .state("Sonora")
                 .city("Hermosillo")
@@ -31,54 +31,49 @@ public class CustomerMapperTests {
                 .street("Center")
                 .build();
 
-        var address = mapper.dtoToAddress(dto);
+        defaultAddressDto = AddressDto.builder()
+                .country("Mexico")
+                .state("Sonora")
+                .city("Hermosillo")
+                .zipCode("83200")
+                .street("Center")
+                .build();
+    }
+
+    @Test
+    public void addressDtoToEntity() {
+
+        var address = mapper.dtoToAddress(defaultAddressDto);
         assertNotNull(address);
 
-        assertEquals(dto.getCountry(), address.getCountry());
-        assertEquals(dto.getState(), address.getState());
-        assertEquals(dto.getCity(), address.getCity());
-        assertEquals(dto.getZipCode(), address.getZipCode());
-        assertEquals(dto.getStreet(), address.getStreet());
+        assertEquals(defaultAddressDto.getCountry(), address.getCountry());
+        assertEquals(defaultAddressDto.getState(), address.getState());
+        assertEquals(defaultAddressDto.getCity(), address.getCity());
+        assertEquals(defaultAddressDto.getZipCode(), address.getZipCode());
+        assertEquals(defaultAddressDto.getStreet(), address.getStreet());
     }
 
     @Test
     public void addressEntityToDto() {
 
-        var address = newAddress(
-                "Mexico",
-                "Sonora",
-                "Hermosillo",
-                "83200",
-                "Center"
-        );
-
-        var dto = mapper.addressToDto(address);
+        var dto = mapper.addressToDto(defaultAddress);
         assertNotNull(dto);
 
-        assertEquals(address.getCountry(), dto.getCountry());
-        assertEquals(address.getState(), dto.getState());
-        assertEquals(address.getCity(), dto.getCity());
-        assertEquals(address.getZipCode(), dto.getZipCode());
-        assertEquals(address.getStreet(), dto.getStreet());
+        assertEquals(defaultAddress.getCountry(), dto.getCountry());
+        assertEquals(defaultAddress.getState(), dto.getState());
+        assertEquals(defaultAddress.getCity(), dto.getCity());
+        assertEquals(defaultAddress.getZipCode(), dto.getZipCode());
+        assertEquals(defaultAddress.getStreet(), dto.getStreet());
     }
 
     @Test
     public void createDtoToEntity() {
 
-        var address = AddressDto
-                .builder()
-                .country("Mexico")
-                .state("Sonora")
-                .city("Hermosillo")
-                .zipCode("83200")
-                .street("Center")
-                .build();
-
         var createDto = CreateCustomerDto.builder()
                 .dni("X1Y9Z3A7B2C8D6E0F5G4")
                 .fullName("John Doe")
                 .phone("555-1234-1")
-                .address(address)
+                .address(defaultAddressDto)
                 .build();
 
         var customer = mapper.createDtoToEntity(createDto);
@@ -88,29 +83,24 @@ public class CustomerMapperTests {
         assertEquals(createDto.getFullName(), customer.getFullName());
         assertEquals(createDto.getPhone(), customer.getPhone());
 
-        assertEquals(address.getCountry(), customer.getAddress().getCountry());
-        assertEquals(address.getState(), customer.getAddress().getState());
-        assertEquals(address.getCity(), customer.getAddress().getCity());
-        assertEquals(address.getZipCode(), customer.getAddress().getZipCode());
-        assertEquals(address.getStreet(), customer.getAddress().getStreet());
+        assertEquals(defaultAddressDto.getCountry(), customer.getAddress().getCountry());
+        assertEquals(defaultAddressDto.getState(), customer.getAddress().getState());
+        assertEquals(defaultAddressDto.getCity(), customer.getAddress().getCity());
+        assertEquals(defaultAddressDto.getZipCode(), customer.getAddress().getZipCode());
+        assertEquals(defaultAddressDto.getStreet(), customer.getAddress().getStreet());
     }
 
     @Test
     public void entityToDto() {
 
-        var customer = newCustomer(
-                1L,
-                "X1Y9Z3A7B2C8D6E0F5G4",
-                "John Doe",
-                "555-1234-1",
-                newAddress(
-                        "Mexico",
-                        "Sonora",
-                        "Hermosillo",
-                        "83200",
-                        "Center"
-                )
-        );
+        var customer = Customer.builder()
+                .id(1L)
+                .dni("X1Y9Z3A7B2C8D6E0F5G4")
+                .fullName("John Doe")
+                .phone("555-1234-1")
+                .address(defaultAddress)
+                .build();
+
 
         var dto = mapper.entityToDto(customer);
         assertNotNull(dto);
@@ -124,21 +114,14 @@ public class CustomerMapperTests {
     @Test
     public void entityToDetailsDto() {
 
-        var address = newAddress(
-                "Mexico",
-                "Sonora",
-                "Hermosillo",
-                "83200",
-                "Center"
-        );
+        var customer = Customer.builder()
+                .id(1L)
+                .dni("X1Y9Z3A7B2C8D6E0F5G4")
+                .fullName("John Doe")
+                .phone("555-1234-1")
+                .address(defaultAddress)
+                .build();
 
-        var customer = newCustomer(
-                1L,
-                "X1Y9Z3A7B2C8D6E0F5G4",
-                "John Doe",
-                "555-1234-1",
-                address
-        );
 
         var dto = mapper.entityToDetailsDto(customer);
         assertNotNull(dto);
@@ -148,11 +131,11 @@ public class CustomerMapperTests {
         assertEquals(customer.getPhone(), dto.getPhone());
         assertEquals(customer.getFullName(), dto.getFullName());
 
-        assertEquals(address.getCountry(), dto.getAddress().getCountry());
-        assertEquals(address.getState(), dto.getAddress().getState());
-        assertEquals(address.getCity(), dto.getAddress().getCity());
-        assertEquals(address.getZipCode(), dto.getAddress().getZipCode());
-        assertEquals(address.getStreet(), dto.getAddress().getStreet());
+        assertEquals(defaultAddress.getCountry(), dto.getAddress().getCountry());
+        assertEquals(defaultAddress.getState(), dto.getAddress().getState());
+        assertEquals(defaultAddress.getCity(), dto.getAddress().getCity());
+        assertEquals(defaultAddress.getZipCode(), dto.getAddress().getZipCode());
+        assertEquals(defaultAddress.getStreet(), dto.getAddress().getStreet());
     }
 
     @Test
@@ -164,27 +147,36 @@ public class CustomerMapperTests {
         var pageSize = 2;
 
         var customers = List.of(
-                newCustomer(1L,
-                        "123456789",
-                        "555-1234-1",
-                        "John Doe",
-                        newAddress(
-                                "United States",
-                                "California",
-                                "San Francisco",
-                                "94105",
-                                "123 Main St")
-                ),
-                newCustomer(2L,
-                        "987654321",
-                        "555-1234-2",
-                        "Jane Smith",
-                        newAddress("United Kingdom",
-                                "England",
-                                "London",
-                                "EC1A 1BB",
-                                "456 High St")
-                )
+                Customer.builder()
+                        .id(1L)
+                        .dni("123456789")
+                        .fullName("John Doe")
+                        .phone("555-1234-1")
+                        .address(
+                                Address.builder()
+                                        .country("United States")
+                                        .state("California")
+                                        .city("San Francisco")
+                                        .zipCode("94105")
+                                        .street("123 Main St")
+                                        .build()
+                        )
+                        .build(),
+                Customer.builder()
+                        .id(2L)
+                        .dni("987654321")
+                        .fullName("Jane Smith")
+                        .phone("555-1234-2")
+                        .address(
+                                Address.builder()
+                                        .country("United Kingdom")
+                                        .state("England")
+                                        .city("London")
+                                        .zipCode("94106")
+                                        .street("456 High St")
+                                        .build()
+                        )
+                        .build()
         );
 
         var customersDto = customers.stream().map(mapper::entityToDto).toList();

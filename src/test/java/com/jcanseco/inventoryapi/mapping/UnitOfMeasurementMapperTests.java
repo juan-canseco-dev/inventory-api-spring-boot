@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.newUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +19,11 @@ public class UnitOfMeasurementMapperTests {
 
         assertNotNull(mapper);
 
-        var entity = newUnit(1L, "Piece");
+        var entity = UnitOfMeasurement.builder()
+                .id(1L)
+                .name("Piece")
+                .build();
+
         var dto = mapper.entityToDto(entity);
 
         assertEquals(entity.getId(), dto.getId());
@@ -44,8 +47,14 @@ public class UnitOfMeasurementMapperTests {
         var pageSize = 2;
 
         var units = List.of(
-                newUnit(1L, "Each"),
-                newUnit(2L, "Piece")
+                UnitOfMeasurement.builder()
+                        .id(1L)
+                        .name("Each")
+                        .build(),
+                UnitOfMeasurement.builder()
+                        .id(2L)
+                        .name("Piece")
+                        .build()
         );
 
         var unitsDto = units.stream().map(mapper::entityToDto).toList();

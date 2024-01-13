@@ -1,5 +1,7 @@
 package com.jcanseco.inventoryapi.persistence;
 
+import com.jcanseco.inventoryapi.entities.Product;
+import com.jcanseco.inventoryapi.entities.Stock;
 import com.jcanseco.inventoryapi.repositories.CategoryRepository;
 import com.jcanseco.inventoryapi.repositories.ProductRepository;
 import com.jcanseco.inventoryapi.repositories.SupplierRepository;
@@ -11,7 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.jdbc.Sql;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
+import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -39,11 +41,28 @@ public class ProductRepositoryTests {
         var category = categoryRepository.findById(1L).orElseThrow();
         var unit = unitRepository.findById(1L).orElseThrow();
 
-        var product = newProduct(supplier, category, unit, "New Product", 19.99, 20.99);
+        var expectedStock = 5L;
+
+        var product = Product.builder()
+                .supplier(supplier)
+                .category(category)
+                .unit(unit)
+                .name("New Product")
+                .purchasePrice(new BigDecimal("19.99"))
+                .salePrice(new BigDecimal("29.99"))
+                .stock(
+                        Stock.builder()
+                                .quantity(expectedStock)
+                                .build()
+                )
+                .build();
+
         var newProduct = productRepository.saveAndFlush(product);
 
         assertNotNull(newProduct);
         assertTrue(newProduct.getId() > 0);
+        assertNotNull(newProduct.getStock());
+        assertEquals(expectedStock, newProduct.getStock().getQuantity());
     }
 
     @Test
@@ -142,30 +161,30 @@ public class ProductRepositoryTests {
 
     @Test
     @Sql("/multiple-products.sql")
-    public void getProductsOrderByQuantityAscFirstProductQuantityShouldBe10() {
-        var expectedProductQuantity = 10L;
-        var spec = ProductSpecifications.orderByQuantityAsc(
+    public void getProductsOrderByStockAscFirstProductStockShouldBe10() {
+        var expectedProductStock = 10L;
+        var spec = ProductSpecifications.orderByStockAsc(
                 Specification.where(null)
         );
         var products = productRepository.findAll(spec);
         assertNotNull(products);
         assertEquals(20, products.size());
         var firstProduct = products.get(0);
-        assertEquals(expectedProductQuantity, firstProduct.getQuantity());
+        assertEquals(expectedProductStock, firstProduct.getStock().getQuantity());
     }
 
     @Test
     @Sql("/multiple-products.sql")
-    public void getProductsOrderByQuantityDescFirstProductQuantityShouldBe200() {
-        var expectedProductQuantity = 200L;
-        var spec = ProductSpecifications.orderByQuantityDesc(
+    public void getProductsOrderByStockDescFirstProductStockShouldBe200() {
+        var expectedProductStock = 200L;
+        var spec = ProductSpecifications.orderByStockDesc(
                 Specification.where(null)
         );
         var products = productRepository.findAll(spec);
         assertNotNull(products);
         assertEquals(20, products.size());
         var firstProduct = products.get(0);
-        assertEquals(expectedProductQuantity, firstProduct.getQuantity());
+        assertEquals(expectedProductStock, firstProduct.getStock().getQuantity());
     }
 
     @Test

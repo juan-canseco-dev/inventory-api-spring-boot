@@ -31,7 +31,6 @@ public class SupplierApiIntegrationTests {
     @Autowired
     private ObjectMapper mapper;
     private static HttpHeaders httpHeaders;
-    private static Address defaultAddress;
     private static AddressDto defaultAddressDto;
 
     @BeforeAll
@@ -39,14 +38,6 @@ public class SupplierApiIntegrationTests {
         httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         defaultAddressDto = AddressDto.builder()
-                .country("Mexico")
-                .state("Sonora")
-                .city("Hermosillo")
-                .zipCode("83200")
-                .street("Center")
-                .build();
-
-        defaultAddress = Address.builder()
                 .country("Mexico")
                 .state("Sonora")
                 .city("Hermosillo")

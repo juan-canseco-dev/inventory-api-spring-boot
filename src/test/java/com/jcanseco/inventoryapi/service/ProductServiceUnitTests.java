@@ -27,7 +27,6 @@ import org.mockito.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -92,7 +91,7 @@ public class ProductServiceUnitTests {
                         .category(category)
                         .unit(unit)
                         .name("Halo 2")
-                        .quantity(50L)
+                        .stock(Stock.builder().id(1L).quantity(50L).build())
                         .purchasePrice(BigDecimal.valueOf(19.99))
                         .salePrice(BigDecimal.valueOf(29.99))
                         .build(),
@@ -102,7 +101,7 @@ public class ProductServiceUnitTests {
                         .category(category)
                         .unit(unit)
                         .name("Halo 3")
-                        .quantity(50L)
+                        .stock(Stock.builder().id(1L).quantity(50L).build())
                         .purchasePrice(BigDecimal.valueOf(29.99))
                         .salePrice(BigDecimal.valueOf(39.99))
                         .build()
@@ -243,7 +242,7 @@ public class ProductServiceUnitTests {
                 .category(category)
                 .unit(unit)
                 .name("New Product")
-                .quantity(0L)
+                .stock(Stock.builder().id(1L).quantity(0L).build())
                 .purchasePrice(BigDecimal.valueOf(19.99))
                 .salePrice(BigDecimal.valueOf(29.99))
                 .build();
@@ -299,7 +298,7 @@ public class ProductServiceUnitTests {
                 .category(category)
                 .unit(unit)
                 .name("New Product")
-                .quantity(0L)
+                .stock(Stock.builder().id(1L).quantity(0L).build())
                 .purchasePrice(BigDecimal.valueOf(19.99))
                 .salePrice(BigDecimal.valueOf(29.99))
                 .build();
@@ -332,7 +331,7 @@ public class ProductServiceUnitTests {
                 .category(category)
                 .unit(unit)
                 .name("New Product")
-                .quantity(0L)
+                .stock(Stock.builder().id(1L).quantity(0L).build())
                 .purchasePrice(BigDecimal.valueOf(19.99))
                 .salePrice(BigDecimal.valueOf(29.99))
                 .build();
@@ -366,7 +365,7 @@ public class ProductServiceUnitTests {
                 .category(category)
                 .unit(unit)
                 .name("New Product")
-                .quantity(0L)
+                .stock(Stock.builder().id(1L).quantity(0L).build())
                 .purchasePrice(BigDecimal.valueOf(19.99))
                 .salePrice(BigDecimal.valueOf(29.99))
                 .build();
@@ -401,7 +400,7 @@ public class ProductServiceUnitTests {
                 .category(category)
                 .unit(unit)
                 .name("New Product")
-                .quantity(0L)
+                .stock(Stock.builder().id(1L).quantity(0L).build())
                 .purchasePrice(BigDecimal.valueOf(19.99))
                 .salePrice(BigDecimal.valueOf(29.99))
                 .build();
@@ -453,7 +452,7 @@ public class ProductServiceUnitTests {
                 .category(category)
                 .unit(unit)
                 .name("New Product")
-                .quantity(10L)
+                .stock(Stock.builder().id(1L).quantity(0L).build())
                 .purchasePrice(BigDecimal.valueOf(29.99))
                 .salePrice(BigDecimal.valueOf(39.99))
                 .build();

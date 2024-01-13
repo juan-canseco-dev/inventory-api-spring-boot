@@ -1,5 +1,6 @@
 package com.jcanseco.inventoryapi.persistence;
 
+import com.jcanseco.inventoryapi.entities.Category;
 import com.jcanseco.inventoryapi.repositories.CategoryRepository;
 import com.jcanseco.inventoryapi.specifications.CategorySpecifications;
 import org.junit.jupiter.api.Test;
@@ -7,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.newCategory;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -19,7 +19,10 @@ public class CategoryRepositoryTests {
     @Test
     public void createCategoryShouldGenerateId() {
 
-        var category = newCategory("New Category");
+        var category = Category.builder()
+                .name("New Category")
+                .build();
+
         var newCategory = repository.saveAndFlush(category);
 
         assertTrue(newCategory.getId() > 0);

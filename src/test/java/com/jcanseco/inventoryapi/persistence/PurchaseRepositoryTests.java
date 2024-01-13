@@ -1,5 +1,6 @@
 package com.jcanseco.inventoryapi.persistence;
 
+import com.jcanseco.inventoryapi.entities.*;
 import com.jcanseco.inventoryapi.repositories.*;
 import com.jcanseco.inventoryapi.specifications.PurchaseSpecifications;
 import org.junit.jupiter.api.Test;
@@ -7,11 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
-
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -38,53 +38,92 @@ public class PurchaseRepositoryTests {
     public void createPurchaseShouldGenerateId() {
 
         var unit = unitRepository.saveAndFlush(
-                newUnit("Box")
+                UnitOfMeasurement.builder()
+                        .name("Box")
+                        .build()
         );
 
         var category = categoryRepository.saveAndFlush(
-                newCategory("Video Games")
+                Category.builder()
+                        .name("Electronics")
+                        .build()
         );
 
         var supplier = supplierRepository.saveAndFlush(
-                newSupplier(
-                        "Pika Games",
-                        "Perla Lopez",
-                        "555-1234-1",
-                        newAddress(
-                                "Mexico",
-                                "Sonora",
-                                "Hermosillo",
-                                "83200",
-                                "Center"
-                        )
-                )
+
+                Supplier.builder()
+                        .companyName("Pika Games")
+                        .contactName("Perla Lopez")
+                        .contactPhone( "555-1234-1")
+                        .address(Address.builder()
+                                .country("Mexico")
+                                .state("Sonora")
+                                .city("Hermosillo")
+                                .zipCode("83200")
+                                .street("Center")
+                                .build())
+                        .build()
         );
 
-        var products = productRepository.saveAllAndFlush(
-                List.of(
-                        newProduct(
-                                supplier,
-                                category,
-                                unit,
-                                "Halo 3",
-                                5.99,
-                                9.99
-                        ),
-                        newProduct(
-                                supplier,
-                                category,
-                                unit,
-                                "Halo Infinite",
-                                39.99,
-                                59.99
-                        )
-                )
+        var product1 = productRepository.saveAndFlush(
+                Product.builder()
+                        .supplier(supplier)
+                        .category(category)
+                        .unit(unit)
+                        .name("Halo 3")
+                        .stock(Stock.builder().quantity(0L).build())
+                        .purchasePrice(new BigDecimal("5.99"))
+                        .salePrice(new BigDecimal("9.99"))
+                        .build()
         );
 
-        var items = products.stream().map(p -> newPurchaseItem(p, 10L)).toList();
+        var product2 = productRepository.saveAndFlush(
+                Product.builder()
+                        .supplier(supplier)
+                        .category(category)
+                        .unit(unit)
+                        .name("Halo Infinite")
+                        .stock(Stock.builder().quantity(0L).build())
+                        .purchasePrice(new BigDecimal("39.99"))
+                        .salePrice(new BigDecimal("59.99"))
+                        .build()
+        );
+
+        var item1Quantity = 10L;
+        var item1 = PurchaseItem.builder()
+                .product(product1)
+                .productName(product1.getName())
+                .productUnit(product1.getUnit().getName())
+                .quantity(item1Quantity)
+                .price(product1.getPurchasePrice())
+                .total(product1.getPurchasePrice().multiply(BigDecimal.valueOf(item1Quantity)))
+                .build();
+
+        var item2Quantity = 10L;
+        var item2 = PurchaseItem.builder()
+                .product(product2)
+                .productName(product2.getName())
+                .productUnit(product2.getUnit().getName())
+                .quantity(item2Quantity)
+                .price(product2.getPurchasePrice())
+                .total(product2.getPurchasePrice().multiply(BigDecimal.valueOf(item2Quantity)))
+                .build();
+
+        var items = List.of(
+                item1,
+                item2
+        );
+
+        var purchaseTotal = items.stream()
+                .map(PurchaseItem::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         var purchase = purchaseRepository.saveAndFlush(
-                newPurchase(supplier, items)
+                Purchase.builder()
+                        .supplier(supplier)
+                        .items(items)
+                        .total(purchaseTotal)
+                        .build()
         );
 
         assertNotNull(purchase);

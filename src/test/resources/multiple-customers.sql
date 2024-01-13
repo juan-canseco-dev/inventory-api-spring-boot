@@ -1,3 +1,4 @@
+DELETE FROM customers;
 -- Insert data into customers table
 INSERT INTO customers (id, dni, phone, full_name,
                        customer_address_country,

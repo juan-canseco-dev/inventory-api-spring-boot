@@ -20,8 +20,8 @@ public class GetProductsRequest {
     private Integer pageSize;
 
     @OrderBy(
-            message = "Invalid Order By field. The following options are valid: 'id', 'name', 'quantity' 'supplier', 'category', 'unit'.",
-            fields = {"id", "name", "quantity", "supplier", "category", "unit"}
+            message = "Invalid Order By field. The following options are valid: 'id', 'name', 'stock' 'supplier', 'category', 'unit'.",
+            fields = {"id", "name", "stock", "supplier", "category", "unit"}
     )
     private String orderBy;
 

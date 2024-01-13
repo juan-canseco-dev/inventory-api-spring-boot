@@ -2,62 +2,78 @@ package com.jcanseco.inventoryapi.mapping;
 
 import com.jcanseco.inventoryapi.entities.*;
 import com.jcanseco.inventoryapi.mappers.ProductMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 
 public class ProductMapperTests {
     private final ProductMapper mapper = Mappers.getMapper(ProductMapper.class);
 
-    private Product buildProduct() {
+    private Supplier supplier;
+    private Category category;
+    private UnitOfMeasurement unit;
+    private Product product;
 
-        var category = newCategory(1L, "Electronics");
-        var unit = newUnit(2L, "Piece");
+    @BeforeEach
+    public void setup() {
 
-        var supplier = newSupplier(
-                3L,
-                "ABC Corp",
-                "John Doe",
-                "555-1234-1",
-                newAddress(
-                        "Mexico",
-                        "Sonora",
-                        "Hermosillo",
-                        "83200",
-                        "Center"
+        supplier = Supplier.builder()
+                .id(3L)
+                .companyName("ABC Corp")
+                .contactName("John Doe")
+                .contactPhone("555-1234-1")
+                .address(
+                        Address.builder()
+                                .country("Mexico")
+                                .state("Sonora")
+                                .city("Hermosillo")
+                                .zipCode("83200")
+                                .street("Center")
+                                .build()
                 )
-        );
+                .build();
 
-        return newProduct(
-               4L,
-                supplier,
-                category,
-                unit,
-                "Laptop",
-                10L,
-                20.99,
-                30.99
-        );
+        category = Category.builder()
+                .id(1L)
+                .name("Electronics")
+                .build();
+
+        unit = UnitOfMeasurement.builder()
+                .id(2L)
+                .name("Piece")
+                .build();
+
+        product = Product.builder()
+                .id(4L)
+                .supplier(supplier)
+                .category(category)
+                .unit(unit)
+                .stock(Stock.builder().quantity(10L).build())
+                .name("Laptop")
+                .purchasePrice(new BigDecimal("20.99"))
+                .salePrice(new BigDecimal("30.99"))
+                .build();
+
     }
 
     @Test
     public void entityToDto() {
 
-        var entity = buildProduct();
+        var entity = product;
         var dto = mapper.entityToDto(entity);
 
         assertNotNull(dto);
         assertEquals(entity.getId(), dto.getId());
         assertEquals(entity.getName(), dto.getName());
-        assertEquals(entity.getQuantity(), dto.getQuantity());
+        assertEquals(entity.getStock().getQuantity(), dto.getStock());
         assertEquals(entity.getPurchasePrice(), dto.getPurchasePrice());
         assertEquals(entity.getSalePrice(), dto.getSalePrice());
         assertEquals(entity.getSupplier().getCompanyName(), dto.getSupplier());
@@ -68,13 +84,13 @@ public class ProductMapperTests {
     @Test
     public void entityToDetailsDto() {
 
-        var entity = buildProduct();
+        var entity = product;
         var dto = mapper.entityToDetailsDto(entity);
 
         assertNotNull(dto);
         assertEquals(entity.getId(), dto.getId());
         assertEquals(entity.getName(), dto.getName());
-        assertEquals(entity.getQuantity(), dto.getQuantity());
+        assertEquals(entity.getStock().getQuantity(), dto.getStock());
         assertEquals(entity.getPurchasePrice(), dto.getPurchasePrice());
         assertEquals(entity.getSalePrice(), dto.getSalePrice());
 
@@ -101,45 +117,28 @@ public class ProductMapperTests {
         var totalPages = 2;
         var pageSize = 2;
 
-        var category = newCategory(1L, "Electronics");
-        var unit = newUnit(2L, "Piece");
-
-        var supplier = newSupplier(
-                3L,
-                "ABC Corp",
-                "John Doe",
-                "555-1234-1",
-                newAddress(
-                        "Mexico",
-                        "Sonora",
-                        "Hermosillo",
-                        "83200",
-                        "Center"
-                )
-        );
-
 
         var products = List.of(
-                newProduct(
-                        4L,
-                        supplier,
-                        category,
-                        unit,
-                        "Laptop",
-                        10L,
-                        20.99,
-                        30.99
-                ),
-                newProduct(
-                        5L,
-                        supplier,
-                        category,
-                        unit,
-                        "PC Gamer",
-                        50L,
-                        599.99,
-                        799.99
-                )
+                Product.builder()
+                        .id(4L)
+                        .supplier(supplier)
+                        .category(category)
+                        .unit(unit)
+                        .name("Mouse")
+                        .stock(Stock.builder().quantity(10L).build())
+                        .salePrice(new BigDecimal("20.99"))
+                        .purchasePrice(new BigDecimal("30.99"))
+                        .build(),
+                Product.builder()
+                        .id(5L)
+                        .supplier(supplier)
+                        .category(category)
+                        .unit(unit)
+                        .name("Pc Gamer")
+                        .stock(Stock.builder().quantity(50L).build())
+                        .salePrice(new BigDecimal("599.99"))
+                        .purchasePrice(new BigDecimal("799.99"))
+                        .build()
         );
 
         var productsDto = products.stream().map(mapper::entityToDto).toList();

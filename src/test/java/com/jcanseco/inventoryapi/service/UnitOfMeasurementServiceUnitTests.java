@@ -23,7 +23,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 import java.util.Optional;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.newUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doNothing;
@@ -46,8 +45,8 @@ public class UnitOfMeasurementServiceUnitTests {
     @BeforeEach
     public void setup() {
         units = List.of(
-                newUnit(1L, "Each"),
-                newUnit(2L, "Piece")
+                UnitOfMeasurement.builder().id(1L).name("Each").build(),
+                UnitOfMeasurement.builder().id(2L).name("Piece").build()
         );
     }
 

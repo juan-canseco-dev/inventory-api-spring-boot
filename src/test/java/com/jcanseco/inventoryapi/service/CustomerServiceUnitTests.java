@@ -25,7 +25,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 import java.util.Optional;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doNothing;
@@ -52,28 +51,32 @@ public class CustomerServiceUnitTests {
     @BeforeEach
     public void setup() {
         customers = List.of(
-                newCustomer(
-                        "123456789",
-                        "555-1234-1",
-                        "John Doe",
-                        newAddress(
-                                "United States",
-                                "California",
-                                "San Francisco",
-                                "94105",
-                                "123 Main St")
-                ),
-                newCustomer(
-                        "987654321",
-                        "555-1234-2",
-                        "Jane Smith",
-                        newAddress(
-                                "United Kingdom",
-                                "England",
-                                "London",
-                                "EC1A 1BB",
-                                "456 High St")
-                )
+                Customer.builder()
+                        .id(1L)
+                        .dni("123456789")
+                        .fullName("John Doe")
+                        .phone("555-1234-1")
+                        .address(Address.builder()
+                                .country("United States")
+                                .state("California")
+                                .city("San Francisco")
+                                .zipCode("94105")
+                                .street("123 Main St")
+                                .build()
+                        ).build(),
+                Customer.builder()
+                        .id(2L)
+                        .dni("987654321")
+                        .fullName("Jane Smith")
+                        .phone("555-1234-2")
+                        .address(Address.builder()
+                                .country("United Kingdom")
+                                .state("England")
+                                .city("London")
+                                .zipCode("EC1A 1BB")
+                                .street("456 High St")
+                                .build()
+                        ).build()
         );
 
         defaultAddressDto = AddressDto.builder()

@@ -1,3 +1,4 @@
+DELETE FROM units_of_measurement;
 INSERT INTO units_of_measurement (id, name) VALUES
                                             (1,'Meter'),
                                             (2,'Kilogram'),

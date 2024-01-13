@@ -98,7 +98,7 @@ public class GetProductsDtoValidationTests {
 
 
     @ParameterizedTest
-    @ValueSource(strings = {"id", "name", "quantity", "supplier", "category", "unit"})
+    @ValueSource(strings = {"id", "name", "stock", "supplier", "category", "unit"})
     public void getProductsWhenOrderByIsValidValidationShouldNotFail(String orderBy) {
         var request = GetProductsRequest.builder()
                 .pageNumber(1)

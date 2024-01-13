@@ -8,10 +8,7 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-
 import java.util.List;
-
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.newCategory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,7 +20,10 @@ public class CategoryMapperTests {
 
         assertNotNull(mapper);
 
-        var entity = newCategory(1L, "Electronics");
+        var entity = Category.builder()
+                .id(1L)
+                .name("Electronics")
+                .build();
         var dto = mapper.entityToDto(entity);
 
         assertEquals(entity.getId(), dto.getId());
@@ -47,8 +47,14 @@ public class CategoryMapperTests {
         var pageSize = 2;
 
         var categories = List.of(
-                newCategory(1L, "Electronics"),
-                newCategory(2L, "Home & Garden")
+                Category.builder()
+                        .id(1L)
+                        .name("Electronics")
+                        .build(),
+                Category.builder()
+                        .id(2L)
+                        .name("Home & Garden")
+                        .build()
         );
 
         var categoriesDto = categories.stream().map(mapper::entityToDto).toList();

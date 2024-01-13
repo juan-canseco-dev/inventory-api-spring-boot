@@ -1,15 +1,16 @@
 package com.jcanseco.inventoryapi.persistence;
 
+import com.jcanseco.inventoryapi.entities.Address;
+import com.jcanseco.inventoryapi.entities.Customer;
 import com.jcanseco.inventoryapi.repositories.CustomerRepository;
 import com.jcanseco.inventoryapi.specifications.CustomerSpecifications;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.jdbc.Sql;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.newCustomer;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.newAddress;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -19,21 +20,28 @@ public class CustomerRepositoryTests {
     @Autowired
     private CustomerRepository repository;
 
+    private Address address;
+
+    @BeforeEach
+    public void setup() {
+        address =   Address.builder()
+                .country("Mexico")
+                .state("Sonora")
+                .city("Hermosillo")
+                .zipCode("83200")
+                .street("Center")
+                .build();
+    }
+
     @Test
     public void createCustomerShouldGenerateCustomerId() {
 
-        var customer = newCustomer(
-                "X1Y9Z3A7B2C8D6E0F5G4",
-                "555-1234-1",
-                "Smith Powell Johnson",
-                newAddress(
-                        "Mexico",
-                        "Sonora",
-                        "Hermosillo",
-                        "83200",
-                        "Center"
-                )
-        );
+        var customer = Customer.builder()
+                .dni("X1Y9Z3A7B2C8D6E0F5G4")
+                .fullName("Smith Powell Johnson")
+                .phone("555-1234-1")
+                .address(address)
+                .build();
 
         var newCustomer = repository.saveAndFlush(customer);
         assertTrue(newCustomer.getId() > 0);
@@ -43,32 +51,21 @@ public class CustomerRepositoryTests {
     @Test
     public void createCustomerWithExistentDniShouldThrowException() {
         repository.saveAndFlush(
-                newCustomer(
-                        "901234567",
-                        "555-1234-1",
-                        "John Troll",
-                        newAddress(
-                                "Mexico",
-                                "Sonora",
-                                "Hermosillo",
-                                "83200",
-                                "Center"
-                        )
-                )
+
+                Customer.builder()
+                        .dni( "901234567")
+                        .fullName("John Troll")
+                        .phone("555-1234-1")
+                        .address(address)
+                        .build()
         );
 
-        var newCustomer = newCustomer(
-                "901234567",
-                "555-1234-9",
-                "Jane Troll",
-                newAddress(
-                        "Mexico",
-                        "Sonora",
-                        "Hermosillo",
-                        "83200",
-                        "Center"
-                )
-        );
+        var newCustomer =   Customer.builder()
+                .dni( "901234567")
+                .fullName("John Smith Jr")
+                .phone("555-1234-9")
+                .address(address)
+                .build();
 
         assertThrows(DataIntegrityViolationException.class, () -> repository.saveAndFlush(newCustomer));
     }

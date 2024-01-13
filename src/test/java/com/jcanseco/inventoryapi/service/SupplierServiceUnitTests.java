@@ -25,7 +25,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 import java.util.Optional;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doNothing;
@@ -51,28 +50,39 @@ public class SupplierServiceUnitTests {
 
     @BeforeEach
     public void setup() {
+
         suppliers = List.of(
-                newSupplier(
-                        "ABC Corp",
-                        "John Doe",
-                        "555-1234-1",
-                        newAddress(
-                                "United States",
-                                "California",
-                                "San Francisco",
-                                "94105",
-                                "123 Main St")
-                ),
-                newSupplier(
-                        "XYZ Ltd",
-                        "Jane Smith",
-                        "555-1234-2",
-                        newAddress("United Kingdom",
-                                "England",
-                                "London",
-                                "EC1A 1BB",
-                                "456 High St"))
-        );
+                Supplier.builder()
+                        .id(1L)
+                        .companyName("ABC Corp")
+                        .contactName("John Doe")
+                        .contactPhone("555-1234-1")
+                        .address(
+                                Address.builder()
+                                        .country("United States")
+                                        .state("California")
+                                        .city("San Francisco")
+                                        .zipCode("94105")
+                                        .street("123 Main St")
+                                        .build()
+                        )
+                        .build(),
+                Supplier.builder()
+                        .id(2L)
+                        .companyName("XYZ Ltd")
+                        .contactName("Jane Smith")
+                        .contactPhone("555-1234-2")
+                        .address(
+                                Address.builder()
+                                        .country("United Kingdom")
+                                        .state("England")
+                                        .city("London")
+                                        .zipCode("EC1A 1BB")
+                                        .street("456 High St")
+                                        .build()
+                        )
+                        .build()
+                );
 
         defaultAddressDto = AddressDto.builder()
                 .country("Mexico")

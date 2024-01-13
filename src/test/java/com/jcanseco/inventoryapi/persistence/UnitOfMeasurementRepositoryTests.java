@@ -1,5 +1,6 @@
 package com.jcanseco.inventoryapi.persistence;
 
+import com.jcanseco.inventoryapi.entities.UnitOfMeasurement;
 import com.jcanseco.inventoryapi.repositories.UnitOfMeasurementRepository;
 import com.jcanseco.inventoryapi.specifications.UnitOfMeasurementSpecifications;
 import org.junit.jupiter.api.Test;
@@ -7,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.newUnit;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 @DataJpaTest
@@ -20,7 +20,9 @@ public class UnitOfMeasurementRepositoryTests {
     @Test
     public void createUnitShouldGeneratedId() {
 
-        var unit = newUnit("New Unit");
+        var unit = UnitOfMeasurement.builder()
+                .name("New Unit")
+                .build();
         var newUnit = repository.saveAndFlush(unit);
 
         assertTrue(newUnit.getId() > 0);

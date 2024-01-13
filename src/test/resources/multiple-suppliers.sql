@@ -1,3 +1,4 @@
+DELETE FROM suppliers;
 -- Insert data into suppliers table
 INSERT INTO suppliers (id, company_name, contact_name, contact_phone,
                        supplier_address_country,

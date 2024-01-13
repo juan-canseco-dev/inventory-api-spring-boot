@@ -272,7 +272,7 @@ public class ProductControllerUnitTests {
                         .name("Product")
                         .purchasePrice(BigDecimal.valueOf(49.99))
                         .salePrice(BigDecimal.valueOf(59.99))
-                        .quantity(10L)
+                        .stock(10L)
                         .build();
         when(productService.getProductById(productId)).thenReturn(productDto);
         mockMvc.perform(
@@ -351,7 +351,7 @@ public class ProductControllerUnitTests {
                         .name("Halo Infinite")
                         .purchasePrice(BigDecimal.valueOf(49.99))
                         .salePrice(BigDecimal.valueOf(59.99))
-                        .quantity(10L)
+                        .stock(10L)
                         .build(),
                 ProductDto.builder()
                         .id(1L)
@@ -361,7 +361,7 @@ public class ProductControllerUnitTests {
                         .name("Halo 3")
                         .purchasePrice(BigDecimal.valueOf(9.99))
                         .salePrice(BigDecimal.valueOf(19.99))
-                        .quantity(10L)
+                        .stock(10L)
                         .build()
                 );
 
@@ -394,7 +394,7 @@ public class ProductControllerUnitTests {
                         .name("Halo Infinite")
                         .purchasePrice(BigDecimal.valueOf(49.99))
                         .salePrice(BigDecimal.valueOf(59.99))
-                        .quantity(10L)
+                        .stock(10L)
                         .build()
         );
 

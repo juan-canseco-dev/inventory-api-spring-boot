@@ -1,4 +1,5 @@
 package com.jcanseco.inventoryapi.specifications;
+
 import com.jcanseco.inventoryapi.entities.Category;
 import com.jcanseco.inventoryapi.entities.Product;
 import com.jcanseco.inventoryapi.entities.Supplier;
@@ -57,25 +58,6 @@ public class ProductSpecifications {
         };
     }
 
-    public static Specification<Product> orderByQuantityAsc(Specification<Product> spec) {
-        return (root, query, builder) -> {
-            query.orderBy(
-                    builder.asc(root.get("quantity"))
-            );
-            return spec.toPredicate(root, query, builder);
-        };
-    }
-
-    public static Specification<Product> orderByQuantityDesc(Specification<Product> spec) {
-        return (root, query, builder) -> {
-            query.orderBy(
-                    builder.desc(root.get("quantity"))
-            );
-            return spec.toPredicate(root, query, builder);
-        };
-    }
-
-
     public static Specification<Product> orderBySupplierAsc(Specification<Product> spec) {
         return (root, query, builder) -> {
             root.fetch("supplier");
@@ -131,6 +113,26 @@ public class ProductSpecifications {
             root.fetch("unit");
             query.orderBy(
                     builder.desc(root.get("unit").get("name"))
+            );
+            return spec.toPredicate(root, query, builder);
+        };
+    }
+
+    public static Specification<Product> orderByStockAsc(Specification<Product> spec) {
+        return (root, query, builder) -> {
+            root.fetch("stock");
+            query.orderBy(
+              builder.asc(root.get("stock").get("quantity"))
+            );
+            return spec.toPredicate(root, query, builder);
+        };
+    }
+
+    public static Specification<Product> orderByStockDesc(Specification<Product> spec) {
+        return (root, query, builder) -> {
+            root.fetch("stock");
+            query.orderBy(
+                    builder.desc(root.get("stock").get("quantity"))
             );
             return spec.toPredicate(root, query, builder);
         };

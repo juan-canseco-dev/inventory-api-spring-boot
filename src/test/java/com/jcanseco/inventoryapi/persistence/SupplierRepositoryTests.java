@@ -1,5 +1,7 @@
 package com.jcanseco.inventoryapi.persistence;
 
+import com.jcanseco.inventoryapi.entities.Address;
+import com.jcanseco.inventoryapi.entities.Supplier;
 import com.jcanseco.inventoryapi.repositories.SupplierRepository;
 import com.jcanseco.inventoryapi.specifications.SupplierSpecifications;
 import org.junit.jupiter.api.Test;
@@ -7,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
-
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,18 +22,20 @@ public class SupplierRepositoryTests {
     @Test
     public void createSupplierShouldGeneratedId() {
 
-        var supplier = newSupplier(
-                "ABC Electronics",
-                "John Doe",
-                "+12222222",
-                newAddress(
-                        "Mexico",
-                        "Sonora",
-                        "Hermosillo",
-                        "83200",
-                        "Center"
-                )
-        );
+        var address = Address.builder()
+                .country("Mexico")
+                .state("Sonora")
+                .city("Hermosillo")
+                .zipCode("83200")
+                .street("Center")
+                .build();
+
+        var supplier = Supplier.builder()
+                .companyName("ABC Electronics")
+                .contactName("John Doe")
+                .contactPhone("+12222222")
+                .address(address)
+                .build();
 
         var newSupplier = repository.saveAndFlush(supplier);
         assertTrue(newSupplier.getId() > 0);

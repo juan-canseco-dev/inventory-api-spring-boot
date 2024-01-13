@@ -22,9 +22,6 @@ public class Product {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false)
-    private Long quantity;
-
     @Column(nullable = false, precision = 8, scale = 2)
     private BigDecimal purchasePrice;
 
@@ -42,6 +39,9 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
+
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Stock stock;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore

@@ -23,7 +23,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 import java.util.Optional;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.newCategory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doNothing;
@@ -46,8 +45,8 @@ public class CategoryServiceUnitTests {
     @BeforeEach
     public void setup() {
         categories = List.of(
-                newCategory(1L, "Electronics"),
-                newCategory(2L, "Home & Garden")
+                Category.builder().id(1L).name("Electronics").build(),
+                Category.builder().id(2L).name("Home & Garden").build()
         );
     }
 

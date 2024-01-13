@@ -21,7 +21,6 @@ import org.springframework.http.*;
 import org.springframework.test.context.jdbc.Sql;
 import java.math.BigDecimal;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -117,7 +116,7 @@ public class ProductApiIntegrationTests {
                                 .build()
                 )
                 .name("Laptop")
-                .quantity(10L)
+                .stock(10L)
                 .purchasePrice(new BigDecimal("800.00"))
                 .salePrice(new BigDecimal("1200.00"))
                 .build();

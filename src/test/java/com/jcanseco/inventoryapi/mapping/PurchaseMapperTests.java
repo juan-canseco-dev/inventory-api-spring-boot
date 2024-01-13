@@ -4,77 +4,112 @@ import com.jcanseco.inventoryapi.dtos.purchases.PurchaseItemDto;
 import com.jcanseco.inventoryapi.dtos.suppliers.SupplierDto;
 import com.jcanseco.inventoryapi.entities.*;
 import com.jcanseco.inventoryapi.mappers.PurchaseMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
-import static com.jcanseco.inventoryapi.utils.TestModelFactory.*;
 
 public class PurchaseMapperTests {
     private final PurchaseMapper mapper = Mappers.getMapper(PurchaseMapper.class);
 
-    private Purchase buildPurchase() {
+    private Supplier supplier;
 
-        var supplier = newSupplier(
-                1L,
-                "ABC Corp",
-                "John Doe",
-                "555-1234-1",
-                newAddress(
-                 "Mexico",
-                 "Sonora",
-                 "Hermosillo",
-                 "83200",
-                 "Center"
+    private Purchase purchase;
+
+    @BeforeEach
+    public void setup() {
+        supplier = Supplier.builder()
+                .id(1L)
+                .companyName("ABC Corp")
+                .contactName("John Doe")
+                .contactPhone("555-1234-1")
+                .address(
+                        Address.builder()
+                                .country("Mexico")
+                                .state("Sonora")
+                                .city("Hermosillo")
+                                .zipCode("83200")
+                                .street("Center")
+                                .build()
                 )
-        );
+                .build();
+
+        var item1Price = new BigDecimal("9.99");
+        var item1Quantity =  10L;
+        var item1Total = item1Price.multiply(BigDecimal.valueOf(item1Quantity));
+
+        var item1 = PurchaseItem.builder()
+                .id(1L)
+                .productName("Mouse")
+                .productUnit("Piece")
+                .price(item1Price)
+                .quantity(item1Quantity)
+                .total(item1Total)
+                .build();
+
+
+        var item2Price = new BigDecimal("19.99");
+        var item2Quantity =  20L;
+        var item2Total = item1Price.multiply(BigDecimal.valueOf(item2Quantity));
+
+        var item2 = PurchaseItem.builder()
+                .id(2L)
+                .productName("Keyboard")
+                .productUnit("Piece")
+                .price(item2Price)
+                .quantity(item2Quantity)
+                .total(item2Total)
+                .build();
 
         var items = List.of(
-                newPurchaseItem(
-                        1L,
-                        70L,
-                        "Laptop",
-                        "Box",
-                        10L,
-                        9.99
-                )
+                item1,
+                item2
         );
-
         var createdAt = LocalDateTime.now();
+        var total = items.stream()
+                .map(PurchaseItem::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return newPurchase(5L,supplier, items, createdAt);
+        purchase = Purchase.builder()
+                .id(1L)
+                .supplier(supplier)
+                .items(items)
+                .total(total)
+                .createdAt(createdAt)
+                .build();
     }
-
     @Test
     public void entityToDto() {
 
-        var purchase = buildPurchase();
-        var dto = mapper.entityToDto(purchase);
+        var entity = purchase;
+        var dto = mapper.entityToDto(entity);
 
         assertNotNull(dto);
-        assertEquals(purchase.getId(), dto.getId());
-        assertEquals(purchase.getSupplier().getCompanyName(), dto.getSupplier());
-        assertEquals(purchase.getTotal(), dto.getTotal());
-        assertEquals(purchase.getCreatedAt(), dto.getCreatedAt());
+        assertEquals(entity.getId(), dto.getId());
+        assertEquals(entity.getSupplier().getCompanyName(), dto.getSupplier());
+        assertEquals(entity.getTotal(), dto.getTotal());
+        assertEquals(entity.getCreatedAt(), dto.getCreatedAt());
     }
 
     @Test
     public void entityToDetailsDto() {
 
-        var purchase = buildPurchase();
-        var dto = mapper.entityToDetailsDto(purchase);
+        var entity = purchase;
+        var dto = mapper.entityToDetailsDto(entity);
 
         assertNotNull(dto);
-        assertEquals(purchase.getId(), dto.getId());
-        assertEquals(purchase.getTotal(), dto.getTotal());
+        assertEquals(entity.getId(), dto.getId());
+        assertEquals(entity.getTotal(), dto.getTotal());
 
         assertNotNull(dto.getSupplier());
-        assertEqualsSupplier(purchase.getSupplier(), dto.getSupplier());
+        assertEqualsSupplier(entity.getSupplier(), dto.getSupplier());
 
         assertNotNull(dto.getItems());
-        assertEqualsItems(purchase.getItems(), dto.getItems());
-        assertEquals(purchase.getCreatedAt(), dto.getCreatedAt());
+        assertEqualsItems(entity.getItems(), dto.getItems());
+        assertEquals(entity.getCreatedAt(), dto.getCreatedAt());
     }
 
     private void assertEqualsSupplier(Supplier expected, SupplierDto actual) {

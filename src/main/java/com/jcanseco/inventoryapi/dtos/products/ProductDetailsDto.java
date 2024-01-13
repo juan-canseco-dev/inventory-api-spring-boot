@@ -18,7 +18,7 @@ public class ProductDetailsDto {
     private SupplierDto supplier;
     private CategoryDto category;
     private UnitOfMeasurementDto unit;
-    private Long quantity;
+    private Long stock;
     private BigDecimal purchasePrice;
     private BigDecimal salePrice;
 }

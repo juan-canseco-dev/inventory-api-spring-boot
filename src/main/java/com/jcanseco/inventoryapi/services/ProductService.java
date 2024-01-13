@@ -3,6 +3,7 @@ package com.jcanseco.inventoryapi.services;
 import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.dtos.products.*;
 import com.jcanseco.inventoryapi.entities.Product;
+import com.jcanseco.inventoryapi.entities.Stock;
 import com.jcanseco.inventoryapi.exceptions.DomainException;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.ProductMapper;
@@ -56,8 +57,8 @@ public class ProductService {
                 .supplier(supplier)
                 .category(category)
                 .unit(unit)
+                .stock(Stock.builder().quantity(0L).build())
                 .name(dto.getName())
-                .quantity(0L)
                 .purchasePrice(BigDecimal.valueOf(dto.getPurchasePrice()))
                 .salePrice(BigDecimal.valueOf(dto.getSalePrice()))
                 .build();
@@ -134,6 +135,7 @@ public class ProductService {
             case "supplier" -> isAscending? orderBySupplierAsc(spec) : orderBySupplierDesc(spec);
             case "category" -> isAscending? orderByCategoryAsc(spec) : orderByCategoryDesc(spec);
             case "unit" -> isAscending? orderByUnitAsc(spec) : orderByUnitDesc(spec);
+            case "stock" -> isAscending? orderByStockAsc(spec) : orderByStockDesc(spec);
             default -> isAscending? orderByNameAsc(spec) : orderByNameDesc(spec);
         };
     }
