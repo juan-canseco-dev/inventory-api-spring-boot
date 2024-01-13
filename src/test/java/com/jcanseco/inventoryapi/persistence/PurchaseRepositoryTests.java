@@ -1,6 +1,7 @@
 package com.jcanseco.inventoryapi.persistence;
 
 import com.jcanseco.inventoryapi.repositories.*;
+import com.jcanseco.inventoryapi.specifications.PurchaseSpecifications;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -99,7 +100,7 @@ public class PurchaseRepositoryTests {
     public void getPurchasesByDateRangeSpecificationShouldReturnList() {
         var startDate = LocalDateTime.of(2023, Month.MAY, 1, 0,0);
         var endDate = LocalDateTime.of(2023, Month.MAY, 28, 0, 0);
-        var specification = PurchaseRepository.Specs.byDateRange(startDate, endDate);
+        var specification = PurchaseSpecifications.byDateRange(startDate, endDate);
         var purchases = purchaseRepository.findAll(specification);
         assertNotNull(purchases);
         assertEquals(4, purchases.size());
@@ -109,7 +110,7 @@ public class PurchaseRepositoryTests {
     @Sql("/multiple-purchases.sql")
     public void getPurchasesBySupplierSpecificationShouldReturnList() {
         var supplier = supplierRepository.findById(2L).orElseThrow();
-        var specification = PurchaseRepository.Specs.bySupplier(supplier);
+        var specification = PurchaseSpecifications.bySupplier(supplier);
         var purchases = purchaseRepository.findAll(specification);
         assertNotNull(purchases);
         assertEquals(5, purchases.size());
