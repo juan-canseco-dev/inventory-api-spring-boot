@@ -19,6 +19,9 @@ public class Stock {
     @Id
     private Long id;
 
+    @Column(name = "product_id", insertable = false, updatable = false)
+    private Long productId;
+
     @Column(nullable = false)
     private Long quantity;
 

@@ -4,6 +4,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode
 @Builder
 @Setter
 @Getter

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import java.util.HashMap;
 
+@EqualsAndHashCode
 @Builder
 @Setter
 @Getter
