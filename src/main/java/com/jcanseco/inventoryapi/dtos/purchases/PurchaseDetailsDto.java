@@ -19,5 +19,5 @@ public class PurchaseDetailsDto {
     private List<PurchaseItemDto> items;
     private boolean arrived;
     private LocalDateTime createdAt;
-    private LocalDateTime arrivalDate;
+    private LocalDateTime arrivedAt;
 }

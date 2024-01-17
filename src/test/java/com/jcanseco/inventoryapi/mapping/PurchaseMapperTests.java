@@ -15,13 +15,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PurchaseMapperTests {
     private final PurchaseMapper mapper = Mappers.getMapper(PurchaseMapper.class);
 
-    private Supplier supplier;
-
     private Purchase purchase;
 
     @BeforeEach
     public void setup() {
-        supplier = Supplier.builder()
+        Supplier supplier = Supplier.builder()
                 .id(1L)
                 .companyName("ABC Corp")
                 .contactName("John Doe")
@@ -79,6 +77,8 @@ public class PurchaseMapperTests {
                 .items(items)
                 .total(total)
                 .createdAt(createdAt)
+                .arrived(true)
+                .arrivedAt(createdAt.plusHours(5))
                 .build();
     }
     @Test
@@ -92,6 +92,8 @@ public class PurchaseMapperTests {
         assertEquals(entity.getSupplier().getCompanyName(), dto.getSupplier());
         assertEquals(entity.getTotal(), dto.getTotal());
         assertEquals(entity.getCreatedAt(), dto.getCreatedAt());
+        assertEquals(entity.isArrived(), dto.isArrived());
+        assertEquals(entity.getArrivedAt(), dto.getArrivedAt());
     }
 
     @Test
@@ -110,6 +112,9 @@ public class PurchaseMapperTests {
         assertNotNull(dto.getItems());
         assertEqualsItems(entity.getItems(), dto.getItems());
         assertEquals(entity.getCreatedAt(), dto.getCreatedAt());
+
+        assertEquals(entity.isArrived(), dto.isArrived());
+        assertEquals(entity.getArrivedAt(), dto.getArrivedAt());
     }
 
     private void assertEqualsSupplier(Supplier expected, SupplierDto actual) {

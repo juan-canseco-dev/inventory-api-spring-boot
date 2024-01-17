@@ -16,5 +16,5 @@ public class PurchaseDto {
     private BigDecimal total;
     private boolean arrived;
     private LocalDateTime createdAt;
-    private LocalDateTime arrivalDate;
+    private LocalDateTime arrivedAt;
 }
