@@ -17,5 +17,7 @@ public class PurchaseDetailsDto {
     private SupplierDto supplier;
     private BigDecimal total;
     private List<PurchaseItemDto> items;
+    private boolean arrived;
     private LocalDateTime createdAt;
+    private LocalDateTime arrivalDate;
 }

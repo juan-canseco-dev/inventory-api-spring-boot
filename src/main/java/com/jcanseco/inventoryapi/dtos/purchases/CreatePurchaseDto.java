@@ -1,5 +1,7 @@
 package com.jcanseco.inventoryapi.dtos.purchases;
 
+import com.jcanseco.inventoryapi.validators.allproductsexist.AllProductsExist;
+import com.jcanseco.inventoryapi.validators.positiveproductquantities.PositiveProductQuantities;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +21,8 @@ public class CreatePurchaseDto {
     @NotNull
     private Long supplierId;
 
+    @AllProductsExist
+    @PositiveProductQuantities
     @Size(min = 1)
     @NotEmpty
     private HashMap<Long, Long> productsWithQuantities;

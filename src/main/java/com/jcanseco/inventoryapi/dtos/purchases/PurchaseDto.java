@@ -14,5 +14,7 @@ public class PurchaseDto {
     private Long id;
     private String supplier;
     private BigDecimal total;
+    private boolean arrived;
     private LocalDateTime createdAt;
+    private LocalDateTime arrivalDate;
 }

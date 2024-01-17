@@ -11,10 +11,12 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 @Getter
 @Entity
 @Table(name = "purchases")
 public class Purchase {
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
@@ -26,8 +28,15 @@ public class Purchase {
     @JoinColumn(name = "supplier_id", referencedColumnName = "id")
     private Supplier supplier;
 
+
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL)
     private List<PurchaseItem> items;
+
+    @Column(nullable = false, name = "arrived", columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean arrived = false;
+
+    @Column(name = "arrival_date")
+    private LocalDateTime arrivedAt;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
