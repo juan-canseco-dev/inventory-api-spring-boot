@@ -11,8 +11,12 @@ public class PurchaseSpecifications {
         return (root, query, builder) -> builder.equal(root.get("supplier"), supplier);
     }
 
-    public static Specification<Purchase> byDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        return (root, query, builder) -> builder.between(root.get("arrivalDate"), startDate, endDate);
+    public static Specification<Purchase> arrivedBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return (root, query, builder) -> builder.between(root.get("arrivedAt"), startDate, endDate);
+    }
+
+    public static Specification<Purchase> byCreatedBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return (root, query, builder) -> builder.between(root.get("createdAt"), startDate, endDate);
     }
 
     public static Specification<Purchase> isArrived() {

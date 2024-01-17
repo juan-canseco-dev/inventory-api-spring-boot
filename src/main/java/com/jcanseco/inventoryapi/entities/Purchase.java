@@ -35,7 +35,7 @@ public class Purchase {
     @Column(nullable = false, name = "arrived", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean arrived;
 
-    @Column(name = "arrival_date")
+    @Column(name = "arrived_at")
     private LocalDateTime arrivedAt;
 
     @CreationTimestamp

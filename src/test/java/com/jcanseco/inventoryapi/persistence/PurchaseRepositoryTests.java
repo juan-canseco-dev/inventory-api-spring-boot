@@ -11,7 +11,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.List;
+import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -22,97 +22,34 @@ public class PurchaseRepositoryTests {
     private SupplierRepository supplierRepository;
 
     @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private UnitOfMeasurementRepository unitRepository;
-
-    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
     private PurchaseRepository purchaseRepository;
 
-
+    @Sql("/multiple-purchases.sql")
     @Test
     public void createPurchaseShouldGenerateId() {
 
-        var unit = unitRepository.saveAndFlush(
-                UnitOfMeasurement.builder()
-                        .name("Box")
-                        .build()
-        );
+        var supplier = supplierRepository.findById(1L).orElseThrow();
+        var productsWithQuantities = new HashMap<Long, Long>() {{
+           put(1L, 10L);
+           put(2L, 10L);
+        }};
 
-        var category = categoryRepository.saveAndFlush(
-                Category.builder()
-                        .name("Electronics")
-                        .build()
-        );
+        var products = productRepository.findAllById(productsWithQuantities.keySet());
 
-        var supplier = supplierRepository.saveAndFlush(
-
-                Supplier.builder()
-                        .companyName("Pika Games")
-                        .contactName("Perla Lopez")
-                        .contactPhone( "555-1234-1")
-                        .address(Address.builder()
-                                .country("Mexico")
-                                .state("Sonora")
-                                .city("Hermosillo")
-                                .zipCode("83200")
-                                .street("Center")
-                                .build())
-                        .build()
-        );
-
-        var product1 = productRepository.saveAndFlush(
-                Product.builder()
-                        .supplier(supplier)
-                        .category(category)
-                        .unit(unit)
-                        .name("Halo 3")
-                        .stock(Stock.builder().quantity(0L).build())
-                        .purchasePrice(new BigDecimal("5.99"))
-                        .salePrice(new BigDecimal("9.99"))
-                        .build()
-        );
-
-        var product2 = productRepository.saveAndFlush(
-                Product.builder()
-                        .supplier(supplier)
-                        .category(category)
-                        .unit(unit)
-                        .name("Halo Infinite")
-                        .stock(Stock.builder().quantity(0L).build())
-                        .purchasePrice(new BigDecimal("39.99"))
-                        .salePrice(new BigDecimal("59.99"))
-                        .build()
-        );
-
-        var item1Quantity = 10L;
-        var item1 = PurchaseItem.builder()
-                .product(product1)
-                .productName(product1.getName())
-                .productUnit(product1.getUnit().getName())
-                .quantity(item1Quantity)
-                .price(product1.getPurchasePrice())
-                .total(product1.getPurchasePrice().multiply(BigDecimal.valueOf(item1Quantity)))
-                .build();
-
-        var item2Quantity = 10L;
-        var item2 = PurchaseItem.builder()
-                .product(product2)
-                .productName(product2.getName())
-                .productUnit(product2.getUnit().getName())
-                .quantity(item2Quantity)
-                .price(product2.getPurchasePrice())
-                .total(product2.getPurchasePrice().multiply(BigDecimal.valueOf(item2Quantity)))
-                .build();
-
-        var items = List.of(
-                item1,
-                item2
-        );
+        var items = products.stream().map(p -> PurchaseItem
+                .builder()
+                .product(p)
+                .productId(p.getId())
+                .productName(p.getName())
+                .productUnit(p.getUnit().getName())
+                .price(p.getPurchasePrice())
+                .quantity(productsWithQuantities.get(p.getId()))
+                .total(p.getPurchasePrice().multiply(BigDecimal.valueOf(productsWithQuantities.get(p.getId()))))
+                .build())
+                .toList();
 
         var purchaseTotal = items.stream()
                 .map(PurchaseItem::getTotal)
@@ -129,6 +66,8 @@ public class PurchaseRepositoryTests {
         assertNotNull(purchase);
         assertTrue(purchase.getId() > 0);
         assertNotNull(purchase.getCreatedAt());
+        assertFalse(purchase.isArrived());
+        assertNull(purchase.getArrivedAt());
 
         var foundPurchase = purchaseRepository.findById(purchase.getId());
         assertTrue(foundPurchase.isPresent());
@@ -136,13 +75,25 @@ public class PurchaseRepositoryTests {
 
     @Test
     @Sql("/multiple-purchases.sql")
-    public void getPurchasesByDateRangeSpecificationShouldReturnList() {
+    public void getPurchasesByCreatedBetweenSpecificationShouldReturnList() {
         var startDate = LocalDateTime.of(2023, Month.MAY, 1, 0,0);
         var endDate = LocalDateTime.of(2023, Month.MAY, 28, 0, 0);
-        var specification = PurchaseSpecifications.byDateRange(startDate, endDate);
+        var specification = PurchaseSpecifications.byCreatedBetween(startDate, endDate);
         var purchases = purchaseRepository.findAll(specification);
         assertNotNull(purchases);
         assertEquals(4, purchases.size());
+    }
+
+
+    @Test
+    @Sql("/multiple-purchases.sql")
+    public void getPurchasesByArrivedBetweenSpecificationShouldReturnList() {
+        var startDate = LocalDateTime.of(2023, Month.JUNE, 5, 0,0);
+        var endDate = LocalDateTime.of(2023, Month.JUNE, 19, 0, 0);
+        var specification = PurchaseSpecifications.arrivedBetween(startDate, endDate);
+        var purchases = purchaseRepository.findAll(specification);
+        assertNotNull(purchases);
+        assertEquals(3, purchases.size());
     }
 
     @Test
@@ -153,5 +104,15 @@ public class PurchaseRepositoryTests {
         var purchases = purchaseRepository.findAll(specification);
         assertNotNull(purchases);
         assertEquals(5, purchases.size());
+    }
+
+    @Test
+    @Sql("/multiple-purchases.sql")
+    public void getPurchasesByIsArrivedSpecificationShouldReturnList() {
+        var arrivedPurchases = purchaseRepository.findAll(
+                PurchaseSpecifications.isArrived()
+        );
+        assertNotNull(arrivedPurchases);
+        assertEquals(5, arrivedPurchases.size());
     }
 }
