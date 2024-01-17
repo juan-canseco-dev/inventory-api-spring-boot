@@ -33,7 +33,7 @@ public class Purchase {
     private List<PurchaseItem> items;
 
     @Column(nullable = false, name = "arrived", columnDefinition = "BOOLEAN DEFAULT false")
-    private boolean arrived = false;
+    private boolean arrived;
 
     @Column(name = "arrival_date")
     private LocalDateTime arrivedAt;

@@ -23,8 +23,8 @@ public class GetPurchasesRequest {
     private Integer pageSize;
 
     @OrderBy(
-            message = "Invalid Order By field. The following options are valid: 'id', 'supplier', 'createdAt'.",
-            fields = {"id", "supplier", "createdAt"}
+            message = "Invalid Order By field. The following options are valid: 'id', 'supplier', 'createdAt', 'arrivedAt'.",
+            fields = {"id", "supplier", "createdAt", "arrivedAt"}
     )
     private String orderBy;
 
