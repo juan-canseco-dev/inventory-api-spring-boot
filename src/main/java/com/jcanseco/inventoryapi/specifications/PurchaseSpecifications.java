@@ -79,22 +79,57 @@ public class PurchaseSpecifications {
         };
     }
 
-    public static Specification<Purchase> orderByCreatedAtAsc(Specification<Purchase> spec) {
+    public static Specification<Purchase> orderByOrderedAtAsc(Specification<Purchase> spec) {
         return (root, query, builder) -> {
             query.orderBy(
-                    builder.asc(root.get("createdAt"))
+                    builder.asc(root.get("orderedAt"))
             );
             return spec.toPredicate(root, query, builder);
         };
     }
 
-    public static Specification<Purchase> orderByCreatedAtDesc(Specification<Purchase> spec) {
+    public static Specification<Purchase> orderByOrderedAtDesc(Specification<Purchase> spec) {
         return (root, query, builder) -> {
             query.orderBy(
-                    builder.desc(root.get("createdAt"))
+                    builder.desc(root.get("orderedAt"))
             );
             return spec.toPredicate(root, query, builder);
         };
     }
 
+    public static Specification<Purchase> orderByArrivedAtAsc(Specification<Purchase> spec) {
+        return (root, query, builder) -> {
+            query.orderBy(
+                    builder.asc(root.get("arrivedAt"))
+            );
+            return spec.toPredicate(root, query, builder);
+        };
+    }
+
+    public static Specification<Purchase> orderByArrivedAtDesc(Specification<Purchase> spec) {
+        return (root, query, builder) -> {
+            query.orderBy(
+                    builder.desc(root.get("arrivedAt"))
+            );
+            return spec.toPredicate(root, query, builder);
+        };
+    }
+
+    public static Specification<Purchase> orderByArrivedAsc(Specification<Purchase> spec) {
+        return (root, query, builder) -> {
+            query.orderBy(
+                    builder.asc(root.get("arrived"))
+            );
+            return spec.toPredicate(root, query, builder);
+        };
+    }
+
+    public static Specification<Purchase> orderByArrivedDesc(Specification<Purchase> spec) {
+        return (root, query, builder) -> {
+            query.orderBy(
+                    builder.desc(root.get("arrived"))
+            );
+            return spec.toPredicate(root, query, builder);
+        };
+    }
 }
