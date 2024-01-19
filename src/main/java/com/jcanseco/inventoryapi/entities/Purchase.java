@@ -39,6 +39,6 @@ public class Purchase {
     private LocalDateTime arrivedAt;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "ordered_at", nullable = false, updatable = false)
+    private LocalDateTime orderedAt;
 }

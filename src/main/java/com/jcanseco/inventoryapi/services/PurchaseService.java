@@ -100,7 +100,7 @@ public class PurchaseService {
         }
 
         purchase.setArrived(true);
-        purchase.setCreatedAt(LocalDateTime.now());
+        purchase.setOrderedAt(LocalDateTime.now());
 
         purchaseRepository.saveAndFlush(purchase);
 

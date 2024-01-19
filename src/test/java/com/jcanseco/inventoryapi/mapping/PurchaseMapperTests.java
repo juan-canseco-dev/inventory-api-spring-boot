@@ -66,7 +66,7 @@ public class PurchaseMapperTests {
                 item1,
                 item2
         );
-        var createdAt = LocalDateTime.now();
+        var orderedAt = LocalDateTime.now();
         var total = items.stream()
                 .map(PurchaseItem::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -76,9 +76,9 @@ public class PurchaseMapperTests {
                 .supplier(supplier)
                 .items(items)
                 .total(total)
-                .createdAt(createdAt)
+                .orderedAt(orderedAt)
                 .arrived(true)
-                .arrivedAt(createdAt.plusHours(5))
+                .arrivedAt(orderedAt.plusHours(5))
                 .build();
     }
     @Test
@@ -91,7 +91,7 @@ public class PurchaseMapperTests {
         assertEquals(entity.getId(), dto.getId());
         assertEquals(entity.getSupplier().getCompanyName(), dto.getSupplier());
         assertEquals(entity.getTotal(), dto.getTotal());
-        assertEquals(entity.getCreatedAt(), dto.getCreatedAt());
+        assertEquals(entity.getOrderedAt(), dto.getOrderedAt());
         assertEquals(entity.isArrived(), dto.isArrived());
         assertEquals(entity.getArrivedAt(), dto.getArrivedAt());
     }
@@ -111,7 +111,7 @@ public class PurchaseMapperTests {
 
         assertNotNull(dto.getItems());
         assertEqualsItems(entity.getItems(), dto.getItems());
-        assertEquals(entity.getCreatedAt(), dto.getCreatedAt());
+        assertEquals(entity.getOrderedAt(), dto.getOrderedAt());
 
         assertEquals(entity.isArrived(), dto.isArrived());
         assertEquals(entity.getArrivedAt(), dto.getArrivedAt());

@@ -18,6 +18,6 @@ public class PurchaseDetailsDto {
     private BigDecimal total;
     private List<PurchaseItemDto> items;
     private boolean arrived;
-    private LocalDateTime createdAt;
+    private LocalDateTime orderedAt;
     private LocalDateTime arrivedAt;
 }

@@ -15,8 +15,8 @@ public class PurchaseSpecifications {
         return (root, query, builder) -> builder.between(root.get("arrivedAt"), startDate, endDate);
     }
 
-    public static Specification<Purchase> byCreatedBetween(LocalDateTime startDate, LocalDateTime endDate) {
-        return (root, query, builder) -> builder.between(root.get("createdAt"), startDate, endDate);
+    public static Specification<Purchase> byOrderedBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return (root, query, builder) -> builder.between(root.get("orderedAt"), startDate, endDate);
     }
 
     public static Specification<Purchase> isArrived() {

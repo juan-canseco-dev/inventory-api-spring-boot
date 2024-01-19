@@ -65,7 +65,7 @@ public class PurchaseRepositoryTests {
 
         assertNotNull(purchase);
         assertTrue(purchase.getId() > 0);
-        assertNotNull(purchase.getCreatedAt());
+        assertNotNull(purchase.getOrderedAt());
         assertFalse(purchase.isArrived());
         assertNull(purchase.getArrivedAt());
 
@@ -75,10 +75,10 @@ public class PurchaseRepositoryTests {
 
     @Test
     @Sql("/multiple-purchases.sql")
-    public void getPurchasesByCreatedBetweenSpecificationShouldReturnList() {
+    public void getPurchasesByOrderedBetweenSpecificationShouldReturnList() {
         var startDate = LocalDateTime.of(2023, Month.MAY, 1, 0,0);
         var endDate = LocalDateTime.of(2023, Month.MAY, 28, 0, 0);
-        var specification = PurchaseSpecifications.byCreatedBetween(startDate, endDate);
+        var specification = PurchaseSpecifications.byOrderedBetween(startDate, endDate);
         var purchases = purchaseRepository.findAll(specification);
         assertNotNull(purchases);
         assertEquals(4, purchases.size());
