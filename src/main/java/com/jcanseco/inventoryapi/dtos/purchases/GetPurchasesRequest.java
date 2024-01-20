@@ -23,8 +23,8 @@ public class GetPurchasesRequest {
     private Integer pageSize;
 
     @OrderBy(
-            message = "Invalid Order By field. The following options are valid: 'id', 'supplier', 'createdAt', 'arrivedAt'.",
-            fields = {"id", "supplier", "createdAt", "arrivedAt"}
+            message = "Invalid Order By field. The following options are valid: 'id', 'supplier', 'total', 'orderedAt', 'arrivedAt', 'arrived'.",
+            fields = {"id", "supplier", "total", "orderedAt", "arrivedAt", "arrived"}
     )
     private String orderBy;
 
@@ -34,7 +34,11 @@ public class GetPurchasesRequest {
     @Min(1)
     private Long supplierId;
 
-    private LocalDateTime startDate;
+    private Boolean arrived;
 
-    private LocalDateTime endDate;
+    private LocalDateTime orderedAtStartDate;
+    private LocalDateTime orderedAtEndDate;
+
+    private LocalDateTime arrivedAtStartDate;
+    private LocalDateTime arrivedAtEndDate;
 }

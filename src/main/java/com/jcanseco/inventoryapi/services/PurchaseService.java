@@ -1,7 +1,6 @@
 package com.jcanseco.inventoryapi.services;
 
 import com.jcanseco.inventoryapi.dtos.PagedList;
-import com.jcanseco.inventoryapi.dtos.products.GetProductsRequest;
 import com.jcanseco.inventoryapi.dtos.purchases.*;
 import com.jcanseco.inventoryapi.entities.Product;
 import com.jcanseco.inventoryapi.entities.Purchase;
@@ -17,14 +16,17 @@ import com.jcanseco.inventoryapi.repositories.SupplierRepository;
 import com.jcanseco.inventoryapi.specifications.StockSpecifications;
 import com.jcanseco.inventoryapi.utils.IndexUtility;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import static com.jcanseco.inventoryapi.specifications.PurchaseSpecifications.*;
 
 @RequiredArgsConstructor
 @Service
@@ -76,7 +78,7 @@ public class PurchaseService {
     }
 
     @Transactional
-    public void markPurchaseAsArrived(Long purchaseId) {
+    public void receivePurchase(Long purchaseId) {
 
         var purchase = purchaseRepository.findById(purchaseId)
                 .orElseThrow(() -> new NotFoundException(String.format("Purchase with the Id : {%d} was not found.", purchaseId)));
@@ -100,7 +102,7 @@ public class PurchaseService {
         }
 
         purchase.setArrived(true);
-        purchase.setOrderedAt(LocalDateTime.now());
+        purchase.setArrivedAt(LocalDateTime.now());
 
         purchaseRepository.saveAndFlush(purchase);
 
@@ -149,19 +151,62 @@ public class PurchaseService {
                 .orElseThrow(() -> new NotFoundException(String.format("Purchase with the Id : {%d} was not found", purchaseId)));
     }
 
-    private Specification<Purchase> composeOrderBy(Specification<Purchase> specification, GetProductsRequest request) {
-        return null;
+    private Specification<Purchase> orderBySpecification(Specification<Purchase> spec, GetPurchasesRequest request) {
+
+        var orderBy = !StringUtils.hasText(request.getOrderBy())? "" : request.getOrderBy();
+        var isAscending = indexUtility.isAscendingOrder(request.getSortOrder());
+
+        return switch (orderBy) {
+            case "id" -> isAscending? orderByIdAsc(spec) : orderByIdDesc(spec);
+            case "supplier" -> isAscending? orderBySupplierAsc(spec) : orderBySupplierDesc(spec);
+            case "total" -> isAscending? orderByTotalAsc(spec) : orderByTotalDesc(spec);
+            case "arrived" -> isAscending? orderByArrivedAsc(spec) : orderByArrivedDesc(spec);
+            case "arrivedAt" -> isAscending? orderByArrivedAtAsc(spec) : orderByArrivedAtDesc(spec);
+            case "orderedAt" -> isAscending? orderByOrderedAtAsc(spec) : orderByOrderedAtDesc(spec);
+            default -> isAscending? orderByOrderedAtAsc(spec) : orderByOrderedAtDesc(spec);
+        };
     }
 
-    private Specification<Purchase> composeSpecification(GetProductsRequest request) {
-        return null;
+    private Specification<Purchase> composeSpecification(GetPurchasesRequest request) {
+
+        Specification<Purchase> spec = Specification.where(null);
+
+        if (request.getSupplierId() != null) {
+            var supplier = supplierRepository.findById(request.getSupplierId()).orElse(null);
+            spec = spec.and(bySupplier(supplier));
+        }
+
+        if (request.getArrived() != null) {
+            spec = spec.and(byArrived(request.getArrived()));
+        }
+
+        if (request.getOrderedAtStartDate() != null && request.getOrderedAtEndDate() != null) {
+            spec = spec.and(byOrderedBetween(request.getOrderedAtStartDate(), request.getOrderedAtEndDate()));
+        }
+
+        if (request.getArrivedAtStartDate() != null && request.getArrivedAtEndDate() != null) {
+            spec = spec.and(byArrivedBetween(request.getArrivedAtStartDate(), request.getArrivedAtEndDate()));
+        }
+
+        return orderBySpecification(spec, request);
     }
 
     public List<PurchaseDto> getPurchases(GetPurchasesRequest request) {
-        return null;
+        var spec = composeSpecification(request);
+        return purchaseRepository.findAll(spec)
+                .stream()
+                .map(purchaseMapper::entityToDto)
+                .toList();
     }
 
     public PagedList<PurchaseDto> getPurchasesPage(GetPurchasesRequest request) {
-        return null;
+        var pageNumber = indexUtility.toZeroBasedIndex(request.getPageNumber());
+        var pageSize = request.getPageSize();
+
+        var specification = composeSpecification(request);
+        var pageRequest = PageRequest.of(pageNumber, pageSize);
+        var page = purchaseRepository.findAll(specification, pageRequest);
+
+        return purchaseMapper.pageToPagedList(page);
     }
 }

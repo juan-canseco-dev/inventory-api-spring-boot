@@ -11,7 +11,7 @@ public class PurchaseSpecifications {
         return (root, query, builder) -> builder.equal(root.get("supplier"), supplier);
     }
 
-    public static Specification<Purchase> arrivedBetween(LocalDateTime startDate, LocalDateTime endDate) {
+    public static Specification<Purchase> byArrivedBetween(LocalDateTime startDate, LocalDateTime endDate) {
         return (root, query, builder) -> builder.between(root.get("arrivedAt"), startDate, endDate);
     }
 
@@ -19,8 +19,8 @@ public class PurchaseSpecifications {
         return (root, query, builder) -> builder.between(root.get("orderedAt"), startDate, endDate);
     }
 
-    public static Specification<Purchase> isArrived() {
-        return (root, query, builder) -> builder.equal(root.get("arrived"), true);
+    public static Specification<Purchase> byArrived(boolean arrived) {
+        return (root, query, builder) -> builder.equal(root.get("arrived"), arrived);
     }
 
     public static Specification<Purchase> orderByIdAsc(Specification<Purchase> spec) {

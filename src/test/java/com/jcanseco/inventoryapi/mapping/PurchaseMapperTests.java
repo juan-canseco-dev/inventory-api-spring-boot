@@ -7,9 +7,15 @@ import com.jcanseco.inventoryapi.mappers.PurchaseMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PurchaseMapperTests {
@@ -116,6 +122,102 @@ public class PurchaseMapperTests {
         assertEquals(entity.isArrived(), dto.isArrived());
         assertEquals(entity.getArrivedAt(), dto.getArrivedAt());
     }
+
+
+    private List<Purchase> buildPurchases() {
+
+        var items1 = List.of(
+                PurchaseItem.builder()
+                        .productId(11L)
+                        .productName("Coffee Maker")
+                        .productUnit("Piece")
+                        .quantity(10L)
+                        .price(new BigDecimal("50.00"))
+                        .total(new BigDecimal("500.00"))
+                        .build(),
+
+                PurchaseItem.builder()
+                        .productId(12L)
+                        .productName("Desk Chair")
+                        .productUnit("Piece")
+                        .quantity(10L)
+                        .price(new BigDecimal("100.00"))
+                        .total(new BigDecimal("1000.00"))
+                        .build()
+                );
+
+        var purchase1 = Purchase.builder()
+                .id(6L)
+                .supplier(Supplier.builder().build())
+                .items(items1)
+                .total(new BigDecimal("1500.00"))
+                .orderedAt(LocalDateTime.now())
+                .arrivedAt(LocalDateTime.now().plusHours(10))
+                .arrived(true)
+                .build();
+
+        // items 2
+
+        var items2 = List.of(
+                PurchaseItem.builder()
+                        .productId(13L)
+                        .productName("Washing Machine")
+                        .productUnit("Piece")
+                        .quantity(10L)
+                        .price(new BigDecimal("400.00"))
+                        .total(new BigDecimal("4000.00"))
+                        .build(),
+
+                PurchaseItem.builder()
+                        .productId(14L)
+                        .productName("Office Desk")
+                        .productUnit("Piece")
+                        .quantity(10L)
+                        .price(new BigDecimal("120.00"))
+                        .total(new BigDecimal("1200.00"))
+                        .build()
+        );
+
+        var purchase2 = Purchase.builder()
+                .id(7L)
+                .supplier(Supplier.builder().build())
+                .items(items2)
+                .total(new BigDecimal("5200.00"))
+                .orderedAt(LocalDateTime.now())
+                .arrivedAt(LocalDateTime.now().plusHours(10))
+                .arrived(true)
+                .build();
+
+
+        return List.of(purchase1, purchase2);
+    }
+
+
+    @Test
+    public void pageToPagedList() {
+
+        var pageNumber = 1;
+        var totalElementsInDb = 4;
+        var totalPages = 2;
+        var pageSize = 2;
+
+        var purchases = buildPurchases();
+
+        var purchasesDto = purchases.stream().map(mapper::entityToDto).toList();
+
+        Page<Purchase> page = new PageImpl<>(purchases, Pageable.ofSize(pageSize), totalElementsInDb);
+        var pagedList = mapper.pageToPagedList(page);
+
+        assertNotNull(pagedList);
+        assertEquals(pageNumber, pagedList.getPageNumber());
+        assertEquals(pageSize, pagedList.getPageSize());
+        assertEquals(totalElementsInDb, pagedList.getTotalElements());
+        assertEquals(totalPages, pagedList.getTotalPages());
+        assertFalse(pagedList.hasPreviousPage());
+        assertTrue(pagedList.hasNextPage());
+        assertThat(pagedList.getItems()).hasSameElementsAs(purchasesDto);
+    }
+
 
     private void assertEqualsSupplier(Supplier expected, SupplierDto actual) {
         assertEquals(expected.getId(), actual.getId());

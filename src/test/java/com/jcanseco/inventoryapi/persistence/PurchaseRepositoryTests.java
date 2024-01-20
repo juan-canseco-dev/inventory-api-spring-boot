@@ -91,7 +91,7 @@ public class PurchaseRepositoryTests {
     public void getPurchasesByArrivedBetweenSpecificationShouldReturnList() {
         var startDate = LocalDateTime.of(2023, Month.JUNE, 5, 0,0);
         var endDate = LocalDateTime.of(2023, Month.JUNE, 19, 0, 0);
-        var specification = PurchaseSpecifications.arrivedBetween(startDate, endDate);
+        var specification = PurchaseSpecifications.byArrivedBetween(startDate, endDate);
         var purchases = purchaseRepository.findAll(specification);
         assertNotNull(purchases);
         assertEquals(3, purchases.size());
@@ -109,9 +109,20 @@ public class PurchaseRepositoryTests {
 
     @Test
     @Sql("/multiple-purchases.sql")
-    public void getPurchasesByIsArrivedSpecificationShouldReturnList() {
+    public void getPurchasesByArrivedSpecificationWhenArrivedIsTrueShouldReturnList() {
         var arrivedPurchases = purchaseRepository.findAll(
-                PurchaseSpecifications.isArrived()
+                PurchaseSpecifications.byArrived(true)
+        );
+        assertNotNull(arrivedPurchases);
+        assertEquals(5, arrivedPurchases.size());
+    }
+
+
+    @Test
+    @Sql("/multiple-purchases.sql")
+    public void getPurchasesByArrivedSpecificationWhenArrivedIsFalseShouldReturnList() {
+        var arrivedPurchases = purchaseRepository.findAll(
+                PurchaseSpecifications.byArrived(false)
         );
         assertNotNull(arrivedPurchases);
         assertEquals(5, arrivedPurchases.size());

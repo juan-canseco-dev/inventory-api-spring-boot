@@ -63,8 +63,10 @@ public class GetPurchasesValidationTests {
                 Arguments.arguments(null, null, null, null, null),
                 Arguments.arguments(1, 1, "id", "asc", 1L),
                 Arguments.arguments(1, 1, "supplier", "ascending" , 1L),
-                Arguments.arguments(1, 1, "createdAt", "desc", 1L),
-                Arguments.arguments(1, 1, "arrivedAt", "descending", 1L)
+                Arguments.arguments(1, 1, "orderedAt", "desc", 1L),
+                Arguments.arguments(1, 1, "arrivedAt", "descending", 1L),
+                Arguments.arguments(1, 1, "arrived", "descending", 1L),
+                Arguments.arguments(1, 1, "total", "descending", 1L)
         );
     }
 

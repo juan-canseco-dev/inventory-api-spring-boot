@@ -41,7 +41,7 @@ public class PurchaseController {
 
     @PutMapping("{purchaseId}/receive")
     public ResponseEntity<Void> receive(@PathVariable Long purchaseId) {
-        purchaseService.markPurchaseAsArrived(purchaseId);
+        purchaseService.receivePurchase(purchaseId);
         return ResponseEntity.noContent().build();
     }
 
