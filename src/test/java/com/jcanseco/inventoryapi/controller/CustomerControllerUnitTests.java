@@ -33,7 +33,8 @@ import static org.mockito.Mockito.doThrow;
         @MockBean(CategoryService.class),
         @MockBean(ProductService.class),
         @MockBean(SupplierService.class),
-        @MockBean(UnitService.class)
+        @MockBean(UnitService.class),
+        @MockBean(PurchaseService.class)
 })
 @WebMvcTest(
         controllers = CustomerController.class,

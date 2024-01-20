@@ -16,7 +16,8 @@ import java.net.URISyntaxException;
 
 @Validated
 @RestControllerAdvice
-@RestController("api/purchases")
+@RequestMapping("api/purchases")
+@RestController
 @RequiredArgsConstructor
 public class PurchaseController {
 
@@ -42,6 +43,12 @@ public class PurchaseController {
     @PutMapping("{purchaseId}/receive")
     public ResponseEntity<Void> receive(@PathVariable Long purchaseId) {
         purchaseService.receivePurchase(purchaseId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("{purchaseId}")
+    public ResponseEntity<Void> delete(@PathVariable Long purchaseId) {
+        purchaseService.deletePurchase(purchaseId);
         return ResponseEntity.noContent().build();
     }
 
