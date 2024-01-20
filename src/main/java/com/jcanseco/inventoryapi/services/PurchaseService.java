@@ -91,7 +91,7 @@ public class PurchaseService {
                 .collect(Collectors.toMap(PurchaseItem::getProductId, PurchaseItem::getQuantity));
 
         var stocks = stockRepository.findAll(
-                StockSpecifications.byProductIds(productsWithQuantities.keySet())
+                StockSpecifications.byProductIds(productsWithQuantities.keySet().stream().toList())
         );
 
         for (Stock stock : stocks) {
