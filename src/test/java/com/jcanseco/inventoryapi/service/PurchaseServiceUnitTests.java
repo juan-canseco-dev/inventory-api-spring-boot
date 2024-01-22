@@ -1,6 +1,7 @@
 package com.jcanseco.inventoryapi.service;
 
 import com.jcanseco.inventoryapi.dtos.purchases.CreatePurchaseDto;
+import com.jcanseco.inventoryapi.dtos.purchases.GetPurchasesRequest;
 import com.jcanseco.inventoryapi.dtos.purchases.UpdatePurchaseDto;
 import com.jcanseco.inventoryapi.entities.*;
 import com.jcanseco.inventoryapi.exceptions.DomainException;
@@ -13,6 +14,12 @@ import com.jcanseco.inventoryapi.repositories.SupplierRepository;
 import com.jcanseco.inventoryapi.services.PurchaseService;
 import com.jcanseco.inventoryapi.utils.IndexUtility;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +30,7 @@ import java.util.Optional;
 import org.mockito.*;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 public class PurchaseServiceUnitTests {
@@ -35,11 +43,15 @@ public class PurchaseServiceUnitTests {
     @Mock
     private PurchaseRepository purchaseRepository;
     @Spy
-    private PurchaseMapper purchaseMapper;
+    private PurchaseMapper purchaseMapper = Mappers.getMapper(PurchaseMapper.class);
     @Spy
     private IndexUtility indexUtility;
     @InjectMocks
     private PurchaseService service;
+    @Captor
+    private ArgumentCaptor<Purchase> purchaseArgCaptor;
+    @Captor
+    private ArgumentCaptor<List<Stock>> stocksArgCaptor;
     private final Long purchaseId = 1L;
     private final Long supplierId = 1L;
 
@@ -55,6 +67,8 @@ public class PurchaseServiceUnitTests {
 
     private Supplier supplier;
     private List<Product> products;
+    private List<Stock> stocks;
+    private List<Stock> expectedStocks;
 
     @BeforeEach
     public void setup() {
@@ -105,6 +119,37 @@ public class PurchaseServiceUnitTests {
                         .salePrice(new BigDecimal("40.00"))
                         .build()
                 );
+
+        stocks = List.of(
+                Stock.builder()
+                        .id(1L)
+                        .product(products.get(0))
+                        .productId(products.get(0).getId())
+                        .quantity(10L)
+                        .build(),
+                Stock.builder()
+                        .id(2L)
+                        .product(products.get(1))
+                        .productId(products.get(1).getId())
+                        .quantity(10L)
+                        .build()
+        );
+
+        expectedStocks = List.of(
+                Stock.builder()
+                        .id(1L)
+                        .product(products.get(0))
+                        .productId(products.get(0).getId())
+                        .quantity(20L)
+                        .build(),
+                Stock.builder()
+                        .id(2L)
+                        .product(products.get(1))
+                        .productId(products.get(1).getId())
+                        .quantity(20L)
+                        .build()
+        );
+
     }
 
     @Test
@@ -127,7 +172,6 @@ public class PurchaseServiceUnitTests {
 
         verify(purchaseRepository, times(1)).saveAndFlush(any());
 
-        var purchaseArgCaptor = ArgumentCaptor.forClass(Purchase.class);
         verify(purchaseRepository).saveAndFlush(purchaseArgCaptor.capture());
 
         var newPurchase = purchaseArgCaptor.getValue();
@@ -171,7 +215,6 @@ public class PurchaseServiceUnitTests {
 
         verify(purchaseRepository, times(1)).saveAndFlush(any());
 
-        var purchaseArgCaptor = ArgumentCaptor.forClass(Purchase.class);
         verify(purchaseRepository).saveAndFlush(purchaseArgCaptor.capture());
 
         var updatedPurchase = purchaseArgCaptor.getValue();
@@ -210,45 +253,149 @@ public class PurchaseServiceUnitTests {
     @Test
     public void receivePurchaseWhenPurchaseIsNotArrivedShouldReceive() {
 
+        var purchase = Purchase.createNew(supplier, products, productsWithQuantities);
+        purchase.setId(purchaseId);
+
+        when(purchaseRepository.findById(purchaseId)).thenReturn(Optional.of(purchase));
+        when(stockRepository.findAll(any(Specification.class))).thenReturn(stocks);
+
+        service.receivePurchase(purchaseId);
+
+        verify(purchaseRepository, times(1)).saveAndFlush(any());
+        verify(purchaseRepository).saveAndFlush(purchaseArgCaptor.capture());
+        var updatedPurchase = purchaseArgCaptor.getValue();
+        assertTrue(updatedPurchase.isArrived());
+        assertNotNull(updatedPurchase.getArrivedAt());
+
+        verify(stockRepository, times(1)).saveAllAndFlush(any());
+        verify(stockRepository).saveAllAndFlush(stocksArgCaptor.capture());
+        var updatedStocks = stocksArgCaptor.getValue();
+
+        assertThat(updatedStocks).hasSameElementsAs(expectedStocks);
     }
 
     @Test
     public void receivePurchaseWhenPurchaseIsArrivedShouldThrowException() {
 
+        var purchase = Purchase.createNew(supplier, products, productsWithQuantities);
+        purchase.setId(purchaseId);
+        purchase.markAsArrived();
+
+        when(purchaseRepository.findById(purchaseId)).thenReturn(Optional.of(purchase));
+
+        assertThrows(DomainException.class, () -> service.receivePurchase(purchaseId));
     }
 
     @Test
     public void receivePurchaseWhenPurchaseNotExistsShouldThrowException() {
-
+        when(purchaseRepository.findById(purchaseId)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> service.receivePurchase(purchaseId));
     }
 
     @Test
     public void deletePurchaseWhenPurchaseExistsShouldDelete() {
+        Purchase purchase = mock();
+        when(purchaseRepository.findById(purchaseId)).thenReturn(Optional.of(purchase));
+        doNothing().when(purchaseRepository).delete(purchase);
+        service.deletePurchase(purchaseId);
+        verify(purchaseRepository, times(1)).delete(purchase);
+    }
 
+    @Test
+    public void deleteWhenPurchaseIsArrivedShouldThrowException() {
+        var purchase = Purchase.createNew(supplier, products, productsWithQuantities);
+        purchase.setId(purchaseId);
+        purchase.markAsArrived();
+
+        when(purchaseRepository.findById(purchaseId)).thenReturn(Optional.of(purchase));
+
+        assertThrows(DomainException.class, () -> service.deletePurchase(purchaseId));
     }
 
     @Test
     public void deletePurchaseWhenPurchaseNotExistsShouldThrowException() {
-
+        when(purchaseRepository.findById(purchaseId)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> service.deletePurchase(purchaseId));
     }
 
     @Test
     public void getPurchaseWhenPurchaseExistsShouldGet() {
 
+        var purchase = Purchase.createNew(supplier, products, productsWithQuantities);
+        purchase.setId(purchaseId);
+
+        var expectedPurchase = purchaseMapper.entityToDetailsDto(purchase);
+        when(purchaseRepository.findById(purchaseId)).thenReturn(Optional.of(purchase));
+
+        var result = service.getPurchaseById(purchaseId);
+        assertEquals(expectedPurchase, result);
     }
 
     @Test
     public void getPurchaseWhenPurchaseDoNotExistsShouldThrowException() {
-
+        when(purchaseRepository.findById(purchaseId)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> service.getPurchaseById(purchaseId));
     }
 
     @Test
     public void getPurchasesShouldReturnList() {
 
+        var purchase = Purchase.createNew(supplier, products, productsWithQuantities);
+        purchase.setId(purchaseId);
+
+        var purchases = List.of(
+                purchase
+        );
+
+        var expectedResult = purchases.stream().map(purchaseMapper::entityToDto).toList();
+        var request = GetPurchasesRequest.builder().build();
+        Specification<Purchase> spec = any(Specification.class);
+
+        when(purchaseRepository.findAll(spec)).thenReturn(purchases);
+
+        var result = service.getPurchases(request);
+        assertEquals(expectedResult, result);
     }
 
     @Test
     public void getPurchasesPageShouldReturnPagedList() {
 
+        var totalPurchasesInDb = 2;
+
+        var totalPages = 2;
+
+        var purchase = Purchase.createNew(supplier, products, productsWithQuantities);
+        purchase.setId(purchaseId);
+
+        var purchases = List.of(
+                purchase
+        );
+        var expectedItems =  purchases.stream().map(purchaseMapper::entityToDto).toList();
+
+
+        var request = GetPurchasesRequest.builder()
+                .pageNumber(1)
+                .pageSize(1)
+                .build();
+
+        Specification<Purchase> mockSpec = any(Specification.class);
+        PageRequest mockPageRequest = any();
+        Page<Purchase> mockPage = new PageImpl<>(
+                purchases,
+                Pageable.ofSize(1),
+                totalPurchasesInDb
+        );
+
+        when(purchaseRepository.findAll(mockSpec, mockPageRequest)).thenReturn(mockPage);
+
+        var pagedList = service.getPurchasesPage(request);
+        assertNotNull(pagedList);
+        assertEquals(request.getPageNumber(), pagedList.getPageNumber());
+        assertEquals(request.getPageSize(), pagedList.getPageSize());
+        assertEquals(totalPurchasesInDb, pagedList.getTotalElements());
+        assertEquals(totalPages, pagedList.getTotalPages());
+        assertFalse(pagedList.hasPreviousPage());
+        assertTrue(pagedList.hasNextPage());
+        assertThat(pagedList.getItems()).hasSameElementsAs(expectedItems);
     }
 }

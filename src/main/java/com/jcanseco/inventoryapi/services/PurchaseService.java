@@ -66,12 +66,9 @@ public class PurchaseService {
         );
 
         for (Stock stock : stocks) {
-            var currentQuantity = stock.getQuantity();
-            var newQuantity = productsWithQuantities.get(stock.getProductId());
-            var updatedQuantity = currentQuantity + newQuantity;
-            stock.setQuantity(updatedQuantity);
+            var quantity = productsWithQuantities.get(stock.getProductId());
+            stock.addStock(quantity);
         }
-
 
         purchaseRepository.saveAndFlush(purchase);
 

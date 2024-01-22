@@ -1,6 +1,7 @@
 package com.jcanseco.inventoryapi.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jcanseco.inventoryapi.exceptions.DomainException;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -33,4 +34,17 @@ public class Stock {
     @JoinColumn(name = "product_id")
     @JsonIgnore
     private Product product;
+
+    public void addStock(Long addQuantity) {
+        var newQuantity = getQuantity() + addQuantity;
+        setQuantity(newQuantity);
+    }
+
+    public void removeStock(Long removeQuantity) {
+        if (removeQuantity > getQuantity()) {
+            throw new DomainException(String.format("Invalid stock operation: Cannot remove %d units from inventory. Current stock quantity for ProductId %d: %d.", removeQuantity, getProductId(), getQuantity()));
+        }
+        var newQuantity = getQuantity() - removeQuantity;
+        setQuantity(newQuantity);
+    }
 }
