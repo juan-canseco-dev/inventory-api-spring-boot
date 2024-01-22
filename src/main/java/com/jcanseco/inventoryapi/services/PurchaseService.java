@@ -21,9 +21,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import static com.jcanseco.inventoryapi.specifications.PurchaseSpecifications.*;
@@ -39,21 +36,6 @@ public class PurchaseService {
     private final PurchaseMapper purchaseMapper;
     private final IndexUtility indexUtility;
 
-    private List<PurchaseItem> getItemsByProducts(List<Product> products, HashMap<Long, Long> quantities) {
-        return products.stream().map(p -> PurchaseItem.builder()
-                .product(p)
-                .productId(p.getId())
-                .productName(p.getName())
-                .productUnit(p.getUnit().getName())
-                .quantity(quantities.get(p.getId()))
-                .price(p.getPurchasePrice())
-                .total(p.getPurchasePrice().multiply(BigDecimal.valueOf(quantities.get(p.getId()))))
-                .build()).toList();
-    }
-
-    private BigDecimal getTotalFromItems(List<PurchaseItem> items) {
-        return items.stream().map(PurchaseItem::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
 
     @Transactional
     public Long createPurchase(CreatePurchaseDto dto) {
@@ -62,19 +44,10 @@ public class PurchaseService {
         var productsWithQuantities = dto.getProductsWithQuantities();
         var products = productRepository.findAllById(productsWithQuantities.keySet());
 
-        var items = getItemsByProducts(products, productsWithQuantities);
+        var newPurchase = Purchase.createNew(supplier, products, productsWithQuantities);
+        var savedPurchase = purchaseRepository.saveAndFlush(newPurchase);
 
-        var total = getTotalFromItems(items);
-
-        var purchase = Purchase.builder()
-                .supplier(supplier)
-                .items(items)
-                .total(total)
-                .build();
-
-        var newPurchase = purchaseRepository.saveAndFlush(purchase);
-
-        return newPurchase.getId();
+        return savedPurchase.getId();
     }
 
     @Transactional
@@ -83,9 +56,7 @@ public class PurchaseService {
         var purchase = purchaseRepository.findById(purchaseId)
                 .orElseThrow(() -> new NotFoundException(String.format("Purchase with the Id : {%d} was not found.", purchaseId)));
 
-        if (purchase.isArrived()) {
-            throw new DomainException(String.format("The purchase with ID %d has already been marked as 'arrived'.", purchaseId));
-        }
+        purchase.markAsArrived();
 
         var productsWithQuantities = purchase.getItems().stream()
                 .collect(Collectors.toMap(PurchaseItem::getProductId, PurchaseItem::getQuantity));
@@ -101,8 +72,6 @@ public class PurchaseService {
             stock.setQuantity(updatedQuantity);
         }
 
-        purchase.setArrived(true);
-        purchase.setArrivedAt(LocalDateTime.now());
 
         purchaseRepository.saveAndFlush(purchase);
 
@@ -127,17 +96,10 @@ public class PurchaseService {
         var purchase = purchaseRepository.findById(dto.getPurchaseId())
                 .orElseThrow(() -> new NotFoundException(String.format("Purchase with the Id : {%d} was not found.", dto.getPurchaseId())));
 
-        if (purchase.isArrived()) {
-            throw new DomainException(String.format("Purchase with Id %d has already arrived and cannot be updated.", dto.getPurchaseId()));
-        }
 
         var productsWithQuantities = dto.getProductsWithQuantities();
         var products = productRepository.findAllById(productsWithQuantities.keySet());
-        var items = getItemsByProducts(products, productsWithQuantities);
-        var total = getTotalFromItems(items);
-
-        purchase.setItems(items);
-        purchase.setTotal(total);
+        purchase.update(products, productsWithQuantities);
 
         purchaseRepository.saveAndFlush(purchase);
     }
