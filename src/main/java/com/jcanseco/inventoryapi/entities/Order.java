@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @EqualsAndHashCode
 @Builder
@@ -81,7 +82,8 @@ public class Order {
                 .quantity(quantities.get(p.getId()))
                 .price(p.getSalePrice())
                 .total(p.getSalePrice().multiply(BigDecimal.valueOf(quantities.get(p.getId()))))
-                .build()).toList();
+                .build())
+                .collect(Collectors.toList());
     }
 
     private static BigDecimal getTotalFromItems(List<OrderItem> items) {

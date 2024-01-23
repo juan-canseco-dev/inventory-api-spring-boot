@@ -6,9 +6,9 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @EqualsAndHashCode
 @Builder
@@ -33,7 +33,7 @@ public class Purchase {
 
 
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL)
-    private List<PurchaseItem> items = new ArrayList<>();
+    private List<PurchaseItem> items;
 
     @Column(nullable = false, name = "arrived", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean arrived;
@@ -84,7 +84,8 @@ public class Purchase {
                 .quantity(quantities.get(p.getId()))
                 .price(p.getPurchasePrice())
                 .total(p.getPurchasePrice().multiply(BigDecimal.valueOf(quantities.get(p.getId()))))
-                .build()).toList();
+                .build())
+                .collect(Collectors.toList());
     }
 
     private static BigDecimal getTotalFromItems(List<PurchaseItem> items) {
