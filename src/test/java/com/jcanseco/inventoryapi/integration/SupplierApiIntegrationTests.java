@@ -7,7 +7,6 @@ import com.jcanseco.inventoryapi.dtos.suppliers.CreateSupplierDto;
 import com.jcanseco.inventoryapi.dtos.suppliers.SupplierDetailsDto;
 import com.jcanseco.inventoryapi.dtos.suppliers.SupplierDto;
 import com.jcanseco.inventoryapi.dtos.suppliers.UpdateSupplierDto;
-import com.jcanseco.inventoryapi.entities.Address;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class SupplierApiIntegrationTests {
                 .build();
     }
 
-    @Sql(statements = "DELETE FROM suppliers;", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-suppliers.sql")
     @Test
     public void createSupplierStatusShouldBeCreated() throws JsonProcessingException {
         var dto = CreateSupplierDto.builder()
@@ -62,19 +61,11 @@ public class SupplierApiIntegrationTests {
         assertTrue(response.getBody() > 0L);
     }
 
-    @Sql(
-            statements = "INSERT INTO suppliers (id, company_name, contact_name, contact_phone, " +
-                    "supplier_address_country, supplier_address_state, supplier_address_city, " +
-                    "supplier_address_zip_code, supplier_address_street) " +
-                    "VALUES (11, 'ABC Corp', 'John Doe', '555-1234-1', 'United States', " +
-                    "'California', 'San Francisco', '94105', '123 Main St')",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
-    @Sql(statements = "DELETE FROM suppliers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-suppliers.sql")
     @Test
     public void updateSupplierStatusShouldBeNoContent() throws JsonProcessingException {
 
-        var supplierId = 11L;
+        var supplierId = 1L;
         var url = baseUrl() + "/" +supplierId;
 
         var address = AddressDto.builder()
@@ -98,37 +89,21 @@ public class SupplierApiIntegrationTests {
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
     }
 
-    @Sql(
-            statements = "INSERT INTO suppliers (id, company_name, contact_name, contact_phone, " +
-                    "supplier_address_country, supplier_address_state, supplier_address_city, " +
-                    "supplier_address_zip_code, supplier_address_street) " +
-                    "VALUES (12, 'ABC Corp', 'John Doe', '555-1234-1', 'United States', " +
-                    "'California', 'San Francisco', '94105', '123 Main St')",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
-    @Sql(statements = "DELETE FROM suppliers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-suppliers.sql")
     @Test
     public void deleteSupplierStatusShouldBeNoContent() {
-        var supplierId = 12L;
+        var supplierId = 1L;
         var url = baseUrl() + "/" +supplierId;
         var response = restTemplate.exchange(url, HttpMethod.DELETE, null, Void.class);
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
     }
 
 
-    @Sql(
-            statements = "INSERT INTO suppliers (id, company_name, contact_name, contact_phone, " +
-                    "supplier_address_country, supplier_address_state, supplier_address_city, " +
-                    "supplier_address_zip_code, supplier_address_street) " +
-                    "VALUES (13, 'ABC Corp', 'John Doe', '555-1234-1', 'United States', " +
-                    "'California', 'San Francisco', '94105', '123 Main St')",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
-    @Sql(statements = "DELETE FROM suppliers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-suppliers.sql")
     @Test
     public void getSupplierByIdStatusShouldBeOk() {
 
-        var supplierId = 13L;
+        var supplierId = 1L;
         var url = baseUrl() + "/" + supplierId;
 
         var expected = SupplierDetailsDto.builder()
@@ -153,8 +128,7 @@ public class SupplierApiIntegrationTests {
         assertEquals(expected, result);
     }
 
-    @Sql(value = "/multiple-suppliers.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(statements = "DELETE FROM suppliers;", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-suppliers.sql")
     @Test
     public void getSuppliersStatusShouldBeOk() {
         var url = baseUrl() + "?orderBy=companyName&sortOrder=asc&companyName=a&contactName=l&contactPhone=5";
@@ -167,8 +141,7 @@ public class SupplierApiIntegrationTests {
 
     }
 
-    @Sql(value = "/multiple-suppliers.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(statements = "DELETE FROM suppliers;", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-suppliers.sql")
     @Test
     public void getSuppliersPageStatusShouldBeOk() {
         var url = baseUrl() + "?pageNumber=1&pageSize=2&orderBy=companyName&sortOrder=asc&companyName=a&contactName=l&contactPhone=5";
