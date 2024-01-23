@@ -39,7 +39,7 @@ public class UnitOfMeasurementApiIntegrationTests {
     }
 
     @Test
-    @Sql(statements = "DELETE FROM units_of_measurement", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-units_of_measurement.sql")
     public void createUnitOfMeasurementStatusShouldBeCreated() throws JsonProcessingException {
 
         var dto = CreateUnitOfMeasurementDto.builder()
@@ -53,15 +53,14 @@ public class UnitOfMeasurementApiIntegrationTests {
     }
 
     @Test
-    @Sql(statements = "INSERT INTO units_of_measurement (id, name) VALUES (11, 'Pieces')", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(statements = "DELETE FROM units_of_measurement", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-units_of_measurement.sql")
     public void updateUnitStatusShouldBeNoContent() throws JsonProcessingException {
 
-        var unitId = 11L;
+        var unitId = 1L;
         var url = baseUrl() + "/" + unitId;
         var dto = UpdateUnitOfMeasurementDto.builder()
                 .unitOfMeasurementId(unitId)
-                .name("Piece")
+                .name("Meter MT")
                 .build();
 
         var entity = new HttpEntity<>(mapper.writeValueAsString(dto), httpHeaders);
@@ -69,29 +68,33 @@ public class UnitOfMeasurementApiIntegrationTests {
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
     }
 
-    @Sql(statements = "INSERT INTO units_of_measurement (id, name) VALUES (20, 'Each')", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(statements = "DELETE FROM units_of_measurement", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+
+    @Sql("/multiple-units_of_measurement.sql")
     @Test
     public void deleteUnitStatusShouldBeNoContent() {
-        var unitId = 20L;
+        var unitId = 1L;
         var url = baseUrl() + "/" + unitId;
         var response = restTemplate.exchange(url, HttpMethod.DELETE, null, Void.class);
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
     }
 
-    @Sql(statements = "INSERT INTO units_of_measurement (id, name) VALUES (1, 'Piece')", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(statements = "DELETE FROM units_of_measurement", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-units_of_measurement.sql")
     @Test
     public void getUnitByIdStatusShouldBeOk() {
+
         var unitId = 1L;
-        var unitName = "Piece";
+
+        var expectedUnit = UnitOfMeasurementDto.builder()
+                .id(unitId)
+                .name("Meter")
+                .build();
+
         var url = baseUrl() + "/" + unitId;
         var response = restTemplate.exchange(url, HttpMethod.GET, null, UnitOfMeasurementDto.class);
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertNotNull(response.getBody());
         var unit = response.getBody();
-        assertEquals(unitId, unit.getId());
-        assertEquals(unitName, unit.getName());
+        assertEquals(expectedUnit, unit);
     }
 
     @Sql("/multiple-units_of_measurement.sql")
