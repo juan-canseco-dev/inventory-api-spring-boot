@@ -30,6 +30,7 @@ public class Stock {
     @Column(updatable = false)
     private LocalDateTime updatedAt;
 
+    @EqualsAndHashCode.Exclude
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     @JsonIgnore

@@ -51,7 +51,8 @@ public class Purchase {
         }
         var items = getItemsByProducts(products, productsWithQuantities);
         var total = getTotalFromItems(items);
-        setItems(items);
+        this.items.clear();
+        this.items.addAll(items);
         setTotal(total);
     }
 
