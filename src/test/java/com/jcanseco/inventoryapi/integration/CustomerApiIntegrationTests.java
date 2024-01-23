@@ -46,7 +46,7 @@ public class CustomerApiIntegrationTests {
     }
 
 
-    @Sql(statements = "DELETE FROM customers;", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-customers.sql")
     @Test
     public void createCustomerStatusShouldBeCreated() throws JsonProcessingException {
         var dto = CreateCustomerDto.builder()
@@ -62,19 +62,11 @@ public class CustomerApiIntegrationTests {
         assertTrue(response.getBody() > 0L);
     }
 
-    @Sql(statements = "INSERT INTO customers (id, dni, phone, full_name, " +
-                      "customer_address_country, customer_address_state, " +
-                      "customer_address_city, customer_address_zip_code, " +
-                      "customer_address_street) " +
-                      "VALUES (11,'123456789', '555-1234-1', 'John Doe', " +
-                      "'United States', 'California', 'San Francisco', '94105', '123 Main St')",
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
-    @Sql(statements = "DELETE FROM customers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-customers.sql")
     @Test
     public void updateCustomerStatusShouldBeNoContent() throws JsonProcessingException {
 
-        var customerId = 11L;
+        var customerId = 1L;
         var url = baseUrl() + "/" + customerId;
         var dto = UpdateCustomerDto.builder()
                 .customerId(customerId)
@@ -90,36 +82,20 @@ public class CustomerApiIntegrationTests {
     }
 
 
-    @Sql(statements = "INSERT INTO customers (id, dni, phone, full_name, " +
-            "customer_address_country, customer_address_state, " +
-            "customer_address_city, customer_address_zip_code, " +
-            "customer_address_street) " +
-            "VALUES (12,'123456789', '555-1234-1', 'John Doe', " +
-            "'United States', 'California', 'San Francisco', '94105', '123 Main St')",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
-    @Sql(statements = "DELETE FROM customers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-customers.sql")
     @Test
     public void deleteCustomerStatusShouldBeNoContent()  {
-        var customerId = 12L;
+        var customerId = 1L;
         var url = baseUrl() + "/" + customerId;
         var response = restTemplate.exchange(url, HttpMethod.DELETE, null, Void.class);
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
     }
 
-
-    @Sql(statements = "INSERT INTO customers (id, dni, phone, full_name, " +
-            "customer_address_country, customer_address_state, " +
-            "customer_address_city, customer_address_zip_code, " +
-            "customer_address_street) " +
-            "VALUES (13,'123456789', '555-1234-1', 'John Doe', " +
-            "'United States', 'California', 'San Francisco', '94105', '123 Main St')",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
-    @Sql(statements = "DELETE FROM customers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-customers.sql")
     @Test
     public void getCustomerByIdStatusShouldBeNoContent() {
-        var customerId = 13L;
+        var customerId = 1L;
+
         var url = baseUrl() + "/" + customerId;
 
         var expected = CustomerDetailsDto.builder()
@@ -145,8 +121,7 @@ public class CustomerApiIntegrationTests {
         assertEquals(expected, result);
     }
 
-    @Sql(value = "/multiple-customers.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(statements = "DELETE FROM customers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-customers.sql")
     @Test
     public void getCustomersStatusShouldBeOk() {
         var url = baseUrl() + "?orderBy=fullName&sortOrder=asc&dni=1&phone=555&fullName=o";
@@ -158,8 +133,7 @@ public class CustomerApiIntegrationTests {
         assertEquals(5, customers.size());
     }
 
-    @Sql(value = "/multiple-customers.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(statements = "DELETE FROM customers", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-customers.sql")
     @Test
     public void getCustomersPageShouldBeOk() {
         var url = baseUrl() + "?pageNumber=1&pageSize=2&orderBy=fullName&sortOrder=asc&dni=1&phone=555&fullName=o";
