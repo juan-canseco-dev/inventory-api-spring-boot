@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class Purchase {
 
 
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL)
-    private List<PurchaseItem> items;
+    private List<PurchaseItem> items = new ArrayList<>();
 
     @Column(nullable = false, name = "arrived", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean arrived;
