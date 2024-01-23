@@ -38,7 +38,7 @@ public class CategoryApiIntegrationTests {
     }
 
     @Test
-    @Sql(statements = "DELETE FROM categories", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-categories.sql")
     public void createCategoryStatusShouldBeCreated() throws JsonProcessingException {
 
         var dto = CreateCategoryDto.builder()
@@ -52,15 +52,14 @@ public class CategoryApiIntegrationTests {
     }
 
     @Test
-    @Sql(statements = "INSERT INTO categories (id, name) VALUES (11, 'Home')", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(statements = "DELETE FROM categories", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-categories.sql")
     public void updateCategoryStatusShouldBeNoContent() throws JsonProcessingException {
 
-        var categoryId = 11L;
+        var categoryId = 1L;
         var url = baseUrl() + "/" + categoryId;
         var dto = UpdateCategoryDto.builder()
                 .categoryId(categoryId)
-                .name("Home & Garden")
+                .name("Computers & Electronics")
                 .build();
 
         var entity = new HttpEntity<>(mapper.writeValueAsString(dto), httpHeaders);
@@ -68,9 +67,8 @@ public class CategoryApiIntegrationTests {
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
     }
 
-    @Sql(statements = "INSERT INTO categories (id, name) VALUES (1, 'Videogames')", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(statements = "DELETE FROM categories", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @Sql("/multiple-categories.sql")
     public void deleteCategoryStatusShouldBeNoContent() {
         var categoryId = 1L;
         var url = baseUrl() + "/" + categoryId;
@@ -78,19 +76,21 @@ public class CategoryApiIntegrationTests {
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
     }
 
-    @Sql(statements = "INSERT INTO categories (id, name) VALUES (1, 'Home & Garden')", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(statements = "DELETE FROM categories", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql("/multiple-categories.sql")
     @Test
     public void getCategoryByIdStatusShouldBeOk() {
         var categoryId = 1L;
-        var categoryName = "Home & Garden";
+        var expectedCategory = CategoryDto.builder()
+                .id(categoryId)
+                .name("Electronics")
+                .build();
+
         var url = baseUrl() + "/" + categoryId;
         var response = restTemplate.exchange(url, HttpMethod.GET, null, CategoryDto.class);
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertNotNull(response.getBody());
         var category = response.getBody();
-        assertEquals(categoryId, category.getId());
-        assertEquals(categoryName, category.getName());
+        assertEquals(expectedCategory, category);
     }
 
     @Sql("/multiple-categories.sql")
