@@ -1,11 +1,11 @@
 package com.jcanseco.inventoryapi.controller;
 
-import com.jcanseco.inventoryapi.controllers.PurchaseController;
+import com.jcanseco.inventoryapi.controllers.OrderController;
 import com.jcanseco.inventoryapi.dtos.PagedList;
-import com.jcanseco.inventoryapi.dtos.purchases.CreatePurchaseDto;
-import com.jcanseco.inventoryapi.dtos.purchases.GetPurchasesRequest;
-import com.jcanseco.inventoryapi.dtos.purchases.PurchaseDto;
-import com.jcanseco.inventoryapi.dtos.purchases.UpdatePurchaseDto;
+import com.jcanseco.inventoryapi.dtos.orders.CreateOrderDto;
+import com.jcanseco.inventoryapi.dtos.orders.GetOrdersRequest;
+import com.jcanseco.inventoryapi.dtos.orders.OrderDto;
+import com.jcanseco.inventoryapi.dtos.orders.UpdateOrderDto;
 import com.jcanseco.inventoryapi.exceptions.DomainException;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.repositories.ProductRepository;
@@ -29,41 +29,39 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 @MockBeans({
         @MockBean(CustomerService.class),
         @MockBean(CategoryService.class),
         @MockBean(SupplierService.class),
         @MockBean(UnitService.class),
         @MockBean(ProductService.class),
-        @MockBean(OrderService.class)
+        @MockBean(PurchaseService.class)
 })
 @WebMvcTest(
-        controllers = PurchaseController.class,
+        controllers = OrderController.class,
         excludeAutoConfiguration = {SecurityAutoConfiguration.class}
 )
-public class PurchaseControllerUnitTests {
-
+public class OrderControllerUnitTests {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper mapper;
     @MockBean
-    private PurchaseService service;
+    private OrderService service;
     @MockBean
     private ProductRepository productRepository;
-    private Long supplierId;
-    private Long purchaseId;
+    private Long customerId;
+    private Long orderId;
     private HashMap<Long, Long> validProductsWithQuantities;
     private HashMap<Long, Long> invalidProductsWithQuantities;
 
     @BeforeEach
     public void setup() {
-        supplierId = 1L;
-        purchaseId = 1L;
+        customerId = 1L;
+        orderId = 1L;
         validProductsWithQuantities = new HashMap<>(){{
-           put(1L, 10L);
-           put(2L, 20L);
+            put(1L, 10L);
+            put(2L, 20L);
         }};
         invalidProductsWithQuantities = new HashMap<>() {{
             put(1L, 0L);
@@ -72,18 +70,18 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void createPurchaseWhenModelIsValidStatusShouldBeCreated() throws Exception {
+    public void createOrderWhenModelIsValidStatusShouldBeCreated() throws Exception {
 
-        var dto = CreatePurchaseDto.builder()
-                .supplierId(supplierId)
+        var dto = CreateOrderDto.builder()
+                .customerId(customerId)
                 .productsWithQuantities(validProductsWithQuantities)
                 .build();
 
         when(productRepository.existsById(Mockito.any())).thenReturn(true);
-        when(service.createPurchase(dto)).thenReturn(supplierId);
+        when(service.createOrder(dto)).thenReturn(customerId);
 
         mockMvc.perform(
-                        post("/api/purchases")
+                        post("/api/orders")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -95,17 +93,17 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void createPurchaseWhenModelIsInvalidStatusShouldBeBadRequest() throws Exception  {
+    public void createOrderWhenModelIsInvalidStatusShouldBeBadRequest() throws Exception  {
 
-        var dto = CreatePurchaseDto.builder()
-                .supplierId(supplierId)
+        var dto = CreateOrderDto.builder()
+                .customerId(customerId)
                 .productsWithQuantities(invalidProductsWithQuantities)
                 .build();
 
-        when(service.createPurchase(dto)).thenReturn(supplierId);
+        when(service.createOrder(dto)).thenReturn(customerId);
 
         mockMvc.perform(
-                        post("/api/purchases")
+                        post("/api/orders")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -115,18 +113,18 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void updatePurchaseWhenModelIsValidStatusShouldBeNoContent() throws Exception {
+    public void updateOrderWhenModelIsValidStatusShouldBeNoContent() throws Exception {
 
-        var dto = UpdatePurchaseDto.builder()
-                .purchaseId(purchaseId)
+        var dto = UpdateOrderDto.builder()
+                .orderId(orderId)
                 .productsWithQuantities(validProductsWithQuantities)
                 .build();
 
         when(productRepository.existsById(Mockito.any())).thenReturn(true);
-        doNothing().when(service).updatePurchase(dto);
+        doNothing().when(service).updateOrder(dto);
 
         mockMvc.perform(
-                        put("/api/purchases/" + purchaseId)
+                        put("/api/orders/" + orderId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -136,16 +134,16 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void updatePurchaseWhenModelIsInvalidStatusShouldBeBadRequest() throws Exception {
-        var dto = UpdatePurchaseDto.builder()
-                .purchaseId(purchaseId)
+    public void updateOrderWhenModelIsInvalidStatusShouldBeBadRequest() throws Exception {
+        var dto = UpdateOrderDto.builder()
+                .orderId(orderId)
                 .productsWithQuantities(invalidProductsWithQuantities)
                 .build();
 
-        doNothing().when(service).updatePurchase(dto);
+        doNothing().when(service).updateOrder(dto);
 
         mockMvc.perform(
-                        put("/api/purchases/" + purchaseId)
+                        put("/api/orders/" + orderId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -155,16 +153,16 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void updatePurchaseWhenModelIdAndPathIdNotEqualsStatusShouldBeBadRequest() throws Exception {
-        var dto = UpdatePurchaseDto.builder()
-                .purchaseId(purchaseId)
+    public void updateOrderWhenModelIdAndPathIdNotEqualsStatusShouldBeBadRequest() throws Exception {
+        var dto = UpdateOrderDto.builder()
+                .orderId(orderId)
                 .productsWithQuantities(validProductsWithQuantities)
                 .build();
 
-        doNothing().when(service).updatePurchase(dto);
+        doNothing().when(service).updateOrder(dto);
 
         mockMvc.perform(
-                        put("/api/purchases/10")
+                        put("/api/orders/10")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -174,20 +172,20 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void updatePurchaseWhenPurchaseIsArrivedStatusShouldBeUnprocessableEntity() throws Exception {
+    public void updateOrderWhenOrderIsDeliveredStatusShouldBeUnprocessableEntity() throws Exception {
 
-        var dto = UpdatePurchaseDto.builder()
-                .purchaseId(purchaseId)
+        var dto = UpdateOrderDto.builder()
+                .orderId(orderId)
                 .productsWithQuantities(validProductsWithQuantities)
                 .build();
 
         when(productRepository.existsById(Mockito.any())).thenReturn(true);
-        doThrow(new DomainException("An arrived purchase cannot be updated"))
+        doThrow(new DomainException("A delivered Order cannot be updated"))
                 .when(service)
-                .updatePurchase(dto);
+                .updateOrder(dto);
 
         mockMvc.perform(
-                        put("/api/purchases/" + purchaseId)
+                        put("/api/orders/" + orderId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -197,19 +195,19 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void updatePurchaseWhenPurchaseDoNotExistsStatusShouldBeNotFound() throws Exception {
-        var dto = UpdatePurchaseDto.builder()
-                .purchaseId(purchaseId)
+    public void updateOrderWhenOrderDoNotExistsStatusShouldBeNotFound() throws Exception {
+        var dto = UpdateOrderDto.builder()
+                .orderId(orderId)
                 .productsWithQuantities(validProductsWithQuantities)
                 .build();
 
         when(productRepository.existsById(Mockito.any())).thenReturn(true);
-        doThrow(new NotFoundException("The Purchase was not found"))
+        doThrow(new NotFoundException("The Order was not found"))
                 .when(service)
-                .updatePurchase(dto);
+                .updateOrder(dto);
 
         mockMvc.perform(
-                        put("/api/purchases/" + purchaseId)
+                        put("/api/orders/" + orderId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -219,11 +217,12 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void receivePurchaseWhenPurchaseIsNotArrivedStatusShouldBeNoContent() throws Exception {
-        doNothing().when(service).receivePurchase(purchaseId);
+    public void deliverOrderWhenOrdersIsNotDeliveredStatusShouldBeNoContent() throws Exception {
+
+        doNothing().when(service).deliverOrder(orderId);
 
         mockMvc.perform(
-                        put("/api/purchases/" + purchaseId + "/receive")
+                        put("/api/orders/" + orderId + "/deliver")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -232,13 +231,13 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void receivePurchaseWhenPurchaseIsArrivedStatusShouldBeUnprocessableEntity() throws Exception {
-        doThrow(new DomainException("The Purchase already arrive"))
+    public void deliverOrderWhenOrderIsDeliveredStatusShouldBeUnprocessableEntity() throws Exception {
+        doThrow(new DomainException("The Order is already delivered."))
                 .when(service)
-                .receivePurchase(purchaseId);
+                .deliverOrder(orderId);
 
         mockMvc.perform(
-                        put("/api/purchases/" + purchaseId + "/receive")
+                        put("/api/orders/" + orderId + "/deliver")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -247,13 +246,13 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void receivePurchaseWhenPurchaseDoNotExistsStatusShouldBeNotFound() throws Exception {
-        doThrow(new NotFoundException("The Purchase already arrive"))
+    public void deliverOrderWhenOrderDoNotExistsStatusShouldBeNotFound() throws Exception {
+        doThrow(new NotFoundException("The Order is already delivered"))
                 .when(service)
-                .receivePurchase(purchaseId);
+                .deliverOrder(orderId);
 
         mockMvc.perform(
-                        put("/api/purchases/" + purchaseId + "/receive")
+                        put("/api/orders/" + orderId + "/deliver")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -262,12 +261,12 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void deletePurchaseWhenPurchaseIsNotArrivedStatusShouldBeNoContent() throws Exception {
+    public void deleteOrderWhenOrderIsNotDeliveredStatusShouldBeNoContent() throws Exception {
 
-        doNothing().when(service).deletePurchase(purchaseId);
+        doNothing().when(service).deleteOrder(orderId);
 
         mockMvc.perform(
-                        delete("/api/purchases/" + purchaseId)
+                        delete("/api/orders/" + orderId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -276,14 +275,14 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void deletePurchaseWhenPurchaseIsArrivedStatusShouldBeUnprocessableEntity() throws Exception {
+    public void deleteOrderWhenOrderIsDeliveredStatusShouldBeUnprocessableEntity() throws Exception {
 
-        doThrow(new DomainException("Cannot delete a purchase that already arrive."))
+        doThrow(new DomainException("Cannot delete a order that already has been delivered."))
                 .when(service)
-                .deletePurchase(purchaseId);
+                .deleteOrder(orderId);
 
         mockMvc.perform(
-                        delete("/api/purchases/" + purchaseId)
+                        delete("/api/orders/" + orderId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -292,13 +291,13 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void deletePurchaseWhenPurchaseDoNotExistsStatusShouldBeNotFound() throws Exception {
-        doThrow(new NotFoundException("Purchase Not Found."))
+    public void deleteOrderWhenOrderDoNotExistsStatusShouldBeNotFound() throws Exception {
+        doThrow(new NotFoundException("Order Not Found."))
                 .when(service)
-                .deletePurchase(purchaseId);
+                .deleteOrder(orderId);
 
         mockMvc.perform(
-                        delete("/api/purchases/" + purchaseId)
+                        delete("/api/orders/" + orderId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -307,10 +306,10 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void getPurchaseByIdWhenPurchaseExistsStatusShouldBeOk() throws Exception {
-        when(service.getPurchaseById(purchaseId)).thenReturn(mock());
+    public void getOrdersByIdWhenOrderExistsStatusShouldBeOk() throws Exception {
+        when(service.getOrderById(orderId)).thenReturn(mock());
         mockMvc.perform(
-                        get("/api/purchases/" + purchaseId)
+                        get("/api/orders/" + orderId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -319,12 +318,12 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void getPurchaseByIdWhenPurchaseDoNotExistsStatusShouldBeNotFound() throws Exception {
-        doThrow(new NotFoundException("Purchase Not Found"))
+    public void getOrderByIdWhenOrderDoNotExistsStatusShouldBeNotFound() throws Exception {
+        doThrow(new NotFoundException("Order Not Found"))
                 .when(service)
-                .getPurchaseById(purchaseId);
+                .getOrderById(orderId);
         mockMvc.perform(
-                        get("/api/purchases/" + purchaseId)
+                        get("/api/orders/" + orderId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -333,9 +332,9 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void getPurchasesWhenSortOrderIsInvalidStatusShouldBeBadRequest() throws Exception {
+    public void getOrdersWhenSortOrderIsInvalidStatusShouldBeBadRequest() throws Exception {
         mockMvc.perform(
-                        get("/api/purchases")
+                        get("/api/orders")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("sortOrder", "invalid_sort_order")
@@ -345,9 +344,9 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void getPurchasesWhenOrderByIsInvalidStatusShouldBeBadRequest() throws Exception {
+    public void getOrdersWhenOrderByIsInvalidStatusShouldBeBadRequest() throws Exception {
         mockMvc.perform(
-                        get("/api/purchases")
+                        get("/api/orders")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("orderBy", "invalid_order_by")
@@ -357,9 +356,9 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void getPurchasesWhenPageNumberOrPageSizeAreLessThanOneStatusShouldBeBadRequest() throws Exception {
+    public void getOrdersWhenPageNumberOrPageSizeAreLessThanOneStatusShouldBeBadRequest() throws Exception {
         mockMvc.perform(
-                        get("/api/purchases")
+                        get("/api/orders")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("pageNumber", "0")
@@ -370,19 +369,19 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void getPurchasesWhenPageNumberAndPageSizeAreNotPresentStatusShouldBeOk() throws Exception {
-        var getPurchasesRequest = GetPurchasesRequest.builder()
+    public void getOrdersWhenPageNumberAndPageSizeAreNotPresentStatusShouldBeOk() throws Exception {
+        var getOrdersRequest = GetOrdersRequest.builder()
                 .build();
 
-        List<PurchaseDto> purchases = List.of(
+        List<OrderDto> orders = List.of(
                 mock(),
                 mock()
         );
 
-        when(service.getPurchases(getPurchasesRequest)).thenReturn(purchases);
+        when(service.getOrders(getOrdersRequest)).thenReturn(orders);
 
         mockMvc.perform(
-                        get("/api/purchases")
+                        get("/api/orders")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -392,26 +391,26 @@ public class PurchaseControllerUnitTests {
     }
 
     @Test
-    public void getPurchasesWhenPageNumberAndPageSizeArePresentStatusShouldBeOk() throws Exception {
+    public void getOrdersWhenPageNumberAndPageSizeArePresentStatusShouldBeOk() throws Exception {
 
-        var getPurchasesPageRequest = GetPurchasesRequest.builder()
+        var getOrdersRequest = GetOrdersRequest.builder()
                 .pageNumber(1)
                 .pageSize(1)
                 .build();
 
-        List<PurchaseDto> purchases = List.of(
-                PurchaseDto.builder().build()
+        List<OrderDto> orders = List.of(
+                OrderDto.builder().build()
         );
 
-        var pagedList = new PagedList<>(purchases, 1, 1, 2, 2);
+        var pagedList = new PagedList<>(orders, 1, 1, 2, 2);
 
-        when(service.getPurchasesPage(getPurchasesPageRequest)).thenReturn(pagedList);
+        when(service.getOrdersPage(getOrdersRequest)).thenReturn(pagedList);
 
         mockMvc.perform(
-                        get("/api/purchases")
+                        get("/api/orders")
                                 .accept(MediaType.APPLICATION_JSON)
-                                .param("pageNumber", getPurchasesPageRequest.getPageNumber().toString())
-                                .param("pageSize", getPurchasesPageRequest.getPageSize().toString())
+                                .param("pageNumber", getOrdersRequest.getPageNumber().toString())
+                                .param("pageSize", getOrdersRequest.getPageSize().toString())
                 )
                 .andDo(print())
                 .andExpect(status().isOk())

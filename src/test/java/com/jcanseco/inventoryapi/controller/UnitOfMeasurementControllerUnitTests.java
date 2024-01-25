@@ -32,7 +32,8 @@ import static org.mockito.Mockito.doThrow;
         @MockBean(CustomerService.class),
         @MockBean(ProductService.class),
         @MockBean(SupplierService.class),
-        @MockBean(PurchaseService.class)
+        @MockBean(PurchaseService.class),
+        @MockBean(OrderService.class)
 })
 @WebMvcTest(
         controllers = UnitOfMeasurementController.class,
