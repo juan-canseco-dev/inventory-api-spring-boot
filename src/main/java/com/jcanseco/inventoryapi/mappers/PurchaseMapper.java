@@ -1,11 +1,9 @@
 package com.jcanseco.inventoryapi.mappers;
 
 import com.jcanseco.inventoryapi.dtos.PagedList;
-import com.jcanseco.inventoryapi.dtos.products.ProductDto;
 import com.jcanseco.inventoryapi.dtos.purchases.PurchaseDetailsDto;
 import com.jcanseco.inventoryapi.dtos.purchases.PurchaseDto;
 import com.jcanseco.inventoryapi.dtos.purchases.PurchaseItemDto;
-import com.jcanseco.inventoryapi.entities.Product;
 import com.jcanseco.inventoryapi.entities.Purchase;
 import com.jcanseco.inventoryapi.entities.PurchaseItem;
 import com.jcanseco.inventoryapi.entities.Supplier;
