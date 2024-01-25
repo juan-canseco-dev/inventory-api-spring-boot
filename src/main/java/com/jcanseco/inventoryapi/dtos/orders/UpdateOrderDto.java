@@ -20,7 +20,7 @@ public class UpdateOrderDto {
 
     @Min(1)
     @NotNull
-    private Long customerId;
+    private Long orderId;
 
     @AllProductsExist
     @PositiveProductQuantities

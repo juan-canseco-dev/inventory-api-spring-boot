@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.validation.purchses;
+package com.jcanseco.inventoryapi.validation.purchases;
 
 import com.jcanseco.inventoryapi.dtos.purchases.CreatePurchaseDto;
 import com.jcanseco.inventoryapi.factories.CustomLocalValidatorFactoryBean;
