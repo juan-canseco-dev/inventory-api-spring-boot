@@ -44,8 +44,9 @@ public class PurchaseService {
         var productsWithQuantities = dto.getProductsWithQuantities();
         var products = productRepository.findAllById(productsWithQuantities.keySet());
 
-        var newPurchase = Purchase.createNew(supplier, products, productsWithQuantities);
-        var savedPurchase = purchaseRepository.saveAndFlush(newPurchase);
+        var savedPurchase = purchaseRepository.saveAndFlush(
+                Purchase.createNew(supplier, products, productsWithQuantities)
+        );
 
         return savedPurchase.getId();
     }
@@ -65,10 +66,10 @@ public class PurchaseService {
                 StockSpecifications.byProductIds(productsWithQuantities.keySet().stream().toList())
         );
 
-        for (Stock stock : stocks) {
-            var quantity = productsWithQuantities.get(stock.getProductId());
-            stock.addStock(quantity);
-        }
+
+        stocks.forEach(s -> s.addStock(
+                productsWithQuantities.get(s.getProductId())
+        ));
 
         purchaseRepository.saveAndFlush(purchase);
 
@@ -92,6 +93,10 @@ public class PurchaseService {
 
         var purchase = purchaseRepository.findById(dto.getPurchaseId())
                 .orElseThrow(() -> new NotFoundException(String.format("Purchase with the Id : {%d} was not found.", dto.getPurchaseId())));
+
+        if (purchase.isArrived()) {
+            throw new DomainException(String.format("Cannot update the purchase with ID %d because it has already arrived.", dto.getPurchaseId()));
+        }
 
 
         var productsWithQuantities = dto.getProductsWithQuantities();
