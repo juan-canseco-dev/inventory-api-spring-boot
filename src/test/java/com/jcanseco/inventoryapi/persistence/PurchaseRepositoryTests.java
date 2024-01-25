@@ -40,28 +40,8 @@ public class PurchaseRepositoryTests {
 
         var products = productRepository.findAllById(productsWithQuantities.keySet());
 
-        var items = products.stream().map(p -> PurchaseItem
-                .builder()
-                .product(p)
-                .productId(p.getId())
-                .productName(p.getName())
-                .productUnit(p.getUnit().getName())
-                .price(p.getPurchasePrice())
-                .quantity(productsWithQuantities.get(p.getId()))
-                .total(p.getPurchasePrice().multiply(BigDecimal.valueOf(productsWithQuantities.get(p.getId()))))
-                .build())
-                .toList();
-
-        var purchaseTotal = items.stream()
-                .map(PurchaseItem::getTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
         var purchase = purchaseRepository.saveAndFlush(
-                Purchase.builder()
-                        .supplier(supplier)
-                        .items(items)
-                        .total(purchaseTotal)
-                        .build()
+                Purchase.createNew(supplier, products, productsWithQuantities)
         );
 
         assertNotNull(purchase);
