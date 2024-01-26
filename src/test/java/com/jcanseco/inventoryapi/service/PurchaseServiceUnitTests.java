@@ -273,7 +273,6 @@ public class PurchaseServiceUnitTests {
 
         assertThat(updatedStocks).hasSameElementsAs(expectedStocks);
     }
-
     @Test
     public void receivePurchaseWhenPurchaseIsArrivedShouldThrowException() {
 

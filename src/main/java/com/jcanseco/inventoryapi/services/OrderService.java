@@ -4,6 +4,7 @@ import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.dtos.orders.*;
 import com.jcanseco.inventoryapi.entities.Order;
 import com.jcanseco.inventoryapi.entities.OrderItem;
+import com.jcanseco.inventoryapi.entities.Stock;
 import com.jcanseco.inventoryapi.exceptions.DomainException;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.mappers.OrderMapper;
@@ -62,6 +63,7 @@ public class OrderService {
         var stocks = stockRepository.findAll(
                 StockSpecifications.byProductIds(productsWithQuantities.keySet().stream().toList())
         );
+
         stocks.forEach(s -> s.removeStock(
                 productsWithQuantities.get(s.getProductId())
         ));

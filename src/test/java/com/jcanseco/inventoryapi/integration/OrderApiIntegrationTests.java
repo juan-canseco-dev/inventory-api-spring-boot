@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.dtos.customers.CustomerDto;
 import com.jcanseco.inventoryapi.dtos.orders.*;
+import com.jcanseco.inventoryapi.entities.Stock;
 import com.jcanseco.inventoryapi.repositories.StockRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -104,9 +105,10 @@ public class OrderApiIntegrationTests {
         var url = baseUrl() + "/" + orderId + "/deliver";
         var response = restTemplate.exchange(url, HttpMethod.PUT, null, Void.class);
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
-
         var stocks = stockRepository.findAllById(List.of(1L, 2L));
-        stocks.forEach(s -> assertEquals(20L, s.getQuantity()));
+        for (Stock stock : stocks) {
+            assertEquals(0L, stock.getQuantity());
+        }
     }
 
     @Sql("/multiple-orders.sql")

@@ -282,6 +282,23 @@ public class OrderServiceUnitTests {
     }
 
     @Test
+    public void deliverOrderWhenProductQuantityExceedsStockQuantityShouldThrowException() {
+        HashMap<Long, Long> productsWithQuantities = new HashMap<>() {{
+            put(9L, 40L);
+            put(10L, 5L);
+        }};
+
+        var order = Order.createNew(customer, products, productsWithQuantities);
+        order.setId(orderId);
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(stockRepository.findAll(any(Specification.class))).thenReturn(stocks);
+
+
+        assertThrows(DomainException.class, () -> service.deliverOrder(orderId));
+    }
+
+    @Test
     public void deliverOrderWhenOrderIsDeliveredShouldThrowException() {
 
         var order = Order.createNew(customer, products, productsWithQuantities);
