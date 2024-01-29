@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.security.dtos.roles;
+package com.jcanseco.inventoryapi.security.dtos.users;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -11,24 +11,14 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateUserDto {
+public class UpdateUserDto {
+
+    @NotEmpty
+    @NotBlank
+    private String userId;
 
     @Size(max = 50)
     @NotEmpty
     @NotBlank
     private String fullName;
-
-    @NotEmpty
-    @NotBlank
-    private String roleId;
-
-    @Size(max = 50)
-    @NotEmpty
-    @NotBlank
-    private String email;
-
-    @Size(max = 30)
-    @NotEmpty
-    @NotBlank
-    private String password;
 }
