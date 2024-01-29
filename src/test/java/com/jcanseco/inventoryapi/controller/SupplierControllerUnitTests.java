@@ -5,6 +5,7 @@ import com.jcanseco.inventoryapi.dtos.AddressDto;
 import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.dtos.suppliers.*;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
+import com.jcanseco.inventoryapi.security.services.ResourceService;
 import com.jcanseco.inventoryapi.services.*;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,8 @@ import static org.mockito.Mockito.doThrow;
         @MockBean(CategoryService.class),
         @MockBean(UnitService.class),
         @MockBean(PurchaseService.class),
-        @MockBean(OrderService.class)
+        @MockBean(OrderService.class),
+        @MockBean(ResourceService.class)
 })
 @WebMvcTest(
         controllers = SupplierController.class,

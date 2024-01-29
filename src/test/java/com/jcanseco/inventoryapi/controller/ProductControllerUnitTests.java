@@ -11,6 +11,7 @@ import com.jcanseco.inventoryapi.dtos.products.UpdateProductDto;
 import com.jcanseco.inventoryapi.dtos.suppliers.SupplierDto;
 import com.jcanseco.inventoryapi.dtos.units.UnitOfMeasurementDto;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
+import com.jcanseco.inventoryapi.security.services.ResourceService;
 import com.jcanseco.inventoryapi.services.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,8 @@ import static org.mockito.Mockito.doThrow;
         @MockBean(SupplierService.class),
         @MockBean(UnitService.class),
         @MockBean(PurchaseService.class),
-        @MockBean(OrderService.class)
+        @MockBean(OrderService.class),
+        @MockBean(ResourceService.class)
 })
 @WebMvcTest(
         controllers = ProductController.class,

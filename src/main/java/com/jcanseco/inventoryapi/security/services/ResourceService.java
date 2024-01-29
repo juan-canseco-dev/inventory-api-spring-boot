@@ -2,6 +2,7 @@ package com.jcanseco.inventoryapi.security.services;
 
 import com.jcanseco.inventoryapi.security.resources.Action;
 import com.jcanseco.inventoryapi.security.resources.Resource;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import static com.jcanseco.inventoryapi.security.resources.ActionType.*;
@@ -10,7 +11,9 @@ import static com.jcanseco.inventoryapi.security.resources.ResourceType.*;
 import static com.jcanseco.inventoryapi.security.resources.ResourceType.Orders;
 
 @Service
+@NoArgsConstructor
 public class ResourceService {
+
 
     public List<Resource> getAll() {
         return List.of(
