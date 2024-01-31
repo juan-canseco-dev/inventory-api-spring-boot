@@ -16,4 +16,9 @@ public class Action {
     public static String permissionOf(String resource, String action) {
         return String.format("Permissions.%s.%s", resource, action);
     }
+
+    public String asPermission() {
+        return permissionOf(resource, action);
+    }
+
 }

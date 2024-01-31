@@ -1,19 +1,44 @@
 package com.jcanseco.inventoryapi.security.services;
 
+import com.jcanseco.inventoryapi.exceptions.DomainException;
 import com.jcanseco.inventoryapi.security.resources.Action;
 import com.jcanseco.inventoryapi.security.resources.Resource;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 import static com.jcanseco.inventoryapi.security.resources.ActionType.*;
-import static com.jcanseco.inventoryapi.security.resources.ActionType.Receive;
 import static com.jcanseco.inventoryapi.security.resources.ResourceType.*;
-import static com.jcanseco.inventoryapi.security.resources.ResourceType.Orders;
 
 @Service
 @NoArgsConstructor
 public class ResourceService {
 
+    public HashSet<String> permissionsByResource(String resource) {
+        return getAll().stream()
+                .filter(r -> r.getName().equals(resource))
+                .findFirst()
+                .orElseThrow(() -> new DomainException(String.format("Resource of the Type : %s is not valid.", resource)))
+                .getActions()
+                .stream()
+                .map(Action::asPermission)
+                .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    public boolean hasRequiredPermissionsByResource(String resource, List<String> requiredPermissions) {
+        return false;
+    }
+
+    public List<String> getResourcesByPermissions(List<String> permissions) {
+        return null;
+    }
+
+    public HashSet<String> allPermissions() {
+        return getAll().stream()
+                .flatMap(role -> role.getActions().stream().map(Action::asPermission))
+                .collect(Collectors.toCollection(HashSet::new));
+    }
 
     public List<Resource> getAll() {
         return List.of(
@@ -65,7 +90,7 @@ public class ResourceService {
                         new Action(4, Purchases, Delete, "Delete Purchases", false),
                         new Action(5, Purchases, Receive, "Receive Purchases", false)
                 )),
-                new Resource(9, Purchases, List.of(
+                new Resource(9, Orders, List.of(
                         new Action(1, Orders, View, "View Orders", true),
                         new Action(2, Orders, Create, "Create Orders", false),
                         new Action(3, Orders, Update, "Update Orders", false),

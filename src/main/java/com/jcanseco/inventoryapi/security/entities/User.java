@@ -46,9 +46,9 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.getActions()
+        return role.getPermissions()
                 .stream()
-                .map(a -> new SimpleGrantedAuthority(a.getId()))
+                .map(SimpleGrantedAuthority::new)
                 .toList();
     }
 

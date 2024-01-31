@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @EqualsAndHashCode
 @Builder
@@ -24,8 +24,10 @@ public class Role {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
-    private List<RoleAction> actions;
+    @ElementCollection
+    @CollectionTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"))
+    @Column(name = "permission")
+    private Set<String> permissions = new HashSet<>();
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

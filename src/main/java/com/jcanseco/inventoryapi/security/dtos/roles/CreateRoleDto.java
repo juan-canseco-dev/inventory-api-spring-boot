@@ -24,5 +24,5 @@ public class CreateRoleDto {
     private String description;
 
     @NotEmpty
-    private List<String> actions;
+    private List<String> permissions;
 }
