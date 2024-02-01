@@ -3,6 +3,7 @@ package com.jcanseco.inventoryapi.controller;
 import com.jcanseco.inventoryapi.controllers.ResourceController;
 import com.jcanseco.inventoryapi.security.resources.Resource;
 import com.jcanseco.inventoryapi.security.services.ResourceService;
+import com.jcanseco.inventoryapi.security.services.RoleService;
 import com.jcanseco.inventoryapi.services.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         @MockBean(SupplierService.class),
         @MockBean(UnitService.class),
         @MockBean(PurchaseService.class),
-        @MockBean(OrderService.class)
+        @MockBean(OrderService.class),
+        @MockBean(RoleService.class)
 })
 @WebMvcTest(
         controllers = ResourceController.class,

@@ -1,12 +1,10 @@
 package com.jcanseco.inventoryapi.controller;
 
-import com.jcanseco.inventoryapi.controllers.UnitOfMeasurementController;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcanseco.inventoryapi.dtos.PagedList;
-import com.jcanseco.inventoryapi.dtos.units.UnitOfMeasurementDto;
-import com.jcanseco.inventoryapi.dtos.units.CreateUnitOfMeasurementDto;
-import com.jcanseco.inventoryapi.dtos.units.GetUnitsOfMeasurementRequest;
-import com.jcanseco.inventoryapi.dtos.units.UpdateUnitOfMeasurementDto;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
+import com.jcanseco.inventoryapi.security.controllers.RoleController;
+import com.jcanseco.inventoryapi.security.dtos.roles.*;
 import com.jcanseco.inventoryapi.security.services.ResourceService;
 import com.jcanseco.inventoryapi.security.services.RoleService;
 import com.jcanseco.inventoryapi.services.*;
@@ -19,50 +17,57 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.LocalDateTime;
 import java.util.List;
-import static org.hamcrest.Matchers.*;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 
 @MockBeans({
-        @MockBean(CategoryService.class),
         @MockBean(CustomerService.class),
+        @MockBean(CategoryService.class),
         @MockBean(ProductService.class),
         @MockBean(SupplierService.class),
+        @MockBean(UnitService.class),
         @MockBean(PurchaseService.class),
         @MockBean(OrderService.class),
-        @MockBean(ResourceService.class),
-        @MockBean(RoleService.class)
+        @MockBean(ResourceService.class)
 })
 @WebMvcTest(
-        controllers = UnitOfMeasurementController.class,
+        controllers = RoleController.class,
         excludeAutoConfiguration = {SecurityAutoConfiguration.class}
 )
-public class UnitOfMeasurementControllerUnitTests {
+public class RoleControllerUnitTests {
 
-    @MockBean
-    private UnitService unitService;
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private ObjectMapper mapper;
 
-    @Test
-    public void createUnitWhenModelIsValidStatusShouldBeCreated() throws Exception {
 
-        var dto = CreateUnitOfMeasurementDto.builder()
-                .name("New Unit")
+    @MockBean
+    private RoleService service;
+
+
+    @Test
+    public void createRoleWhenModelIsValidStatusShouldBeCreated() throws Exception {
+
+        var dto = CreateRoleDto.builder()
+                .name("New Role")
+                .permissions(List.of(
+                        "Permissions.Roles.View",
+                        "Permissions.Users.View"
+                ))
                 .build();
 
-        when(unitService.createUnit(dto)).thenReturn(1L);
-
+        when(service.createRole(dto)).thenReturn(1L);
         mockMvc.perform(
-                        post("/api/units")
+                        post("/api/roles")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -71,18 +76,67 @@ public class UnitOfMeasurementControllerUnitTests {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$").isNumber())
                 .andExpect(jsonPath("$").value(1L));
+
     }
 
     @Test
-    public void createUnitWhenModelIsInvalidStatusShouldBeBadRequest() throws Exception {
-        var dto = CreateUnitOfMeasurementDto.builder()
-                .name("")
+    public void createRoleWhenModelIsInvalidStatusShouldBeBadRequest() throws Exception {
+
+        var dto = CreateRoleDto.builder()
+                .name("New Role")
+                .permissions(List.of(
+                        "Permissions.Roles.View",
+                        "Permissions.Users.View",
+                        "Permissions.Users.View"
+                ))
                 .build();
 
-        when(unitService.createUnit(dto)).thenReturn(1L);
+        mockMvc.perform(
+                        post("/api/roles")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    public void updateRoleWhenModelIsValidStatusShouldBeNoContent() throws Exception {
+
+        var dto = UpdateRoleDto.builder()
+                .roleId(1L)
+                .name("New Role")
+                .permissions(List.of(
+                        "Permissions.Roles.View",
+                        "Permissions.Users.View"
+                ))
+                .build();
 
         mockMvc.perform(
-                        post("/api/units")
+                        put("/api/roles/1")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void updateRoleWhenModelIsInvalidStatusShouldBeBadRequest() throws Exception {
+        var dto = UpdateRoleDto.builder()
+                .roleId(1L)
+                .name("")
+                .permissions(List.of(
+                        "Permissions.Roles.View",
+                        "Permissions.Users.View"
+                ))
+                .build();
+
+        mockMvc.perform(
+                        put("/api/roles/1")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -92,99 +146,56 @@ public class UnitOfMeasurementControllerUnitTests {
     }
 
     @Test
-    public void updateUnitWhenModelIsValidStatusShouldBeNoContent() throws Exception {
-
-        var unitId = 1L;
-
-        var updateUnitDto = UpdateUnitOfMeasurementDto.builder()
-                .unitOfMeasurementId(unitId)
-                .name("Piece")
+    public void updateRoleWhenRoleIsNotFoundStatusShouldBeNotFound() throws Exception{
+        var dto = UpdateRoleDto.builder()
+                .roleId(1L)
+                .name("New Role")
+                .permissions(List.of(
+                        "Permissions.Roles.View",
+                        "Permissions.Users.View"
+                ))
                 .build();
 
-        doNothing().when(unitService).updateUnit(updateUnitDto);
+        doThrow(new NotFoundException("Role Not Found"))
+                .when(service)
+                .updateRole(dto);
 
         mockMvc.perform(
-                        put("/api/units/" + unitId)
+                        put("/api/roles/1")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(mapper.writeValueAsString(updateUnitDto))
-                )
-                .andDo(print())
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    public void updateUnitWhenModelIsInvalidStatusShouldBeBadRequest() throws Exception {
-        var unitId = 1L;
-
-        var updateUnitDto = UpdateUnitOfMeasurementDto.builder()
-                .unitOfMeasurementId(unitId)
-                .name(" ")
-                .build();
-
-        doNothing().when(unitService).updateUnit(updateUnitDto);
-
-        mockMvc.perform(
-                        put("/api/units/" + unitId)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(mapper.writeValueAsString(updateUnitDto))
-                )
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void updateUnitWhenModelAndPathIdAreDifferentStatusShouldBeBadRequest() throws Exception {
-        var unitId = 1L;
-
-        var updateUnitDto = UpdateUnitOfMeasurementDto.builder()
-                .unitOfMeasurementId(unitId)
-                .name("Each")
-                .build();
-
-        doNothing().when(unitService).updateUnit(updateUnitDto);
-
-        mockMvc.perform(
-                        put("/api/units/5")
-                                .accept(MediaType.APPLICATION_JSON)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(mapper.writeValueAsString(updateUnitDto))
-                )
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void updateUnitWhenUnitDoNotExistsStatusShouldBeNotFound() throws Exception {
-
-        var unitId = 1L;
-
-        var updateUnitDto = UpdateUnitOfMeasurementDto.builder()
-                .unitOfMeasurementId(unitId)
-                .name("Piece")
-                .build();
-
-        doThrow(new NotFoundException(String.format("Unit Of Measurement with the Id {%d} was not found.", unitId)))
-                .when(unitService)
-                .updateUnit(updateUnitDto);
-
-        mockMvc.perform(
-                        put("/api/units/" + unitId)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(mapper.writeValueAsString(updateUnitDto))
+                                .content(mapper.writeValueAsString(dto))
                 )
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void deleteUnitWhenUnitExistsStatusShouldBeNoContent() throws Exception {
-        var unitId = 1L;
-        doNothing().when(unitService).deleteUnit(unitId);
+    public void updateRoleWhenDtoIdAndPathIdAreNotEqualStatusShouldBeBadRequest() throws Exception {
+        var dto = UpdateRoleDto.builder()
+                .roleId(1L)
+                .name("New Role")
+                .permissions(List.of(
+                        "Permissions.Roles.View",
+                        "Permissions.Users.View"
+                ))
+                .build();
+
+
         mockMvc.perform(
-                        delete("/api/units/" + unitId)
+                        put("/api/roles/11")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void deleteRoleWhenRoleExistsStatusShouldBeNoContent() throws Exception {
+        mockMvc.perform(
+                        delete("/api/roles/1")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -193,13 +204,14 @@ public class UnitOfMeasurementControllerUnitTests {
     }
 
     @Test
-    public void deleteUnitWhenUnitDoNotExistsStatusShouldBeNotFound() throws Exception {
-        var unitId = 1L;
-        doThrow(new NotFoundException(String.format("Unit Of Measurement with the Id {%d} was not found.", unitId)))
-                .when(unitService)
-                .deleteUnit(unitId);
+    public void deleteRoleWhenRoleNotExistsStatusShouldBeNotFound() throws Exception {
+
+        doThrow(new NotFoundException("Role Not Found"))
+                .when(service)
+                .deleteRole(1L);
+
         mockMvc.perform(
-                        delete("/api/units/" + unitId)
+                        delete("/api/roles/1")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -207,16 +219,27 @@ public class UnitOfMeasurementControllerUnitTests {
                 .andExpect(status().isNotFound());
     }
 
+
     @Test
-    public void getUnitByIdWhenUnitExistsStatusShouldBeOk() throws Exception {
-        var unitId = 1L;
-        var unitDto = UnitOfMeasurementDto.builder()
-                .id(unitId)
-                .name("Piece")
+    public void getRoleIdWhenRoleExistsStatusShouldBeOk() throws Exception {
+
+        var roleId = 1L;
+
+        var role = RoleDetailsDto.builder()
+                .id(roleId)
+                .name("New Role")
+                .permissions(List.of(
+                        "Permissions.Roles.View",
+                        "Permissions.Users.View"
+                ))
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now().plusDays(2))
                 .build();
-        when(unitService.getUnitById(unitId)).thenReturn(unitDto);
+
+        when(service.getRoleById(roleId)).thenReturn(role);
+
         mockMvc.perform(
-                        get("/api/units/" + unitId)
+                        get("/api/roles/" + roleId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -225,23 +248,9 @@ public class UnitOfMeasurementControllerUnitTests {
     }
 
     @Test
-    public void getUnitByIdWhenUnitDoNotExistsStatusShouldBeNotFound() throws Exception {
-        var unitId = 1L;
-        doThrow(new NotFoundException(String.format("Unit Of Measurement with the Id {%d} was not found.", unitId)))
-                .when(unitService).getUnitById(unitId);
+    public void getRolesWhenSortOrderIsInvalidStatusShouldBeBadRequest() throws Exception {
         mockMvc.perform(
-                        get("/api/units/" + unitId)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andDo(print())
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void getUnitsWhenSortOrderIsInvalidStatusShouldBeBadRequest() throws Exception {
-        mockMvc.perform(
-                        get("/api/units")
+                        get("/api/roles")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("sortOrder", "invalid_sort_order")
@@ -251,9 +260,9 @@ public class UnitOfMeasurementControllerUnitTests {
     }
 
     @Test
-    public void getUnitsWhenOrderByIsInvalidStatusShouldBeBadRequest() throws Exception {
+    public void getRolesWhenOrderByIsInvalidStatusShouldBeBadRequest() throws Exception {
         mockMvc.perform(
-                        get("/api/units")
+                        get("/api/roles")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("orderBy", "invalid_order_by")
@@ -263,9 +272,9 @@ public class UnitOfMeasurementControllerUnitTests {
     }
 
     @Test
-    public void getUnitsPageWhenPageNumberOrPageSizeAreLessThanOneStatusShouldBeBadRequest() throws Exception {
+    public void getRolesPageWhenPageNumberOrPageSizeAreLessThanOneStatusShouldBeBadRequest() throws Exception {
         mockMvc.perform(
-                        get("/api/units")
+                        get("/api/roles")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("pageNumber", "0")
@@ -276,21 +285,21 @@ public class UnitOfMeasurementControllerUnitTests {
     }
 
     @Test
-    public void getUnitsWhenPageSizeAndPageNumberAreNotPresentStatusShouldBeOk() throws Exception {
+    public void getRolesWhenPageSizeAndPageNumberAreNotPresentStatusShouldBeOk() throws Exception {
 
 
-        var getUnitsRequest = GetUnitsOfMeasurementRequest.builder()
+        var getRolesRequest = GetRolesRequest.builder()
                 .build();
 
-        var units = List.of(
-                UnitOfMeasurementDto.builder().id(1L).name("Piece").build(),
-                UnitOfMeasurementDto.builder().id(2L).name("Each").build()
+        var roles = List.of(
+                RoleDto.builder().id(1L).name("Role 1").build(),
+                RoleDto.builder().id(2L).name("Role 2").build()
         );
 
-        when(unitService.getUnits(getUnitsRequest)).thenReturn(units);
+        when(service.getRoles(getRolesRequest)).thenReturn(roles);
 
         mockMvc.perform(
-                        get("/api/units")
+                        get("/api/roles")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -300,26 +309,26 @@ public class UnitOfMeasurementControllerUnitTests {
     }
 
     @Test
-    public void getUnitsPageWhenPageSizeAndPageNumberArePresentStatusShouldBeOk() throws Exception {
+    public void getRolesPageWhenPageSizeAndPageNumberArePresentStatusShouldBeOk() throws Exception {
 
-        var getUnitsPageRequest = GetUnitsOfMeasurementRequest.builder()
+        var getRolesPageRequest = GetRolesRequest.builder()
                 .pageNumber(1)
                 .pageSize(1)
                 .build();
 
-        var units = List.of(
-                UnitOfMeasurementDto.builder().id(1L).name("Electronics").build()
+        var roles = List.of(
+                RoleDto.builder().id(1L).name("Role 1").build()
         );
 
-        var pagedList = new PagedList<>(units, 1, 1, 2, 2);
+        var pagedList = new PagedList<>(roles, 1, 1, 2, 2);
 
-        when(unitService.getUnitsPage(getUnitsPageRequest)).thenReturn(pagedList);
+        when(service.getRolesPage(getRolesPageRequest)).thenReturn(pagedList);
 
         mockMvc.perform(
-                        get("/api/units")
+                        get("/api/roles")
                                 .accept(MediaType.APPLICATION_JSON)
-                                .param("pageNumber", getUnitsPageRequest.getPageNumber().toString())
-                                .param("pageSize", getUnitsPageRequest.getPageSize().toString())
+                                .param("pageNumber", getRolesPageRequest.getPageNumber().toString())
+                                .param("pageSize", getRolesPageRequest.getPageSize().toString())
                 )
                 .andDo(print())
                 .andExpect(status().isOk())

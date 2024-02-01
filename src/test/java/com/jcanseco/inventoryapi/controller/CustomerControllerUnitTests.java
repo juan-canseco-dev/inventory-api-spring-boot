@@ -10,6 +10,7 @@ import com.jcanseco.inventoryapi.dtos.customers.GetCustomersRequest;
 import com.jcanseco.inventoryapi.dtos.customers.UpdateCustomerDto;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.security.services.ResourceService;
+import com.jcanseco.inventoryapi.security.services.RoleService;
 import com.jcanseco.inventoryapi.services.*;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,8 @@ import static org.mockito.Mockito.doThrow;
         @MockBean(UnitService.class),
         @MockBean(PurchaseService.class),
         @MockBean(OrderService.class),
-        @MockBean(ResourceService.class)
+        @MockBean(ResourceService.class),
+        @MockBean(RoleService.class)
 })
 @WebMvcTest(
         controllers = CustomerController.class,
