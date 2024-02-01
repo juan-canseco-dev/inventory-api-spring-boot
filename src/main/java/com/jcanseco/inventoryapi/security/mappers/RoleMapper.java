@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.mappers;
+package com.jcanseco.inventoryapi.security.mappers;
 
 import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.security.dtos.roles.RoleDetailsDto;

@@ -26,7 +26,7 @@ public class Role {
 
     @ElementCollection
     @CollectionTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"))
-    @Column(name = "permission")
+    @Column(name = "permission", unique = true)
     private Set<String> permissions = new HashSet<>();
 
     @CreationTimestamp
@@ -34,6 +34,6 @@ public class Role {
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false, updatable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 }

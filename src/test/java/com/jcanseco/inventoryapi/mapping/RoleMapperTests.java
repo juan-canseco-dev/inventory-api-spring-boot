@@ -1,6 +1,6 @@
 package com.jcanseco.inventoryapi.mapping;
 
-import com.jcanseco.inventoryapi.mappers.RoleMapper;
+import com.jcanseco.inventoryapi.security.mappers.RoleMapper;
 import com.jcanseco.inventoryapi.security.entities.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

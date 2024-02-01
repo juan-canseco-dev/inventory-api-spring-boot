@@ -2,7 +2,7 @@ package com.jcanseco.inventoryapi.security.services;
 
 import com.jcanseco.inventoryapi.exceptions.DomainException;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
-import com.jcanseco.inventoryapi.mappers.RoleMapper;
+import com.jcanseco.inventoryapi.security.mappers.RoleMapper;
 import com.jcanseco.inventoryapi.security.dtos.roles.CreateRoleDto;
 import com.jcanseco.inventoryapi.security.dtos.roles.RoleDetailsDto;
 import com.jcanseco.inventoryapi.security.dtos.roles.UpdateRoleDto;
