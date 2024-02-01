@@ -1,13 +1,13 @@
 package com.jcanseco.inventoryapi.security.services;
 
-import com.jcanseco.inventoryapi.exceptions.DomainException;
 import com.jcanseco.inventoryapi.security.resources.Action;
 import com.jcanseco.inventoryapi.security.resources.Resource;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static com.jcanseco.inventoryapi.security.resources.ActionType.*;
 import static com.jcanseco.inventoryapi.security.resources.ResourceType.*;
 
@@ -15,32 +15,56 @@ import static com.jcanseco.inventoryapi.security.resources.ResourceType.*;
 @NoArgsConstructor
 public class ResourceService {
 
-    public HashSet<String> permissionsByResource(String resource) {
-        return getAll().stream()
-                .filter(r -> r.getName().equals(resource))
-                .findFirst()
-                .orElseThrow(() -> new DomainException(String.format("Resource of the Type : %s is not valid.", resource)))
-                .getActions()
-                .stream()
-                .map(Action::asPermission)
-                .collect(Collectors.toCollection(HashSet::new));
+    public Map<String, List<String>> groupPermissionsWithResource(List<String> permissions) {
+        return getActionsStream()
+                .filter(action -> permissions.contains(action.asPermission()))
+                .collect(Collectors.groupingBy(
+                        Action::getResource,
+                        Collectors.mapping(Action::asPermission, Collectors.toList())
+                ));
     }
 
-    public boolean hasRequiredPermissionsByResource(String resource, List<String> requiredPermissions) {
+
+    public List<String> getInvalidPermissions(List<String> permissions) {
+        HashSet<String> allPermissions = allPermissions();
+        return permissions
+                .stream().filter(p -> !allPermissions.contains(p))
+                .toList();
+    }
+
+    public boolean hasRequiredPermissionsByResource(String resource, List<String> permissions) {
+
+        Map<String, HashSet<String>> resourceWithRequiredPermissions = getActionsStream()
+                .filter(Action::isRequired)
+                .collect(Collectors.groupingBy(
+                        Action::getResource,
+                        Collectors.mapping(Action::asPermission, Collectors.toCollection(HashSet::new))
+                ));
+
+        if (resourceWithRequiredPermissions.containsKey(resource)) {
+            return resourceWithRequiredPermissions.get(resource).containsAll(permissions);
+        }
+
         return false;
     }
 
-    public List<String> getResourcesByPermissions(List<String> permissions) {
-        return null;
+    public boolean hasPermissions(List<String> permissions) {
+        return allPermissions().containsAll(permissions);
     }
 
     public HashSet<String> allPermissions() {
-        return getAll().stream()
+        return getAllResources().stream()
                 .flatMap(role -> role.getActions().stream().map(Action::asPermission))
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
-    public List<Resource> getAll() {
+    private Stream<Action> getActionsStream() {
+        return getAllResources()
+                .stream()
+                .flatMap(r -> r.getActions().stream());
+    }
+
+    public List<Resource> getAllResources() {
         return List.of(
                 new Resource(1, Dashboard, List.of(
                         new Action(1, Dashboard, View, "View Dashboard", true)

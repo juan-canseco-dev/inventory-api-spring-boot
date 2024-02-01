@@ -18,11 +18,6 @@ public class CreateRoleDto {
     @NotNull
     private String name;
 
-    @Size(max = 50)
-    @NotEmpty
-    @NotNull
-    private String description;
-
     @NotEmpty
     private List<String> permissions;
 }

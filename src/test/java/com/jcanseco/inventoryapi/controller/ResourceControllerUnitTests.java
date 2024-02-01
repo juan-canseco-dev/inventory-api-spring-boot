@@ -43,7 +43,7 @@ public class ResourceControllerUnitTests {
     @Test
     public void getResourcesStatusShouldBeOk() throws Exception {
         List<Resource> resources = new ArrayList<>();
-        when(service.getAll()).thenReturn(resources);
+        when(service.getAllResources()).thenReturn(resources);
         mockMvc.perform(
                         get("/api/resources")
                                 .accept(MediaType.APPLICATION_JSON)

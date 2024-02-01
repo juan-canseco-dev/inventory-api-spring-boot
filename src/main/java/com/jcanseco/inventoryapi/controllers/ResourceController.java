@@ -19,7 +19,7 @@ public class ResourceController {
     @GetMapping
     public ResponseEntity<List<Resource>> getResources() {
         return ResponseEntity.ok(
-                service.getAll()
+                service.getAllResources()
         );
     }
 }
