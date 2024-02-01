@@ -2,6 +2,7 @@ package com.jcanseco.inventoryapi.security.services;
 
 import com.jcanseco.inventoryapi.exceptions.DomainException;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
+import com.jcanseco.inventoryapi.mappers.RoleMapper;
 import com.jcanseco.inventoryapi.security.dtos.roles.CreateRoleDto;
 import com.jcanseco.inventoryapi.security.dtos.roles.RoleDetailsDto;
 import com.jcanseco.inventoryapi.security.dtos.roles.UpdateRoleDto;
@@ -20,6 +21,7 @@ public class RoleService {
 
     private final RoleRepository roleRepository;
     private final ResourceService resourceService;
+    private final RoleMapper mapper;
 
     private void validatePermissions(List<String> permissions) {
         if (!resourceService.hasPermissions(permissions)) {
@@ -73,6 +75,8 @@ public class RoleService {
 
     @Transactional(readOnly = true)
     public RoleDetailsDto getRoleById(Long roleId) {
-        return null;
+        return roleRepository.findById(roleId)
+                .map(mapper::entityToDetailsDto)
+                .orElseThrow(() -> new NotFoundException(String.format("Role with the Id : {%d} was not found.", roleId)));
     }
 }
