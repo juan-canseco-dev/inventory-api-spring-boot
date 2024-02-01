@@ -42,7 +42,8 @@ public class ResourceService {
                 ));
 
         if (resourceWithRequiredPermissions.containsKey(resource)) {
-            return resourceWithRequiredPermissions.get(resource).containsAll(permissions);
+            var requiredPermissions = resourceWithRequiredPermissions.get(resource);
+            return new HashSet<>(permissions).containsAll(requiredPermissions);
         }
 
         return false;
