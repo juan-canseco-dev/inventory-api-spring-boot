@@ -26,7 +26,7 @@ public class Role {
 
     @ElementCollection
     @CollectionTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"))
-    @Column(name = "permission", unique = true)
+    @Column(name = "permission")
     private Set<String> permissions = new HashSet<>();
 
     @CreationTimestamp

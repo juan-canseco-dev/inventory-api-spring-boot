@@ -1,4 +1,5 @@
 DELETE FROM users;
+DELETE FROM role_permissions;
 DELETE FROM roles;
 
 -- Role 1
