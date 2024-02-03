@@ -1,5 +1,5 @@
+DELETE FROM users;
 DELETE FROM roles;
-
 
 -- Role 1
 INSERT INTO roles (id, name, created_at, updated_at)
