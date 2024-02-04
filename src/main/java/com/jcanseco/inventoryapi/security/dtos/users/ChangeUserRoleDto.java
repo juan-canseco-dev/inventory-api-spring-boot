@@ -1,23 +1,20 @@
 package com.jcanseco.inventoryapi.security.dtos.users;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @EqualsAndHashCode
 @Builder
-@Setter
-@Getter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateUserDto {
-
-
+public class ChangeUserRoleDto {
     @Min(1)
     @NotNull
     private Long userId;
 
-    @Size(max = 50)
-    @NotEmpty
-    @NotBlank
-    private String fullName;
+    @Min(1)
+    @NotNull
+    private Long roleId;
 }

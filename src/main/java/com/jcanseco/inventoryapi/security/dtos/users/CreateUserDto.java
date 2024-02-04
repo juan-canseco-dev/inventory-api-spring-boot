@@ -1,8 +1,6 @@
 package com.jcanseco.inventoryapi.security.dtos.users;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @EqualsAndHashCode
@@ -18,13 +16,14 @@ public class CreateUserDto {
     @NotBlank
     private String fullName;
 
-    @NotEmpty
-    @NotBlank
-    private String roleId;
+    @Min(1)
+    @NotNull
+    private Long roleId;
 
     @Size(max = 50)
     @NotEmpty
     @NotBlank
+    @Email
     private String email;
 
     @Size(max = 30)
