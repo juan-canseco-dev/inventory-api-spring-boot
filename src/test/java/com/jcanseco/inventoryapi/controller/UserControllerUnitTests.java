@@ -1,10 +1,11 @@
 package com.jcanseco.inventoryapi.controller;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
-import com.jcanseco.inventoryapi.security.controllers.RoleController;
-import com.jcanseco.inventoryapi.security.dtos.roles.*;
+import com.jcanseco.inventoryapi.security.controllers.UserController;
+import com.jcanseco.inventoryapi.security.dtos.users.*;
 import com.jcanseco.inventoryapi.security.services.ResourceService;
 import com.jcanseco.inventoryapi.security.services.RoleService;
 import com.jcanseco.inventoryapi.security.services.UserService;
@@ -35,13 +36,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         @MockBean(PurchaseService.class),
         @MockBean(OrderService.class),
         @MockBean(ResourceService.class),
-        @MockBean(UserService.class)
+        @MockBean(RoleService.class)
 })
 @WebMvcTest(
-        controllers = RoleController.class,
+        controllers = UserController.class,
         excludeAutoConfiguration = {SecurityAutoConfiguration.class}
 )
-public class RoleControllerUnitTests {
+public class UserControllerUnitTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -49,25 +50,23 @@ public class RoleControllerUnitTests {
     @Autowired
     private ObjectMapper mapper;
 
-
     @MockBean
-    private RoleService service;
-
+    private UserService service;
 
     @Test
-    public void createRoleWhenModelIsValidStatusShouldBeCreated() throws Exception {
+    public void createUserWhenModelIsValidStatusShouldBeCreated() throws Exception {
 
-        var dto = CreateRoleDto.builder()
-                .name("New Role")
-                .permissions(List.of(
-                        "Permissions.Roles.View",
-                        "Permissions.Users.View"
-                ))
+        var dto = CreateUserDto.builder()
+                .roleId(1L)
+                .fullName("Jane Doe")
+                .email("jane.doe@mail.com")
+                .password("jane1234")
                 .build();
 
-        when(service.createRole(dto)).thenReturn(1L);
+        when(service.createUser(dto)).thenReturn(1L);
+
         mockMvc.perform(
-                        post("/api/roles")
+                        post("/api/users")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -76,46 +75,35 @@ public class RoleControllerUnitTests {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$").isNumber())
                 .andExpect(jsonPath("$").value(1L));
-
     }
 
     @Test
-    public void createRoleWhenModelIsInvalidStatusShouldBeBadRequest() throws Exception {
-
-        var dto = CreateRoleDto.builder()
-                .name("New Role")
-                .permissions(List.of(
-                        "Permissions.Roles.View",
-                        "Permissions.Users.View",
-                        "Permissions.Users.View"
-                ))
+    public void createUserWhenModelIsInvalidStatusShouldBeBadRequest() throws Exception {
+        var dto = CreateUserDto.builder()
+                .fullName("Jane Doe")
+                .email("jane.doe@mail.com")
+                .password("jane1234")
                 .build();
 
         mockMvc.perform(
-                        post("/api/roles")
+                        post("/api/users")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-
     }
 
     @Test
-    public void updateRoleWhenModelIsValidStatusShouldBeNoContent() throws Exception {
-
-        var dto = UpdateRoleDto.builder()
-                .roleId(1L)
-                .name("New Role")
-                .permissions(List.of(
-                        "Permissions.Roles.View",
-                        "Permissions.Users.View"
-                ))
+    public void updateUserWhenModelIsValidStatusShouldBeNoContent() throws Exception {
+        var dto = UpdateUserDto.builder()
+                .userId(1L)
+                .fullName("Jane Doe")
                 .build();
 
         mockMvc.perform(
-                        put("/api/roles/1")
+                        put("/api/users/1")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -125,18 +113,14 @@ public class RoleControllerUnitTests {
     }
 
     @Test
-    public void updateRoleWhenModelIsInvalidStatusShouldBeBadRequest() throws Exception {
-        var dto = UpdateRoleDto.builder()
-                .roleId(1L)
-                .name("")
-                .permissions(List.of(
-                        "Permissions.Roles.View",
-                        "Permissions.Users.View"
-                ))
+    public void updateUserWhenModelIsInvalidStatusShouldBeBadRequest() throws Exception {
+        var dto = UpdateUserDto.builder()
+                .userId(1L)
+                .fullName(" ")
                 .build();
 
         mockMvc.perform(
-                        put("/api/roles/1")
+                        put("/api/users/1")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -146,22 +130,36 @@ public class RoleControllerUnitTests {
     }
 
     @Test
-    public void updateRoleWhenRoleIsNotFoundStatusShouldBeNotFound() throws Exception{
-        var dto = UpdateRoleDto.builder()
-                .roleId(1L)
-                .name("New Role")
-                .permissions(List.of(
-                        "Permissions.Roles.View",
-                        "Permissions.Users.View"
-                ))
+    public void updateUserWhenDtoIdAndPathIdAreNotEqualStatusShouldBeBadRequest() throws Exception {
+        var dto = UpdateUserDto.builder()
+                .userId(1L)
+                .fullName("Jane Doe")
                 .build();
 
-        doThrow(new NotFoundException("Role Not Found"))
+        mockMvc.perform(
+                        put("/api/users/2")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void updateUserWhenUserDoNotExistsStatusShouldBeNotFound() throws Exception {
+
+        var dto = UpdateUserDto.builder()
+                .userId(1L)
+                .fullName("Jane Doe")
+                .build();
+
+        doThrow(new NotFoundException("User Not Found"))
                 .when(service)
-                .updateRole(dto);
+                .updateUser(dto);
 
         mockMvc.perform(
-                        put("/api/roles/1")
+                        put("/api/users/1")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -171,19 +169,31 @@ public class RoleControllerUnitTests {
     }
 
     @Test
-    public void updateRoleWhenDtoIdAndPathIdAreNotEqualStatusShouldBeBadRequest() throws Exception {
-        var dto = UpdateRoleDto.builder()
+    public void changeUserRoleWhenModelIsValidStatusShouldBeNoContent() throws Exception {
+
+        var dto = ChangeUserRoleDto.builder()
+                .userId(1L)
                 .roleId(1L)
-                .name("New Role")
-                .permissions(List.of(
-                        "Permissions.Roles.View",
-                        "Permissions.Users.View"
-                ))
                 .build();
 
+        mockMvc.perform(
+                        put("/api/users/1/changeRole")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void changeUserRoleWhenModelsIsInvalidStatusShouldBeBadRequest() throws Exception {
+        var dto = ChangeUserRoleDto.builder()
+                .userId(1L)
+                .build();
 
         mockMvc.perform(
-                        put("/api/roles/11")
+                        put("/api/users/1/changeRole")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -193,9 +203,48 @@ public class RoleControllerUnitTests {
     }
 
     @Test
-    public void deleteRoleWhenRoleExistsStatusShouldBeNoContent() throws Exception {
+    public void changeUserRoleWhenDtoIdAndPathIdAreNotEqualStatusShouldBeBadRequest() throws Exception {
+        var dto = ChangeUserRoleDto.builder()
+                .userId(1L)
+                .roleId(1L)
+                .build();
+
         mockMvc.perform(
-                        delete("/api/roles/1")
+                        put("/api/users/2/changeRole")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void changeUserRoleWhenUserDoNotExistsStatusShouldBeNotFound() throws  Exception {
+        var dto = ChangeUserRoleDto.builder()
+                .userId(1L)
+                .roleId(1L)
+                .build();
+
+        doThrow(new NotFoundException("User Not Found"))
+                .when(service)
+                .changeUserRole(dto);
+
+
+        mockMvc.perform(
+                        put("/api/users/1/changeRole")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteUserWhenUserExistsStatusShouldBeNoContent() throws Exception {
+        mockMvc.perform(
+                        delete("/api/users/1")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -204,14 +253,13 @@ public class RoleControllerUnitTests {
     }
 
     @Test
-    public void deleteRoleWhenRoleNotExistsStatusShouldBeNotFound() throws Exception {
-
-        doThrow(new NotFoundException("Role Not Found"))
+    public void deleteUserWhenUserDoNotExistsStatusShouldBeNotFound() throws Exception {
+        doThrow(new NotFoundException("User Not Found"))
                 .when(service)
-                .deleteRole(1L);
+                .deleteUser(1L);
 
         mockMvc.perform(
-                        delete("/api/roles/1")
+                        delete("/api/users/1")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -219,27 +267,10 @@ public class RoleControllerUnitTests {
                 .andExpect(status().isNotFound());
     }
 
-
     @Test
-    public void getRoleIdWhenRoleExistsStatusShouldBeOk() throws Exception {
-
-        var roleId = 1L;
-
-        var role = RoleDetailsDto.builder()
-                .id(roleId)
-                .name("New Role")
-                .permissions(List.of(
-                        "Permissions.Roles.View",
-                        "Permissions.Users.View"
-                ))
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now().plusDays(2))
-                .build();
-
-        when(service.getRoleById(roleId)).thenReturn(role);
-
+    public void getUserWhenUserExistsStatusShouldBeOk() throws Exception {
         mockMvc.perform(
-                        get("/api/roles/" + roleId)
+                        get("/api/users/1")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -247,10 +278,27 @@ public class RoleControllerUnitTests {
                 .andExpect(status().isOk());
     }
 
+
     @Test
-    public void getRolesWhenSortOrderIsInvalidStatusShouldBeBadRequest() throws Exception {
+    public void getUserWhenUserDoNotExistsStatusShouldBeNotFound() throws Exception {
+        doThrow(new NotFoundException("User Not Found"))
+                .when(service)
+                .getUserById(1L);
         mockMvc.perform(
-                        get("/api/roles")
+                        get("/api/users/1")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    // Users
+
+    @Test
+    public void getUsersWhenSortOrderIsInvalidStatusShouldBeBadRequest() throws Exception {
+        mockMvc.perform(
+                        get("/api/users")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("sortOrder", "invalid_sort_order")
@@ -260,9 +308,9 @@ public class RoleControllerUnitTests {
     }
 
     @Test
-    public void getRolesWhenOrderByIsInvalidStatusShouldBeBadRequest() throws Exception {
+    public void getUsersWhenOrderByIsInvalidStatusShouldBeBadRequest() throws Exception {
         mockMvc.perform(
-                        get("/api/roles")
+                        get("/api/users")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("orderBy", "invalid_order_by")
@@ -272,9 +320,9 @@ public class RoleControllerUnitTests {
     }
 
     @Test
-    public void getRolesPageWhenPageNumberOrPageSizeAreLessThanOneStatusShouldBeBadRequest() throws Exception {
+    public void getUsersPageWhenPageNumberOrPageSizeAreLessThanOneStatusShouldBeBadRequest() throws Exception {
         mockMvc.perform(
-                        get("/api/roles")
+                        get("/api/users")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("pageNumber", "0")
@@ -285,21 +333,21 @@ public class RoleControllerUnitTests {
     }
 
     @Test
-    public void getRolesWhenPageSizeAndPageNumberAreNotPresentStatusShouldBeOk() throws Exception {
+    public void getUsersWhenPageSizeAndPageNumberAreNotPresentStatusShouldBeOk() throws Exception {
 
 
-        var getRolesRequest = GetRolesRequest.builder()
+        var getUsersRequest = GetUsersRequest.builder()
                 .build();
 
-        var roles = List.of(
-                RoleDto.builder().id(1L).name("Role 1").build(),
-                RoleDto.builder().id(2L).name("Role 2").build()
+        var users = List.of(
+                UserDto.builder().id(1L).fullName("User 1").build(),
+                UserDto.builder().id(2L).fullName("User 2").build()
         );
 
-        when(service.getRoles(getRolesRequest)).thenReturn(roles);
+        when(service.getUsers(getUsersRequest)).thenReturn(users);
 
         mockMvc.perform(
-                        get("/api/roles")
+                        get("/api/users")
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -309,26 +357,26 @@ public class RoleControllerUnitTests {
     }
 
     @Test
-    public void getRolesPageWhenPageSizeAndPageNumberArePresentStatusShouldBeOk() throws Exception {
+    public void getUsersPageWhenPageSizeAndPageNumberArePresentStatusShouldBeOk() throws Exception {
 
-        var getRolesPageRequest = GetRolesRequest.builder()
+        var getUsersPageRequest = GetUsersRequest.builder()
                 .pageNumber(1)
                 .pageSize(1)
                 .build();
 
-        var roles = List.of(
-                RoleDto.builder().id(1L).name("Role 1").build()
+        var users = List.of(
+                UserDto.builder().id(1L).fullName("User 1").build()
         );
 
-        var pagedList = new PagedList<>(roles, 1, 1, 2, 2);
+        var pagedList = new PagedList<>(users, 1, 1, 2, 2);
 
-        when(service.getRolesPage(getRolesPageRequest)).thenReturn(pagedList);
+        when(service.getUsersPage(getUsersPageRequest)).thenReturn(pagedList);
 
         mockMvc.perform(
-                        get("/api/roles")
+                        get("/api/users")
                                 .accept(MediaType.APPLICATION_JSON)
-                                .param("pageNumber", getRolesPageRequest.getPageNumber().toString())
-                                .param("pageSize", getRolesPageRequest.getPageSize().toString())
+                                .param("pageNumber", getUsersPageRequest.getPageNumber().toString())
+                                .param("pageSize", getUsersPageRequest.getPageSize().toString())
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
