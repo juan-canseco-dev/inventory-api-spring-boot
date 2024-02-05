@@ -30,6 +30,7 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true, length = 50)
     private String email;
 
+    @Column
     private String password;
 
     @ManyToOne
