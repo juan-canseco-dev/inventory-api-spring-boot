@@ -1,3 +1,5 @@
+DELETE FROM order_items;
+DELETE FROM orders;
 DELETE FROM customers;
 -- Insert data into customers table
 INSERT INTO customers (id, dni, phone, full_name,

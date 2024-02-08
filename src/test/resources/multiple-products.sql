@@ -1,3 +1,7 @@
+DELETE FROM order_items;
+DELETE FROM orders;
+DELETE FROM purchase_items;
+DELETE FROM purchases;
 DELETE FROM products_stock;
 DELETE FROM products;
 DELETE FROM units_of_measurement;
