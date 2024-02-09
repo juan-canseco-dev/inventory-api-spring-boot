@@ -9,6 +9,7 @@ import com.jcanseco.inventoryapi.dtos.orders.UpdateOrderDto;
 import com.jcanseco.inventoryapi.exceptions.DomainException;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.repositories.ProductRepository;
+import com.jcanseco.inventoryapi.security.services.JwtService;
 import com.jcanseco.inventoryapi.security.services.ResourceService;
 import com.jcanseco.inventoryapi.security.services.RoleService;
 import com.jcanseco.inventoryapi.security.services.UserService;
@@ -41,7 +42,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         @MockBean(PurchaseService.class),
         @MockBean(ResourceService.class),
         @MockBean(RoleService.class),
-        @MockBean(UserService.class)
+        @MockBean(UserService.class),
+        @MockBean(JwtService.class)
 })
 @WebMvcTest(
         controllers = OrderController.class,

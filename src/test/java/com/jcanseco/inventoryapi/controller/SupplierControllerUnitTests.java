@@ -5,6 +5,7 @@ import com.jcanseco.inventoryapi.dtos.AddressDto;
 import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.dtos.suppliers.*;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
+import com.jcanseco.inventoryapi.security.services.JwtService;
 import com.jcanseco.inventoryapi.security.services.ResourceService;
 import com.jcanseco.inventoryapi.security.services.RoleService;
 import com.jcanseco.inventoryapi.security.services.UserService;
@@ -37,7 +38,8 @@ import static org.mockito.Mockito.doThrow;
         @MockBean(OrderService.class),
         @MockBean(ResourceService.class),
         @MockBean(RoleService.class),
-        @MockBean(UserService.class)
+        @MockBean(UserService.class),
+        @MockBean(JwtService.class)
 })
 @WebMvcTest(
         controllers = SupplierController.class,
