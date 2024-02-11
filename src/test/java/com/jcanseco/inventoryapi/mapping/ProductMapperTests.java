@@ -58,8 +58,8 @@ public class ProductMapperTests {
                 .unit(unit)
                 .stock(Stock.builder().quantity(10L).build())
                 .name("Laptop")
-                .purchasePrice(new BigDecimal("20.99"))
-                .salePrice(new BigDecimal("30.99"))
+                .purchasePrice(BigDecimal.valueOf(20.99))
+                .salePrice(BigDecimal.valueOf(30.99))
                 .build();
 
     }
@@ -74,8 +74,8 @@ public class ProductMapperTests {
         assertEquals(entity.getId(), dto.getId());
         assertEquals(entity.getName(), dto.getName());
         assertEquals(entity.getStock().getQuantity(), dto.getStock());
-        assertEquals(entity.getPurchasePrice(), dto.getPurchasePrice());
-        assertEquals(entity.getSalePrice(), dto.getSalePrice());
+        assertEquals(entity.getPurchasePrice().doubleValue(), dto.getPurchasePrice());
+        assertEquals(entity.getSalePrice().doubleValue(), dto.getSalePrice());
         assertEquals(entity.getSupplier().getCompanyName(), dto.getSupplier());
         assertEquals(entity.getCategory().getName(), dto.getCategory());
         assertEquals(entity.getUnit().getName(), dto.getUnit());
@@ -91,8 +91,8 @@ public class ProductMapperTests {
         assertEquals(entity.getId(), dto.getId());
         assertEquals(entity.getName(), dto.getName());
         assertEquals(entity.getStock().getQuantity(), dto.getStock());
-        assertEquals(entity.getPurchasePrice(), dto.getPurchasePrice());
-        assertEquals(entity.getSalePrice(), dto.getSalePrice());
+        assertEquals(entity.getPurchasePrice().doubleValue(), dto.getPurchasePrice());
+        assertEquals(entity.getSalePrice().doubleValue(), dto.getSalePrice());
 
         assertNotNull(dto.getCategory());
         assertEquals(entity.getCategory().getId(), dto.getCategory().getId());
@@ -126,8 +126,8 @@ public class ProductMapperTests {
                         .unit(unit)
                         .name("Mouse")
                         .stock(Stock.builder().quantity(10L).build())
-                        .salePrice(new BigDecimal("20.99"))
-                        .purchasePrice(new BigDecimal("30.99"))
+                        .salePrice(BigDecimal.valueOf(20.99))
+                        .purchasePrice(BigDecimal.valueOf(30.99))
                         .build(),
                 Product.builder()
                         .id(5L)
@@ -136,8 +136,8 @@ public class ProductMapperTests {
                         .unit(unit)
                         .name("Pc Gamer")
                         .stock(Stock.builder().quantity(50L).build())
-                        .salePrice(new BigDecimal("599.99"))
-                        .purchasePrice(new BigDecimal("799.99"))
+                        .salePrice(BigDecimal.valueOf(599.99))
+                        .purchasePrice(BigDecimal.valueOf(799.99))
                         .build()
         );
 

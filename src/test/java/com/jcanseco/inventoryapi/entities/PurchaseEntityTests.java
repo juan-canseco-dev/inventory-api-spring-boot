@@ -3,12 +3,12 @@ package com.jcanseco.inventoryapi.entities;
 import com.jcanseco.inventoryapi.exceptions.DomainException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PurchaseEntityTests {
@@ -59,8 +59,8 @@ public class PurchaseEntityTests {
                         .category(category)
                         .unit(unit)
                         .name("Vacuum Cleaner")
-                        .purchasePrice(new BigDecimal("90.00"))
-                        .salePrice(new BigDecimal("150.00"))
+                        .purchasePrice(BigDecimal.valueOf(90))
+                        .salePrice(BigDecimal.valueOf(150))
                         .build(),
                 Product.builder()
                         .id(10L)
@@ -68,15 +68,15 @@ public class PurchaseEntityTests {
                         .category(category)
                         .unit(unit)
                         .name("Toaster")
-                        .purchasePrice(new BigDecimal("25.00"))
-                        .salePrice(new BigDecimal("40.00"))
+                        .purchasePrice(BigDecimal.valueOf(25))
+                        .salePrice(BigDecimal.valueOf(40))
                         .build()
         );
     }
 
     @Test
     public void createPurchaseItemsAndTotalShouldBeExpected() {
-        var expectedTotal = new BigDecimal("1150.00");
+        var expectedTotal = BigDecimal.valueOf(1150);
         var purchase = Purchase.createNew(supplier, products, productsWithQuantities);
         assertEquals(supplier, purchase.getSupplier());
         assertEquals(expectedTotal, purchase.getTotal());
@@ -86,7 +86,7 @@ public class PurchaseEntityTests {
 
     @Test
     public void updatePurchaseWhenPurchaseIsNotArrivedShouldUpdate() {
-        var expectedTotal = new BigDecimal("575.00");
+        var expectedTotal = BigDecimal.valueOf(575);
         var purchase = Purchase.createNew(supplier, products, productsWithQuantities);
         purchase.update(products, productsWithQuantitiesForUpdate);
         assertEquals(expectedTotal, purchase.getTotal());

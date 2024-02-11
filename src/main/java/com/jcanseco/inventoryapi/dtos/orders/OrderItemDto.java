@@ -2,8 +2,6 @@ package com.jcanseco.inventoryapi.dtos.orders;
 
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @EqualsAndHashCode
 @Builder
 @Setter
@@ -16,6 +14,6 @@ public class OrderItemDto {
     private String productName;
     private String productUnit;
     private Long quantity;
-    private BigDecimal price;
-    private BigDecimal total;
+    private Double price;
+    private Double total;
 }

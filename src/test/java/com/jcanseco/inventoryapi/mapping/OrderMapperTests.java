@@ -10,6 +10,7 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -62,14 +63,14 @@ public class OrderMapperTests {
                         .supplier(supplier)
                         .unit(unit)
                         .name("Coffee Maker")
-                        .salePrice(new BigDecimal("50.00"))
+                        .salePrice(BigDecimal.valueOf(50))
                         .build(),
                 Product.builder()
                         .id(12L)
                         .supplier(supplier)
                         .unit(unit)
                         .name("Desk Chair")
-                        .salePrice(new BigDecimal("100.00"))
+                        .salePrice(BigDecimal.valueOf(100))
                         .build()
         );
 
@@ -98,14 +99,14 @@ public class OrderMapperTests {
                         .supplier(supplier)
                         .unit(unit)
                         .name("Coffee Maker")
-                        .salePrice(new BigDecimal("50.00"))
+                        .salePrice(BigDecimal.valueOf(50))
                         .build(),
                 Product.builder()
                         .id(12L)
                         .supplier(supplier)
                         .unit(unit)
                         .name("Desk Chair")
-                        .salePrice(new BigDecimal("100.00"))
+                        .salePrice(BigDecimal.valueOf(100))
                         .build()
         );
 
@@ -121,14 +122,14 @@ public class OrderMapperTests {
                         .supplier(supplier)
                         .unit(unit)
                         .name("Washing Machine")
-                        .salePrice(new BigDecimal("400.00"))
+                        .salePrice(BigDecimal.valueOf(400))
                         .build(),
                 Product.builder()
                         .id(14L)
                         .supplier(supplier)
                         .unit(unit)
                         .name("Office Desk")
-                        .salePrice(new BigDecimal("120.00"))
+                        .salePrice(BigDecimal.valueOf(120))
                         .build()
         );
 
@@ -163,7 +164,7 @@ public class OrderMapperTests {
 
         assertNotNull(dto);
         assertEquals(order.getId(), dto.getId());
-        assertEquals(order.getTotal(), dto.getTotal());
+        assertEquals(order.getTotal().doubleValue(), dto.getTotal());
 
         assertNotNull(dto.getCustomer());
         assertEqualsCustomer(order.getCustomer(), dto.getCustomer());
@@ -213,8 +214,8 @@ public class OrderMapperTests {
         assertEquals(expected.getProductName(), actual.getProductName());
         assertEquals(expected.getProductUnit(), actual.getProductUnit());
         assertEquals(expected.getQuantity(), actual.getQuantity());
-        assertEquals(expected.getPrice(), actual.getPrice());
-        assertEquals(expected.getTotal(), actual.getTotal());
+        assertEquals(expected.getPrice().doubleValue(), actual.getPrice());
+        assertEquals(expected.getTotal().doubleValue(), actual.getTotal());
     }
 
     private void assertEqualsItems(List<OrderItem> expected, List<OrderItemDto> actual) {

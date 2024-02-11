@@ -4,7 +4,6 @@ import com.jcanseco.inventoryapi.dtos.categories.CategoryDto;
 import com.jcanseco.inventoryapi.dtos.suppliers.SupplierDto;
 import com.jcanseco.inventoryapi.dtos.units.UnitOfMeasurementDto;
 import lombok.*;
-import java.math.BigDecimal;
 
 @EqualsAndHashCode
 @Builder
@@ -19,6 +18,6 @@ public class ProductDetailsDto {
     private CategoryDto category;
     private UnitOfMeasurementDto unit;
     private Long stock;
-    private BigDecimal purchasePrice;
-    private BigDecimal salePrice;
+    private Double purchasePrice;
+    private Double salePrice;
 }

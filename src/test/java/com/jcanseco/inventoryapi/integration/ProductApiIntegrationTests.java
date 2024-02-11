@@ -21,7 +21,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.context.jdbc.Sql;
-import java.math.BigDecimal;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -120,8 +119,8 @@ public class ProductApiIntegrationTests {
                 )
                 .name("Laptop")
                 .stock(10L)
-                .purchasePrice(new BigDecimal("800.00"))
-                .salePrice(new BigDecimal("1200.00"))
+                .purchasePrice(800.00)
+                .salePrice(1200.00)
                 .build();
 
         var response = restTemplate.exchange(url, HttpMethod.GET, null, ProductDetailsDto.class);

@@ -23,6 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -106,8 +107,8 @@ public class PurchaseServiceUnitTests {
                         .category(category)
                         .unit(unit)
                         .name("Vacuum Cleaner")
-                        .purchasePrice(new BigDecimal("90.00"))
-                        .salePrice(new BigDecimal("150.00"))
+                        .purchasePrice(BigDecimal.valueOf(90.00))
+                        .salePrice(BigDecimal.valueOf(150.00))
                         .build(),
                 Product.builder()
                         .id(10L)
@@ -115,8 +116,8 @@ public class PurchaseServiceUnitTests {
                         .category(category)
                         .unit(unit)
                         .name("Toaster")
-                        .purchasePrice(new BigDecimal("25.00"))
-                        .salePrice(new BigDecimal("40.00"))
+                        .purchasePrice(BigDecimal.valueOf(25.00))
+                        .salePrice(BigDecimal.valueOf(40.00))
                         .build()
                 );
 

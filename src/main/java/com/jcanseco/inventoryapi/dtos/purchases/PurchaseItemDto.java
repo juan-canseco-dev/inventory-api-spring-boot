@@ -14,6 +14,6 @@ public class PurchaseItemDto {
     private String productName;
     private String productUnit;
     private Long quantity;
-    private BigDecimal price;
-    private BigDecimal total;
+    private Double price;
+    private Double total;
 }

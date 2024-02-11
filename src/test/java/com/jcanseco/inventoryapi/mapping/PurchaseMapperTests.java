@@ -10,6 +10,7 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -54,14 +55,14 @@ public class PurchaseMapperTests {
                         .supplier(supplier)
                         .unit(unit)
                         .name("Coffee Maker")
-                        .purchasePrice(new BigDecimal("50.00"))
+                        .purchasePrice(BigDecimal.valueOf(50))
                         .build(),
                 Product.builder()
                         .id(12L)
                         .supplier(supplier)
                         .unit(unit)
                         .name("Desk Chair")
-                        .purchasePrice(new BigDecimal("100.00"))
+                        .purchasePrice(BigDecimal.valueOf(100))
                         .build()
         );
 
@@ -90,14 +91,14 @@ public class PurchaseMapperTests {
                         .supplier(supplier)
                         .unit(unit)
                         .name("Coffee Maker")
-                        .purchasePrice(new BigDecimal("50.00"))
+                        .purchasePrice(BigDecimal.valueOf(50))
                         .build(),
                 Product.builder()
                         .id(12L)
                         .supplier(supplier)
                         .unit(unit)
                         .name("Desk Chair")
-                        .purchasePrice(new BigDecimal("100.00"))
+                        .purchasePrice(BigDecimal.valueOf(100))
                         .build()
         );
 
@@ -113,14 +114,14 @@ public class PurchaseMapperTests {
                         .supplier(supplier)
                         .unit(unit)
                         .name("Washing Machine")
-                        .purchasePrice(new BigDecimal("400.00"))
+                        .purchasePrice(BigDecimal.valueOf(400))
                         .build(),
                 Product.builder()
                         .id(14L)
                         .supplier(supplier)
                         .unit(unit)
                         .name("Office Desk")
-                        .purchasePrice(new BigDecimal("120.00"))
+                        .purchasePrice(BigDecimal.valueOf(120))
                         .build()
         );
 
@@ -143,7 +144,7 @@ public class PurchaseMapperTests {
         assertNotNull(dto);
         assertEquals(purchase.getId(), dto.getId());
         assertEquals(purchase.getSupplier().getCompanyName(), dto.getSupplier());
-        assertEquals(purchase.getTotal(), dto.getTotal());
+        assertEquals(purchase.getTotal().doubleValue(), dto.getTotal());
         assertEquals(purchase.getOrderedAt(), dto.getOrderedAt());
         assertEquals(purchase.isArrived(), dto.isArrived());
         assertEquals(purchase.getArrivedAt(), dto.getArrivedAt());
@@ -155,7 +156,7 @@ public class PurchaseMapperTests {
 
         assertNotNull(dto);
         assertEquals(purchase.getId(), dto.getId());
-        assertEquals(purchase.getTotal(), dto.getTotal());
+        assertEquals(purchase.getTotal().doubleValue(), dto.getTotal());
 
         assertNotNull(dto.getSupplier());
         assertEqualsSupplier(purchase.getSupplier(), dto.getSupplier());
@@ -205,8 +206,8 @@ public class PurchaseMapperTests {
         assertEquals(expected.getProductName(), actual.getProductName());
         assertEquals(expected.getProductUnit(), actual.getProductUnit());
         assertEquals(expected.getQuantity(), actual.getQuantity());
-        assertEquals(expected.getPrice(), actual.getPrice());
-        assertEquals(expected.getTotal(), actual.getTotal());
+        assertEquals(expected.getPrice().doubleValue(), actual.getPrice());
+        assertEquals(expected.getTotal().doubleValue(), actual.getTotal());
     }
 
     private void assertEqualsItems(List<PurchaseItem> expected, List<PurchaseItemDto> actual) {

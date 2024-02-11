@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class PurchaseDto {
     private Long id;
     private String supplier;
-    private BigDecimal total;
+    private Double total;
     private boolean arrived;
     private LocalDateTime orderedAt;
     private LocalDateTime arrivedAt;

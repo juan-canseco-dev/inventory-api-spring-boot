@@ -12,6 +12,7 @@ import com.jcanseco.inventoryapi.security.repositories.UserRepository;
 import com.jcanseco.inventoryapi.security.specifications.UserSpecifications;
 import com.jcanseco.inventoryapi.utils.IndexUtility;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetailsService;

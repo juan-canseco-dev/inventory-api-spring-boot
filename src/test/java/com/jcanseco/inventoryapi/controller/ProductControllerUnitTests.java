@@ -280,8 +280,8 @@ public class ProductControllerUnitTests {
                         .category(defaultCategory())
                         .unit(defaultUnit())
                         .name("Product")
-                        .purchasePrice(BigDecimal.valueOf(49.99))
-                        .salePrice(BigDecimal.valueOf(59.99))
+                        .purchasePrice(49.99)
+                        .salePrice(59.99)
                         .stock(10L)
                         .build();
         when(productService.getProductById(productId)).thenReturn(productDto);
@@ -359,8 +359,8 @@ public class ProductControllerUnitTests {
                         .category("Video Games")
                         .unit("Piece")
                         .name("Halo Infinite")
-                        .purchasePrice(BigDecimal.valueOf(49.99))
-                        .salePrice(BigDecimal.valueOf(59.99))
+                        .purchasePrice(49.99)
+                        .salePrice(59.99)
                         .stock(10L)
                         .build(),
                 ProductDto.builder()
@@ -369,8 +369,8 @@ public class ProductControllerUnitTests {
                         .category("Video Games")
                         .unit("Piece")
                         .name("Halo 3")
-                        .purchasePrice(BigDecimal.valueOf(9.99))
-                        .salePrice(BigDecimal.valueOf(19.99))
+                        .purchasePrice(9.99)
+                        .salePrice(19.99)
                         .stock(10L)
                         .build()
                 );
@@ -402,8 +402,8 @@ public class ProductControllerUnitTests {
                         .category("Video Games")
                         .unit("Piece")
                         .name("Halo Infinite")
-                        .purchasePrice(BigDecimal.valueOf(49.99))
-                        .salePrice(BigDecimal.valueOf(59.99))
+                        .purchasePrice(49.99)
+                        .salePrice(59.99)
                         .stock(10L)
                         .build()
         );

@@ -20,7 +20,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class CustomerControllerIntegrationTests {
@@ -134,11 +133,7 @@ public class CustomerControllerIntegrationTests {
                 .andExpect(jsonPath("$.dni").value(expected.getDni()))
                 .andExpect(jsonPath("$.phone").value(expected.getPhone()))
                 .andExpect(jsonPath("$.fullName").value(expected.getFullName()))
-                .andExpect(jsonPath("$.address.country").value(expected.getAddress().getCountry()))
-                .andExpect(jsonPath("$.address.state").value(expected.getAddress().getState()))
-                .andExpect(jsonPath("$.address.city").value(expected.getAddress().getCity()))
-                .andExpect(jsonPath("$.address.zipCode").value(expected.getAddress().getZipCode()))
-                .andExpect(jsonPath("$.address.street").value(expected.getAddress().getStreet()));
+                .andExpect(jsonPath("$.address").value(expected.getAddress()));
     }
 
     @WithMockUser

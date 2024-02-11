@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.dtos.purchases.*;
 import com.jcanseco.inventoryapi.dtos.suppliers.SupplierDto;
-import com.jcanseco.inventoryapi.repositories.PurchaseRepository;
 import com.jcanseco.inventoryapi.repositories.StockRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.context.jdbc.Sql;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.HashMap;
@@ -130,8 +128,8 @@ public class PurchaseApiIntegrationTests {
                         .productName("Vacuum Cleaner")
                         .productUnit("Piece")
                         .quantity(10L)
-                        .price(new BigDecimal("90.00"))
-                        .total(new BigDecimal("900.00"))
+                        .price(90.00)
+                        .total(900.00)
                         .build(),
                 PurchaseItemDto.builder()
                         .id(20L)
@@ -139,8 +137,8 @@ public class PurchaseApiIntegrationTests {
                         .productName("Sleeping Bag")
                         .productUnit("Piece")
                         .quantity(10L)
-                        .price(new BigDecimal("40.00"))
-                        .total(new BigDecimal("400.00"))
+                        .price(40.00)
+                        .total(400.00)
                         .build()
         );
 
@@ -148,7 +146,7 @@ public class PurchaseApiIntegrationTests {
                 .id(purchaseId)
                 .supplier(supplier)
                 .items(items)
-                .total(new BigDecimal("1300.00"))
+                .total(1300.00)
                 .orderedAt(LocalDateTime.of(2023, Month.JULY, 3,0,0))
                 .arrivedAt(LocalDateTime.of(2023, Month.JULY, 3,0,0))
                 .arrived(true)

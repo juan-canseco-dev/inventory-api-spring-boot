@@ -15,7 +15,7 @@ import java.util.List;
 public class PurchaseDetailsDto {
     private Long id;
     private SupplierDto supplier;
-    private BigDecimal total;
+    private Double total;
     private List<PurchaseItemDto> items;
     private boolean arrived;
     private LocalDateTime orderedAt;

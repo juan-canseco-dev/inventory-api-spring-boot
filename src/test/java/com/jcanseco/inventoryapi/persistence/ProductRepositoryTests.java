@@ -13,7 +13,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.jdbc.Sql;
+
 import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -48,8 +50,8 @@ public class ProductRepositoryTests {
                 .category(category)
                 .unit(unit)
                 .name("New Product")
-                .purchasePrice(new BigDecimal("19.99"))
-                .salePrice(new BigDecimal("29.99"))
+                .purchasePrice(BigDecimal.valueOf(19.99))
+                .salePrice(BigDecimal.valueOf(29.99))
                 .stock(
                         Stock.builder()
                                 .quantity(expectedStock)

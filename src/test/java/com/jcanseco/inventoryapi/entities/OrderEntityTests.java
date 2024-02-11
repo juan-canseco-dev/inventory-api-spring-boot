@@ -3,18 +3,15 @@ package com.jcanseco.inventoryapi.entities;
 import com.jcanseco.inventoryapi.exceptions.DomainException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OrderEntityTests {
-
     private Customer customer;
     private List<Product> products;
     private final HashMap<Long, Long> productsWithQuantities = new HashMap<>() {{
@@ -70,8 +67,8 @@ public class OrderEntityTests {
                         .category(category)
                         .unit(unit)
                         .name("Vacuum Cleaner")
-                        .purchasePrice(new BigDecimal("90.00"))
-                        .salePrice(new BigDecimal("150.00"))
+                        .purchasePrice(BigDecimal.valueOf(90))
+                        .salePrice(BigDecimal.valueOf(150))
                         .build(),
                 Product.builder()
                         .id(10L)
@@ -79,15 +76,15 @@ public class OrderEntityTests {
                         .category(category)
                         .unit(unit)
                         .name("Toaster")
-                        .purchasePrice(new BigDecimal("25.00"))
-                        .salePrice(new BigDecimal("40.00"))
+                        .purchasePrice(BigDecimal.valueOf(25))
+                        .salePrice(BigDecimal.valueOf(40))
                         .build()
         );
     }
 
     @Test
     public void createOrderItemsAndTotalShouldBeExpected() {
-        var expectedTotal = new BigDecimal("1900.00");
+        var expectedTotal = BigDecimal.valueOf(1900);
         var order = Order.createNew(customer, products, productsWithQuantities);
         assertEquals(customer, order.getCustomer());
         assertEquals(expectedTotal, order.getTotal());
@@ -97,7 +94,7 @@ public class OrderEntityTests {
 
     @Test
     public void updateOrderWhenOrderIsNotDeliveredShouldUpdate() {
-        var expectedTotal = new BigDecimal("950.00");
+        var expectedTotal = BigDecimal.valueOf(950);
         var order = Order.createNew(customer, products, productsWithQuantities);
         order.update(products, productsWithQuantitiesForUpdate);
         assertEquals(expectedTotal, order.getTotal());
@@ -146,6 +143,4 @@ public class OrderEntityTests {
             assertEquals(expectedTotal, item.getTotal());
         }
     }
-
-
 }
