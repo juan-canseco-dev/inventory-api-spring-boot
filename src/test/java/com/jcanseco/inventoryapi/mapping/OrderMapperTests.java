@@ -152,7 +152,7 @@ public class OrderMapperTests {
         assertNotNull(dto);
         assertEquals(order.getId(), dto.getId());
         assertEquals(order.getCustomer().getFullName(), dto.getCustomer());
-        assertEquals(order.getTotal(), dto.getTotal());
+        assertEquals(order.getTotal().doubleValue(), dto.getTotal());
         assertEquals(order.getOrderedAt(), dto.getOrderedAt());
         assertEquals(order.isDelivered(), dto.isDelivered());
         assertEquals(order.getDeliveredAt(), dto.getDeliveredAt());
