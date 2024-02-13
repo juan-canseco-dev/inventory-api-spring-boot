@@ -3,6 +3,8 @@ package com.jcanseco.inventoryapi.persistence;
 import com.jcanseco.inventoryapi.security.entities.Role;
 import com.jcanseco.inventoryapi.security.repositories.RoleRepository;
 import static com.jcanseco.inventoryapi.security.specifications.RoleSpecifications.*;
+
+import com.jcanseco.inventoryapi.security.specifications.RoleSpecifications;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -44,6 +46,13 @@ public class RoleRepositoryTests {
         assertTrue(newRole.getId() > 0);
         assertNotNull(newRole.getCreatedAt());
         assertNotNull(newRole.getPermissions());
+    }
+
+    @Sql("/multiple-roles.sql")
+    @Test
+    public void getRoleByNameSpecificationShouldReturnRole() {
+        var role = repository.findOne(RoleSpecifications.byName("Purchases"));
+        assertTrue(role.isPresent());
     }
 
     @Sql("/multiple-roles.sql")

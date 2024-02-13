@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -132,7 +133,7 @@ public class UserService {
     }
 
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findOne(UserSpecifications.byEmail(username))
+        return username -> userRepository.findByEmailWithRoleAndPermissions(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User : {%s} not found.", username)));
     }
 }

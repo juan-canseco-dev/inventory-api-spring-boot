@@ -8,6 +8,11 @@ public class RoleSpecifications {
         return (root, query, builder) -> builder.like(root.get("name"), "%" + name + "%");
     }
 
+    public static Specification<Role> byName(String name) {
+        return (root, query, builder) -> builder.equal(root.get("name"), name);
+    }
+
+
     public static Specification<Role> orderByIdAsc(Specification<Role> spec) {
         return (root, query, builder) -> {
             query.orderBy(

@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,10 +25,12 @@ public class AuthenticationService {
                 .token(jwtService.generateToken(userDetails))
                 .build();
     }
+
+    @Transactional
     public JwtAuthenticationDto signIn(SignInDto dto) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
         return userRepository.findOne(UserSpecifications.byEmail(dto.getEmail()))
                 .map(this::userToToken)
-                .orElseThrow(() -> new DomainException("Wrong Credentials."));
+                .orElseThrow(() -> new DomainException("Bad credentials"));
     }
 }
