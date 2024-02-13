@@ -42,7 +42,7 @@ public class CustomerControllerIntegrationTests {
     }
 
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Customers.Create"})
     @Sql("/multiple-customers.sql")
     @Test
     public void createCustomerStatusShouldBeCreated() throws Exception {
@@ -63,7 +63,8 @@ public class CustomerControllerIntegrationTests {
                 .andExpect(jsonPath("$").isNumber());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Customers.Update"})
     @Sql("/multiple-customers.sql")
     @Test
     public void updateCustomerStatusShouldBeNoContent() throws Exception {
@@ -87,7 +88,8 @@ public class CustomerControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Customers.Delete"})
     @Sql("/multiple-customers.sql")
     @Test
     public void deleteCustomerStatusShouldBeNoContent() throws Exception  {
@@ -101,7 +103,8 @@ public class CustomerControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Customers.View"})
     @Sql("/multiple-customers.sql")
     @Test
     public void getCustomerByIdStatusShouldBeNoContent() throws Exception {
@@ -136,7 +139,7 @@ public class CustomerControllerIntegrationTests {
                 .andExpect(jsonPath("$.address").value(expected.getAddress()));
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Customers.View"})
     @Sql("/multiple-customers.sql")
     @Test
     public void getCustomersStatusShouldBeOk() throws Exception {
@@ -157,7 +160,7 @@ public class CustomerControllerIntegrationTests {
                 .andExpect(jsonPath("$", hasSize(5)));
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Customers.View"})
     @Sql("/multiple-customers.sql")
     @Test
     public void getCustomersPageShouldBeOk() throws Exception {

@@ -2,10 +2,7 @@ package com.jcanseco.inventoryapi.controller;
 
 import com.jcanseco.inventoryapi.controllers.ResourceController;
 import com.jcanseco.inventoryapi.security.resources.Resource;
-import com.jcanseco.inventoryapi.security.services.JwtService;
-import com.jcanseco.inventoryapi.security.services.ResourceService;
-import com.jcanseco.inventoryapi.security.services.RoleService;
-import com.jcanseco.inventoryapi.security.services.UserService;
+import com.jcanseco.inventoryapi.security.services.*;
 import com.jcanseco.inventoryapi.services.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         @MockBean(OrderService.class),
         @MockBean(RoleService.class),
         @MockBean(UserService.class),
-        @MockBean(JwtService.class)
+        @MockBean(JwtService.class),
+        @MockBean(AuthenticationService.class)
 })
 @WebMvcTest(
         controllers = ResourceController.class,

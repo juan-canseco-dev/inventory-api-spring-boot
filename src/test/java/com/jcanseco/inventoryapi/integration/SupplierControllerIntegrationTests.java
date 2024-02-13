@@ -41,7 +41,7 @@ public class SupplierControllerIntegrationTests {
                 .build();
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Suppliers.Create"})
     @Sql("/multiple-suppliers.sql")
     @Test
     public void createSupplierStatusShouldBeCreated() throws Exception {
@@ -62,7 +62,8 @@ public class SupplierControllerIntegrationTests {
                 .andExpect(jsonPath("$").isNumber());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Suppliers.Update"})
     @Sql("/multiple-suppliers.sql")
     @Test
     public void updateSupplierStatusShouldBeNoContent() throws Exception {
@@ -95,7 +96,8 @@ public class SupplierControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Suppliers.Delete"})
     @Sql("/multiple-suppliers.sql")
     @Test
     public void deleteSupplierStatusShouldBeNoContent() throws Exception {
@@ -110,7 +112,8 @@ public class SupplierControllerIntegrationTests {
     }
 
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Suppliers.View"})
     @Sql("/multiple-suppliers.sql")
     @Test
     public void getSupplierByIdStatusShouldBeOk() throws Exception {
@@ -147,7 +150,7 @@ public class SupplierControllerIntegrationTests {
         assertEquals(expectedSupplier, supplierResult);
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Suppliers.View"})
     @Sql("/multiple-suppliers.sql")
     @Test
     public void getSuppliersStatusShouldBeOk() throws Exception {
@@ -167,7 +170,7 @@ public class SupplierControllerIntegrationTests {
                 .andExpect(jsonPath("$", hasSize(3)));
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Suppliers.View"})
     @Sql("/multiple-suppliers.sql")
     @Test
     public void getSuppliersPageStatusShouldBeOk() throws Exception {

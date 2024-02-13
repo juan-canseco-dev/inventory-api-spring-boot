@@ -28,6 +28,6 @@ public class ResourceControllerIntegrationTests {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(9)));
+                .andExpect(jsonPath("$", hasSize(10)));
     }
 }

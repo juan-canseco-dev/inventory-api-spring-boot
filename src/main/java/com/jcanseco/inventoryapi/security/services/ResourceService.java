@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import static com.jcanseco.inventoryapi.security.resources.ActionType.*;
 import static com.jcanseco.inventoryapi.security.resources.ResourceType.*;
 
@@ -102,20 +101,26 @@ public class ResourceService {
                         new Action(3, Suppliers, Update, "Update Suppliers", false),
                         new Action(4, Suppliers, Delete, "Delete Suppliers", false)
                 )),
-                new Resource(7, Products, List.of(
+                new Resource(7, Customers, List.of(
+                        new Action(1, Customers, View, "View Customers", true),
+                        new Action(2, Customers, Create, "Create Customers", false),
+                        new Action(3, Customers, Update, "Update Customers", false),
+                        new Action(4, Customers, Delete, "Delete Customers", false)
+                )),
+                new Resource(8, Products, List.of(
                         new Action(1, Products, View, "View Products", true),
                         new Action(2, Products, Create, "Create Products", false),
                         new Action(3, Products, Update, "Update Products", false),
                         new Action(4, Products, Delete, "Delete Products", false)
                 )),
-                new Resource(8, Purchases, List.of(
+                new Resource(9, Purchases, List.of(
                         new Action(1, Purchases, View, "View Purchases", true),
                         new Action(2, Purchases, Create, "Create Purchases", false),
                         new Action(3, Purchases, Update, "Update Purchases", false),
                         new Action(4, Purchases, Delete, "Delete Purchases", false),
                         new Action(5, Purchases, Receive, "Receive Purchases", false)
                 )),
-                new Resource(9, Orders, List.of(
+                new Resource(10, Orders, List.of(
                         new Action(1, Orders, View, "View Orders", true),
                         new Action(2, Orders, Create, "Create Orders", false),
                         new Action(3, Orders, Update, "Update Orders", false),

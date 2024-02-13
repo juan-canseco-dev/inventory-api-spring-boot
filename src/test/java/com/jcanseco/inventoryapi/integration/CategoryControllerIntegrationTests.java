@@ -26,7 +26,7 @@ public class CategoryControllerIntegrationTests {
     @Autowired
     private ObjectMapper mapper;
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Categories.Create"})
     @Test
     @Sql("/multiple-categories.sql")
     public void createCategoryStatusShouldBeCreated() throws Exception {
@@ -45,7 +45,7 @@ public class CategoryControllerIntegrationTests {
                 .andExpect(jsonPath("$").isNumber());
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Categories.Update"})
     @Test
     @Sql("/multiple-categories.sql")
     public void updateCategoryStatusShouldBeNoContent() throws Exception {
@@ -65,7 +65,7 @@ public class CategoryControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Categories.Delete"})
     @Test
     @Sql("/multiple-categories.sql")
     public void deleteCategoryStatusShouldBeNoContent() throws Exception {
@@ -79,7 +79,7 @@ public class CategoryControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Categories.View"})
     @Sql("/multiple-categories.sql")
     @Test
     public void getCategoryByIdStatusShouldBeOk() throws Exception {
@@ -97,7 +97,7 @@ public class CategoryControllerIntegrationTests {
                 .andExpect(jsonPath("$.name").value(expectedName));
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Categories.View"})
     @Sql("/multiple-categories.sql")
     @Test
     public void getCategoriesStatusShouldBeOk() throws Exception {
@@ -115,7 +115,7 @@ public class CategoryControllerIntegrationTests {
                 .andExpect(jsonPath("$", hasSize(5)));
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Categories.View"})
     @Sql("/multiple-categories.sql")
     @Test
     public void getCategoriesPageStatusShouldBeOk() throws Exception {

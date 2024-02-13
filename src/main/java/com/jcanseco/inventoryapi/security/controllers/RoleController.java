@@ -8,6 +8,7 @@ import com.jcanseco.inventoryapi.security.services.RoleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
@@ -22,6 +23,7 @@ public class RoleController {
 
     private final RoleService service;
 
+    @PreAuthorize("hasAuthority(@Permissions.permissionOf(@Resource.Roles, @Action.Create))")
     @PostMapping
     public ResponseEntity<Long> create(@RequestBody @Valid CreateRoleDto dto) throws URISyntaxException {
         var roleId = service.createRole(dto);
@@ -29,6 +31,7 @@ public class RoleController {
         return ResponseEntity.created(location).body(roleId);
     }
 
+    @PreAuthorize("hasAuthority(@Permissions.permissionOf(@Resource.Roles, @Action.Update))")
     @PutMapping("{roleId}")
     public ResponseEntity<Void> update(@PathVariable Long roleId, @RequestBody @Valid UpdateRoleDto dto) {
         if (!dto.getRoleId().equals(roleId)) {
@@ -38,17 +41,20 @@ public class RoleController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAuthority(@Permissions.permissionOf(@Resource.Roles, @Action.Delete))")
     @DeleteMapping("{roleId}")
     public ResponseEntity<Void> delete(@PathVariable Long roleId) {
         service.deleteRole(roleId);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAuthority(@Permissions.permissionOf(@Resource.Roles, @Action.View))")
     @GetMapping("{roleId}")
     public ResponseEntity<RoleDetailsDto> getById(@PathVariable Long roleId) {
         return ResponseEntity.ok(service.getRoleById(roleId));
     }
 
+    @PreAuthorize("hasAuthority(@Permissions.permissionOf(@Resource.Roles, @Action.View))")
     @GetMapping
     public ResponseEntity<?> getAll(@Valid GetRolesRequest request) {
         if (request.getPageSize() == null || request.getPageNumber() == null) {

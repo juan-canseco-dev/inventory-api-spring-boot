@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
     public static final String ACCESS_DENIED = "Access denied!";
+    public static final String RESOURCE_FORBIDDEN = "Resource Forbidden!";
     public static final String INVALID_REQUEST = "Invalid request";
     public static final String ERROR_MESSAGE_TEMPLATE = "message: %s %n requested uri: %s";
     public static final String LIST_JOIN_DELIMITER = ",";
@@ -81,6 +82,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
                 Collections.singletonList(exception.getLocalizedMessage()));
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<Object> handleConstraintViolation(
             ConstraintViolationException exception, WebRequest request) {
@@ -105,6 +107,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             WebRequest request) {
         return getExceptionResponseEntity(exception, HttpStatus.NOT_FOUND, request, Collections.singletonList(exception.getMessage()));
     }
+
     /**
      * A general handler for all uncaught exceptions
      */
@@ -146,6 +149,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
     private String getMessageForStatus(HttpStatus status) {
         return switch (status) {
             case UNAUTHORIZED -> ACCESS_DENIED;
+            case FORBIDDEN -> RESOURCE_FORBIDDEN;
             case BAD_REQUEST -> INVALID_REQUEST;
             default -> status.getReasonPhrase();
         };

@@ -6,10 +6,7 @@ import com.jcanseco.inventoryapi.dtos.PagedList;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.security.controllers.UserController;
 import com.jcanseco.inventoryapi.security.dtos.users.*;
-import com.jcanseco.inventoryapi.security.services.JwtService;
-import com.jcanseco.inventoryapi.security.services.ResourceService;
-import com.jcanseco.inventoryapi.security.services.RoleService;
-import com.jcanseco.inventoryapi.security.services.UserService;
+import com.jcanseco.inventoryapi.security.services.*;
 import com.jcanseco.inventoryapi.services.*;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -20,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import java.time.LocalDateTime;
 import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
@@ -38,7 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         @MockBean(OrderService.class),
         @MockBean(ResourceService.class),
         @MockBean(RoleService.class),
-        @MockBean(JwtService.class)
+        @MockBean(JwtService.class),
+        @MockBean(AuthenticationService.class)
 })
 @WebMvcTest(
         controllers = UserController.class,

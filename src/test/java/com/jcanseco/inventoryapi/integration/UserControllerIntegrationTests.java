@@ -29,7 +29,7 @@ public class UserControllerIntegrationTests {
     @Autowired
     private ObjectMapper mapper;
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Users.Create"})
     @Sql("/multiple-users.sql")
     @Test
     public void createUserStatusShouldBeCreated() throws Exception {
@@ -50,7 +50,8 @@ public class UserControllerIntegrationTests {
                 .andExpect(jsonPath("$").isNumber());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Users.Update"})
     @Sql("/multiple-users.sql")
     @Test
     public void updateUserStatusShouldBeNoContent() throws Exception {
@@ -69,7 +70,8 @@ public class UserControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Users.ChangeRole"})
     @Sql("/multiple-users.sql")
     @Test
     public void changeUserRoleStatusShouldBeNoContent() throws Exception {
@@ -92,7 +94,7 @@ public class UserControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Users.Delete"})
     @Sql("/multiple-users.sql")
     @Test
     public void deleteUserStatusShouldBeNoContent() throws Exception {
@@ -106,7 +108,7 @@ public class UserControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Users.View"})
     @Sql("/multiple-users.sql")
     @Test
     public void getUserStatusShouldBeOk() throws Exception {
@@ -144,7 +146,7 @@ public class UserControllerIntegrationTests {
         assertEquals(expectedUser, userResult);
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Users.View"})
     @Sql("/multiple-users.sql")
     @Test
     public void getUsersStatusShouldBeOk() throws Exception {
@@ -162,7 +164,7 @@ public class UserControllerIntegrationTests {
                 .andExpect(jsonPath("$", hasSize(2)));
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Users.View"})
     @Sql("/multiple-users.sql")
     @Test
     public void getUsersPageStatusShouldBeOk() throws Exception {

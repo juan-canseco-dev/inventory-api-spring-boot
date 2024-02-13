@@ -26,7 +26,7 @@ public class UnitOfMeasurementControllerIntegrationTests {
     @Autowired
     private ObjectMapper mapper;
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.UnitsOfMeasurement.Create"})
     @Test
     @Sql("/multiple-units_of_measurement.sql")
     public void createUnitOfMeasurementStatusShouldBeCreated() throws Exception {
@@ -45,7 +45,8 @@ public class UnitOfMeasurementControllerIntegrationTests {
                 .andExpect(jsonPath("$").isNumber());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.UnitsOfMeasurement.Update"})
     @Test
     @Sql("/multiple-units_of_measurement.sql")
     public void updateUnitStatusShouldBeNoContent() throws Exception {
@@ -66,7 +67,7 @@ public class UnitOfMeasurementControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.UnitsOfMeasurement.Delete"})
     @Sql("/multiple-units_of_measurement.sql")
     @Test
     public void deleteUnitStatusShouldBeNoContent() throws Exception {
@@ -80,7 +81,8 @@ public class UnitOfMeasurementControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.UnitsOfMeasurement.View"})
     @Sql("/multiple-units_of_measurement.sql")
     @Test
     public void getUnitByIdStatusShouldBeOk() throws Exception {
@@ -99,7 +101,8 @@ public class UnitOfMeasurementControllerIntegrationTests {
                 .andExpect(jsonPath("$.name").value(expectedName));
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.UnitsOfMeasurement.View"})
     @Sql("/multiple-units_of_measurement.sql")
     @Test
     public void getUnitsStatusShouldBeOk() throws Exception {
@@ -117,7 +120,8 @@ public class UnitOfMeasurementControllerIntegrationTests {
                 .andExpect(jsonPath("$", hasSize(3)));
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.UnitsOfMeasurement.View"})
     @Sql("/multiple-units_of_measurement.sql")
     @Test
     public void getUnitsPageStatusShouldBeOk() throws Exception {

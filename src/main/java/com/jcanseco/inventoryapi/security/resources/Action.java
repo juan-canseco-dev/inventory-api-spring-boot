@@ -3,6 +3,8 @@ package com.jcanseco.inventoryapi.security.resources;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import static com.jcanseco.inventoryapi.security.resources.Permissions.permissionOf;
+
 @Data
 @AllArgsConstructor
 public class Action {
@@ -12,10 +14,6 @@ public class Action {
     private String action;
     private String description;
     private boolean required;
-
-    public static String permissionOf(String resource, String action) {
-        return String.format("Permissions.%s.%s", resource, action);
-    }
 
     public String asPermission() {
         return permissionOf(resource, action);

@@ -1,6 +1,10 @@
 package com.jcanseco.inventoryapi.security.resources;
 
-public class ActionType {
+
+import org.springframework.stereotype.Component;
+
+@Component("Action")
+public final class ActionType {
     public static final String View = "View";
     public static final String Search = "Search";
     public static final String Create = "Create";

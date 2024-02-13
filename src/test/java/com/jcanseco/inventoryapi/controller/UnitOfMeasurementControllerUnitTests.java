@@ -7,10 +7,7 @@ import com.jcanseco.inventoryapi.dtos.units.CreateUnitOfMeasurementDto;
 import com.jcanseco.inventoryapi.dtos.units.GetUnitsOfMeasurementRequest;
 import com.jcanseco.inventoryapi.dtos.units.UpdateUnitOfMeasurementDto;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;
-import com.jcanseco.inventoryapi.security.services.JwtService;
-import com.jcanseco.inventoryapi.security.services.ResourceService;
-import com.jcanseco.inventoryapi.security.services.RoleService;
-import com.jcanseco.inventoryapi.security.services.UserService;
+import com.jcanseco.inventoryapi.security.services.*;
 import com.jcanseco.inventoryapi.services.*;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -41,7 +38,8 @@ import static org.mockito.Mockito.doThrow;
         @MockBean(ResourceService.class),
         @MockBean(RoleService.class),
         @MockBean(UserService.class),
-        @MockBean(JwtService.class)
+        @MockBean(JwtService.class),
+        @MockBean(AuthenticationService.class)
 })
 @WebMvcTest(
         controllers = UnitOfMeasurementController.class,

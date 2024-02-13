@@ -23,7 +23,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class PurchaseControllerIntegrationTests {
@@ -35,7 +34,7 @@ public class PurchaseControllerIntegrationTests {
     @Autowired
     private StockRepository stockRepository;
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Purchases.Create"})
     @Sql("/multiple-purchases.sql")
     @Test
     public void createPurchaseWhenModelIsValidStatusShouldBeCreated() throws Exception {
@@ -62,7 +61,8 @@ public class PurchaseControllerIntegrationTests {
     }
 
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Purchases.Update"})
     @Sql("/multiple-purchases.sql")
     @Test
     public void updatePurchaseWhenModelIsValidStatusShouldBeNoContent() throws Exception {
@@ -89,7 +89,8 @@ public class PurchaseControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Purchases.Delete"})
     @Sql("/multiple-purchases.sql")
     @Test
     public void deletePurchaseStatusShouldBeNoContent() throws Exception {
@@ -103,7 +104,8 @@ public class PurchaseControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Purchases.Receive"})
     @Sql("/multiple-purchases.sql")
     @Test
     public void receivePurchaseStatusShouldBeNoContent() throws Exception {
@@ -120,7 +122,7 @@ public class PurchaseControllerIntegrationTests {
         stocks.forEach(s -> assertEquals(20L, s.getQuantity()));
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Purchases.View"})
     @Sql("/multiple-purchases.sql")
     @Test
     public void getPurchaseByIdStatusShouldBeOk() throws Exception {
@@ -180,7 +182,7 @@ public class PurchaseControllerIntegrationTests {
     }
 
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Purchases.View"})
     @Sql("/multiple-purchases.sql")
     @Test
     public void getPurchasesStatusShouldBeOk() throws Exception {
@@ -200,7 +202,7 @@ public class PurchaseControllerIntegrationTests {
                 .andExpect(jsonPath("$", hasSize(5)));
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Purchases.View"})
     @Sql("/multiple-purchases.sql")
     @Test
     public void getPurchasesPageStatusShouldBeOk() throws Exception {

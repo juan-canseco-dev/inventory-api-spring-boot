@@ -35,7 +35,7 @@ public class OrderControllerIntegrationTests {
     @Autowired
     private StockRepository stockRepository;
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Orders.Create"})
     @Sql("/multiple-orders.sql")
     @Test
     public void createOrderWhenModelIsValidStatusShouldBeCreated() throws Exception {
@@ -63,7 +63,8 @@ public class OrderControllerIntegrationTests {
     }
 
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Orders.Update"})
     @Sql("/multiple-orders.sql")
     @Test
     public void updateOrderWhenModelIsValidStatusShouldBeNoContent() throws Exception {
@@ -89,7 +90,8 @@ public class OrderControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Orders.Delete"})
     @Sql("/multiple-orders.sql")
     @Test
     public void deleteOrderStatusShouldBeNoContent() throws Exception {
@@ -103,7 +105,8 @@ public class OrderControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = "Permissions.Orders.Deliver")
     @Sql("/multiple-orders.sql")
     @Test
     public void deliverOrderStatusShouldBeNoContent() throws Exception {
@@ -121,7 +124,7 @@ public class OrderControllerIntegrationTests {
         }
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = "Permissions.Orders.View")
     @Sql("/multiple-orders.sql")
     @Test
     public void getOrderByIdStatusShouldBeOk() throws Exception {
@@ -180,7 +183,8 @@ public class OrderControllerIntegrationTests {
         assertEquals(expectedOrder, orderResult);
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = "Permissions.Orders.View")
     @Sql("/multiple-orders.sql")
     @Test
     public void getOrdersStatusShouldBeOk() throws Exception {
@@ -200,7 +204,8 @@ public class OrderControllerIntegrationTests {
                 .andExpect(jsonPath("$", hasSize(5)));
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = "Permissions.Orders.View")
     @Sql("/multiple-orders.sql")
     @Test
     public void getOrdersPageStatusShouldBeOk() throws Exception {

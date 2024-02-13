@@ -31,7 +31,7 @@ public class ProductControllerIntegrationTests {
     @Autowired
     private ObjectMapper mapper;
 
-    @WithMockUser
+    @WithMockUser(authorities = {"Permissions.Products.Create"})
     @Sql("/multiple-products.sql")
     @Test
     public void createProductStatusShouldBeCreated() throws Exception {
@@ -56,7 +56,8 @@ public class ProductControllerIntegrationTests {
                 .andExpect(jsonPath("$").isNumber());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Products.Update"})
     @Sql("/multiple-products.sql")
     @Test
     public void updateProductStatusShouldBeNoContent() throws Exception {
@@ -80,7 +81,8 @@ public class ProductControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Products.Delete"})
     @Sql("/multiple-products.sql")
     @Test
     public void deleteProductStatusShouldBeNoContent() throws Exception {
@@ -94,7 +96,8 @@ public class ProductControllerIntegrationTests {
     }
 
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Products.View"})
     @Sql("/multiple-products.sql")
     @Test
     public void getProductByIdStatusShouldBeOk() throws Exception {
@@ -141,7 +144,8 @@ public class ProductControllerIntegrationTests {
         assertEquals(expectedProduct, productResult);
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Products.View"})
     @Sql("/multiple-products.sql")
     @Test
     public void getProductsStatusShouldBeOk() throws Exception {
@@ -162,12 +166,11 @@ public class ProductControllerIntegrationTests {
                 .andExpect(jsonPath("$", hasSize(6)));
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = {"Permissions.Products.View"})
     @Sql("/multiple-products.sql")
     @Test
     public void getProductsPageStatusShouldBeOk() throws Exception {
-        //var url = baseUrl() + "?pageNumber=1&pageSize=2&orderBy=name&sortOrder=asc&name=s&supplierId=2&categoryId=2&unitId=2";
-
         mockMvc.perform(
                         get("/api/products")
                                 .accept(MediaType.APPLICATION_JSON)

@@ -31,7 +31,7 @@ public class RoleControllerIntegrationTests {
     @Autowired
     private ObjectMapper mapper;
 
-    @WithMockUser
+    @WithMockUser(authorities = "Permissions.Roles.Create")
     @Sql("/multiple-roles.sql")
     @Test
     public void createRoleStatusShouldBeCreated() throws Exception {
@@ -53,7 +53,8 @@ public class RoleControllerIntegrationTests {
                 .andExpect(jsonPath("$").isNumber());
     }
 
-    @WithMockUser
+
+    @WithMockUser(authorities = "Permissions.Roles.Update")
     @Sql("/multiple-roles.sql")
     @Test
     public void updateRoleStatusShouldBeNoContent() throws Exception {
@@ -77,7 +78,7 @@ public class RoleControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = "Permissions.Roles.Delete")
     @Sql("/multiple-roles.sql")
     @Test
     public void deleteRoleStatusShouldBeNoContent() throws Exception {
@@ -91,7 +92,7 @@ public class RoleControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = "Permissions.Roles.View")
     @Sql("/multiple-roles.sql")
     @Test
     public void getRoleByIdStatusShouldBeOk() throws Exception {
@@ -119,7 +120,7 @@ public class RoleControllerIntegrationTests {
 
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = "Permissions.Roles.View")
     @Sql("/multiple-roles.sql")
     @Test
     public void getRolesStatusShouldBeOk() throws Exception {
@@ -137,7 +138,7 @@ public class RoleControllerIntegrationTests {
                 .andExpect(jsonPath("$", hasSize(3)));
     }
 
-    @WithMockUser
+    @WithMockUser(authorities = "Permissions.Roles.View")
     @Sql("/multiple-roles.sql")
     @Test
     public void getRolesPageStatusShouldBeOk() throws Exception {
