@@ -1,12 +1,12 @@
 package com.jcanseco.inventoryapi.security.services;
 
-import com.jcanseco.inventoryapi.exceptions.DomainException;
 import com.jcanseco.inventoryapi.security.dtos.authentication.JwtAuthenticationDto;
 import com.jcanseco.inventoryapi.security.dtos.authentication.SignInDto;
 import com.jcanseco.inventoryapi.security.repositories.UserRepository;
 import com.jcanseco.inventoryapi.security.specifications.UserSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -31,6 +31,6 @@ public class AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
         return userRepository.findOne(UserSpecifications.byEmail(dto.getEmail()))
                 .map(this::userToToken)
-                .orElseThrow(() -> new DomainException("Bad credentials"));
+                .orElseThrow(() -> new BadCredentialsException("Bad credentials"));
     }
 }

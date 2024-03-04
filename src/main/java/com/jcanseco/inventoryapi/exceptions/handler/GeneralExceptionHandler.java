@@ -14,12 +14,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.security.access.AccessDeniedException;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -81,6 +83,19 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         return getExceptionResponseEntity(exception, HttpStatus.valueOf(status.value()), request,
                 Collections.singletonList(exception.getLocalizedMessage()));
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Object> handleBadCredentials(BadCredentialsException exception, WebRequest webRequest) {
+        return getExceptionResponseEntity(exception, HttpStatus.BAD_REQUEST, webRequest, Collections.singletonList(exception.getMessage()));
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException exception, WebRequest webRequest) {
+        return getExceptionResponseEntity(exception, HttpStatus.BAD_REQUEST, webRequest, Collections.singletonList(exception.getMessage()));
+    }
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({ConstraintViolationException.class})
