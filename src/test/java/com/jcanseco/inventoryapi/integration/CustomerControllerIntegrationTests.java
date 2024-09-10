@@ -63,6 +63,42 @@ public class CustomerControllerIntegrationTests {
                 .andExpect(jsonPath("$").isNumber());
     }
 
+    @WithMockUser()
+    @Test
+    public void createCustomerWhenUserHasNoAuthorityStatusShouldBeForbidden() throws Exception {
+        var dto = CreateCustomerDto.builder()
+                .dni("12345678912")
+                .fullName("John Doe")
+                .phone("555-1234-1")
+                .address(defaultAddressDto)
+                .build();
+        mockMvc.perform(
+                        post("/api/customers")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void createCustomerWhenUserIsNotPresentStatusShouldBeUnauthorized() throws Exception {
+        var dto = CreateCustomerDto.builder()
+                .dni("12345678912")
+                .fullName("John Doe")
+                .phone("555-1234-1")
+                .address(defaultAddressDto)
+                .build();
+        mockMvc.perform(
+                        post("/api/customers")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
 
     @WithMockUser(authorities = {"Permissions.Customers.Update"})
     @Sql("/multiple-customers.sql")
@@ -88,6 +124,48 @@ public class CustomerControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
+    @WithMockUser()
+    @Test
+    public void updateCustomerWhenUserHasNoAuthorityStatusShouldBeForbidden() throws Exception {
+        var customerId = 1L;
+        var dto = UpdateCustomerDto.builder()
+                .customerId(customerId)
+                .dni("123456789")
+                .fullName("John Doe Smith")
+                .phone("555-1234-9")
+                .address(defaultAddressDto)
+                .build();
+
+        mockMvc.perform(
+                        put("/api/customers/" + customerId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void updateCustomerWhenUserIsNotPresentStatusShouldBeUnauthorized() throws Exception {
+        var customerId = 1L;
+        var dto = UpdateCustomerDto.builder()
+                .customerId(customerId)
+                .dni("123456789")
+                .fullName("John Doe Smith")
+                .phone("555-1234-9")
+                .address(defaultAddressDto)
+                .build();
+
+        mockMvc.perform(
+                        put("/api/customers/" + customerId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
 
     @WithMockUser(authorities = {"Permissions.Customers.Delete"})
     @Sql("/multiple-customers.sql")
@@ -103,6 +181,30 @@ public class CustomerControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
+    @WithMockUser()
+    @Test
+    public void deleteCustomerWhenUserHasNoAuthorityStatusShouldBeForbidden() throws Exception {
+        var customerId = 1L;
+        mockMvc.perform(
+                        delete("/api/customers/" + customerId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void deleteCustomerWhenUserIsNotPresentStatusShouldBeUnauthorized() throws Exception {
+        var customerId = 1L;
+        mockMvc.perform(
+                        delete("/api/customers/" + customerId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
 
     @WithMockUser(authorities = {"Permissions.Customers.View"})
     @Sql("/multiple-customers.sql")
@@ -137,6 +239,31 @@ public class CustomerControllerIntegrationTests {
                 .andExpect(jsonPath("$.phone").value(expected.getPhone()))
                 .andExpect(jsonPath("$.fullName").value(expected.getFullName()))
                 .andExpect(jsonPath("$.address").value(expected.getAddress()));
+    }
+
+    @WithMockUser
+    @Test
+    public void getCustomerByIdWhenUserHasNoAuthorityStatusShouldBeForbidden() throws Exception {
+        var customerId = 1L;
+        mockMvc.perform(
+                        get("/api/customers/" + customerId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getCustomerByIdWhenUserIsNotPresentStatusShouldBeUnauthorized() throws Exception {
+        var customerId = 1L;
+        mockMvc.perform(
+                        get("/api/customers/" + customerId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     @WithMockUser(authorities = {"Permissions.Customers.View"})
@@ -187,5 +314,30 @@ public class CustomerControllerIntegrationTests {
                 .andExpect(jsonPath("$.totalElements").value(5))
                 .andExpect(jsonPath("$.hasPreviousPage").value(false))
                 .andExpect(jsonPath("$.hasNextPage").value(true));
+    }
+
+    @WithMockUser
+    @Test
+    public void getCustomersWhenUserHasNoAuthorityStatusShouldBeForbidden() throws Exception {
+        mockMvc.perform(
+                        get("/api/customers")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getCustomerWhenUserIsNotPresentStatusShouldBeUnauthorized() throws Exception {
+        mockMvc.perform(
+                        get("/api/customers")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 }

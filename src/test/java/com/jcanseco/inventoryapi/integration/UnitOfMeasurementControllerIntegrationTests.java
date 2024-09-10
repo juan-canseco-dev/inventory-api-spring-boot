@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class UnitOfMeasurementControllerIntegrationTests {
+
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -45,6 +46,36 @@ public class UnitOfMeasurementControllerIntegrationTests {
                 .andExpect(jsonPath("$").isNumber());
     }
 
+    @WithMockUser
+    @Test
+    public void createUnitOfMeasurementWhenUserHasNoAuthorityStatusShouldBeForbidden() throws  Exception {
+        var dto = CreateUnitOfMeasurementDto.builder()
+                .name("New Unit")
+                .build();
+        mockMvc.perform(
+                        post("/api/units")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void createUnitOfMeasurementWhenUserIsNotPresentStatusShouldBeUnauthorized() throws  Exception {
+        var dto = CreateUnitOfMeasurementDto.builder()
+                .name("New Unit")
+                .build();
+        mockMvc.perform(
+                        post("/api/units")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
 
     @WithMockUser(authorities = {"Permissions.UnitsOfMeasurement.Update"})
     @Test
@@ -67,6 +98,43 @@ public class UnitOfMeasurementControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
+    @WithMockUser
+    @Test
+    public void updateUnitWhenUserHasNoAuthorityStatusShouldBeForbidden() throws  Exception {
+        var unitId = 1L;
+        var dto = UpdateUnitOfMeasurementDto.builder()
+                .unitOfMeasurementId(unitId)
+                .name("Meter MT")
+                .build();
+
+        mockMvc.perform(
+                        put("/api/units/" + unitId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void updateUnitWhenUserIsNotPresentStatusShouldBeUnauthorized() throws  Exception {
+        var unitId = 1L;
+        var dto = UpdateUnitOfMeasurementDto.builder()
+                .unitOfMeasurementId(unitId)
+                .name("Meter MT")
+                .build();
+
+        mockMvc.perform(
+                        put("/api/units/" + unitId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
     @WithMockUser(authorities = {"Permissions.UnitsOfMeasurement.Delete"})
     @Sql("/multiple-units_of_measurement.sql")
     @Test
@@ -81,6 +149,30 @@ public class UnitOfMeasurementControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
+    @WithMockUser
+    @Test
+    public void deleteUnitWhenUserHasNoAuthorityStatusShouldBeForbidden() throws  Exception {
+        var unitId = 1L;
+        mockMvc.perform(
+                        delete("/api/units/" + unitId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void deleteUnitWhenUserIsNotPresentStatusShouldBeUnauthorized() throws  Exception {
+        var unitId = 1L;
+        mockMvc.perform(
+                        delete("/api/units/" + unitId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
 
     @WithMockUser(authorities = {"Permissions.UnitsOfMeasurement.View"})
     @Sql("/multiple-units_of_measurement.sql")
@@ -101,6 +193,30 @@ public class UnitOfMeasurementControllerIntegrationTests {
                 .andExpect(jsonPath("$.name").value(expectedName));
     }
 
+    @WithMockUser
+    @Test
+    public void getUnitByIdWhenUserHasNoAuthorityStatusShouldBeForbidden() throws  Exception {
+        var unitId = 1L;
+        mockMvc.perform(
+                        get("/api/units/" + unitId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getUnitByIdWhenUserIsNotPresentStatusShouldBeUnauthorized() throws  Exception {
+        var unitId = 1L;
+        mockMvc.perform(
+                        get("/api/units/" + unitId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
 
     @WithMockUser(authorities = {"Permissions.UnitsOfMeasurement.View"})
     @Sql("/multiple-units_of_measurement.sql")
@@ -145,5 +261,28 @@ public class UnitOfMeasurementControllerIntegrationTests {
                 .andExpect(jsonPath("$.totalElements").value(3))
                 .andExpect(jsonPath("$.hasPreviousPage").value(false))
                 .andExpect(jsonPath("$.hasNextPage").value(true));
+    }
+
+    @WithMockUser
+    @Test
+    public void getUnitsWhenUserHasNoAuthorityStatusShouldBeForbidden() throws  Exception {
+        mockMvc.perform(
+                        get("/api/units")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getUnitsWhenUserIsNotPresentStatusShouldBeUnauthorized() throws  Exception {
+        mockMvc.perform(
+                        get("/api/units")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 }

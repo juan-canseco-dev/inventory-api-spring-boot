@@ -45,6 +45,34 @@ public class CategoryControllerIntegrationTests {
                 .andExpect(jsonPath("$").isNumber());
     }
 
+    @WithMockUser()
+    @Test
+    public void createCategoryWhenUserHasNoAuthorityStatusShouldBeForbidden() throws Exception {
+        var dto = CreateCategoryDto.builder()
+                .name("New Category")
+                .build();
+        mockMvc.perform(
+                        post("/api/categories")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void createCategoryWhenUserIsNotPresentStatusShouldBeUnauthorized() throws Exception {
+        mockMvc.perform(
+                        post("/api/categories")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+
     @WithMockUser(authorities = {"Permissions.Categories.Update"})
     @Test
     @Sql("/multiple-categories.sql")
@@ -65,6 +93,36 @@ public class CategoryControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
+    @WithMockUser()
+    @Test
+    public void updateCategoryWhenUserHasNoAuthorityStatusShouldBeForbidden() throws Exception {
+        var categoryId = 1L;
+        var dto = UpdateCategoryDto.builder()
+                .categoryId(categoryId)
+                .name("Computers & Electronics")
+                .build();
+
+        mockMvc.perform(
+                        put("/api/categories/" + categoryId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void updateCategoryWhenUserIsNotPresentStatusShouldBeUnauthorized() throws Exception {
+        mockMvc.perform(
+                        put("/api/categories/1")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
     @WithMockUser(authorities = {"Permissions.Categories.Delete"})
     @Test
     @Sql("/multiple-categories.sql")
@@ -77,6 +135,29 @@ public class CategoryControllerIntegrationTests {
                 )
                 .andDo(print())
                 .andExpect(status().isNoContent());
+    }
+
+    @WithMockUser()
+    @Test
+    public void deleteCategoryWhenUserHasNoAuthorityStatusShouldBeForbidden() throws Exception {
+        mockMvc.perform(
+                        delete("/api/categories/1")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void deleteCategoryWhenUserIsNotPresentStatusShouldBeUnauthorized() throws Exception {
+        mockMvc.perform(
+                        delete("/api/categories/1")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     @WithMockUser(authorities = {"Permissions.Categories.View"})
@@ -96,6 +177,30 @@ public class CategoryControllerIntegrationTests {
                 .andExpect(jsonPath("$.id").value(categoryId))
                 .andExpect(jsonPath("$.name").value(expectedName));
     }
+
+    @WithMockUser()
+    @Test
+    public void getCategoryByIdWhenUserHasNotAuthorityStatusShouldBeForbidden() throws Exception {
+        mockMvc.perform(
+                        get("/api/categories/1")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getCategoryByIdWhenUserIsNotPresentStatusShouldBeUnauthorized() throws Exception {
+        mockMvc.perform(
+                        get("/api/categories/1")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
 
     @WithMockUser(authorities = {"Permissions.Categories.View"})
     @Sql("/multiple-categories.sql")
@@ -139,5 +244,28 @@ public class CategoryControllerIntegrationTests {
                 .andExpect(jsonPath("$.totalElements").value(5))
                 .andExpect(jsonPath("$.hasPreviousPage").value(false))
                 .andExpect(jsonPath("$.hasNextPage").value(true));
+    }
+
+    @WithMockUser()
+    @Test
+    public void getCategoriesWhenUserHasNoAuthorityStatusShouldBeForbidden() throws Exception {
+        mockMvc.perform(
+                        get("/api/categories")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getCategoriesWhenUserIsNotPresentStatusShouldBeUnauthorized() throws  Exception {
+        mockMvc.perform(
+                        get("/api/categories")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 }
