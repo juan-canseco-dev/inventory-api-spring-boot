@@ -1,8 +1,7 @@
-package com.jcanseco.inventoryapi.integration;
+package com.jcanseco.inventoryapi.security.integration;
 
-import com.jcanseco.inventoryapi.security.dtos.roles.CreateRoleDto;
 import com.jcanseco.inventoryapi.security.dtos.roles.RoleDetailsDto;
-import com.jcanseco.inventoryapi.security.dtos.roles.UpdateRoleDto;
+import com.jcanseco.inventoryapi.security.dtos.users.*;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,26 +23,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-public class RoleControllerIntegrationTests {
-
+public class UserControllerIntegrationTests {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper mapper;
 
-    @WithMockUser(authorities = "Permissions.Roles.Create")
-    @Sql("/multiple-roles.sql")
+    @WithMockUser(authorities = {"Permissions.Users.Create"})
+    @Sql("/multiple-users.sql")
     @Test
-    public void createRoleStatusShouldBeCreated() throws Exception {
-        var dto = CreateRoleDto.builder()
-                .name("New Role")
-                .permissions(List.of(
-                        "Permissions.Dashboard.View"
-                ))
+    public void createUserStatusShouldBeCreated() throws Exception {
+        var dto = CreateUserDto.builder()
+                .roleId(1L)
+                .email("rusty.smith@mail.com")
+                .fullName("Rusty Smith")
+                .password("rusty.password.1234")
                 .build();
-
         mockMvc.perform(
-                        post("/api/roles")
+                        post("/api/users")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -54,22 +51,17 @@ public class RoleControllerIntegrationTests {
     }
 
 
-    @WithMockUser(authorities = "Permissions.Roles.Update")
-    @Sql("/multiple-roles.sql")
+    @WithMockUser(authorities = {"Permissions.Users.Update"})
+    @Sql("/multiple-users.sql")
     @Test
-    public void updateRoleStatusShouldBeNoContent() throws Exception {
-        var roleId = 1L;
-        var dto = UpdateRoleDto.builder()
-                .roleId(roleId)
-                .name("Updated Role")
-                .permissions(List.of(
-                        "Permissions.Dashboard.View",
-                        "Permissions.Categories.View"
-                ))
+    public void updateUserStatusShouldBeNoContent() throws Exception {
+        var userId = 1L;
+        var dto = UpdateUserDto.builder()
+                .userId(userId)
+                .fullName("John Doe Smith")
                 .build();
-
         mockMvc.perform(
-                        put("/api/roles/" + roleId)
+                        put("/api/users/" + userId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
@@ -78,13 +70,37 @@ public class RoleControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser(authorities = "Permissions.Roles.Delete")
-    @Sql("/multiple-roles.sql")
+
+    @WithMockUser(authorities = {"Permissions.Users.ChangeRole"})
+    @Sql("/multiple-users.sql")
     @Test
-    public void deleteRoleStatusShouldBeNoContent() throws Exception {
-        var roleId = 1L;
+    public void changeUserRoleStatusShouldBeNoContent() throws Exception {
+
+        var userId = 1L;
+        var roleId = 2L;
+
+        var dto = ChangeUserRoleDto.builder()
+                .userId(userId)
+                .roleId(roleId)
+                .build();
+
         mockMvc.perform(
-                        delete("/api/roles/" + roleId)
+                        put("/api/users/" + userId + "/changeRole")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andDo(print())
+                .andExpect(status().isNoContent());
+    }
+
+    @WithMockUser(authorities = {"Permissions.Users.Delete"})
+    @Sql("/multiple-users.sql")
+    @Test
+    public void deleteUserStatusShouldBeNoContent() throws Exception {
+        var userId = 1L;
+        mockMvc.perform(
+                        delete("/api/users/" + userId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -92,21 +108,32 @@ public class RoleControllerIntegrationTests {
                 .andExpect(status().isNoContent());
     }
 
-    @WithMockUser(authorities = "Permissions.Roles.View")
-    @Sql("/multiple-roles.sql")
+    @WithMockUser(authorities = {"Permissions.Users.View"})
+    @Sql("/multiple-users.sql")
     @Test
-    public void getRoleByIdStatusShouldBeOk() throws Exception {
-        var roleId = 1L;
+    public void getUserStatusShouldBeOk() throws Exception {
+
+        var userId = 1L;
+
         var expectedRole = RoleDetailsDto.builder()
-                .id(roleId)
+                .id(1L)
                 .name("Dashboard")
+                .createdAt(LocalDateTime.of(2023, Month.MAY, 1, 0, 0))
+                .updatedAt(LocalDateTime.of(2023, Month.MAY, 2, 0, 0))
                 .permissions(List.of("Permissions.Dashboard.View"))
+                .build();
+
+        var expectedUser = UserDetailsDto.builder()
+                .id(userId)
+                .fullName("John Doe")
+                .email("john_doe@gmail.com")
+                .role(expectedRole)
                 .createdAt(LocalDateTime.of(2023, Month.MAY, 1, 0, 0))
                 .updatedAt(LocalDateTime.of(2023, Month.MAY, 2, 0, 0))
                 .build();
 
         var result = mockMvc.perform(
-                        get("/api/roles/" + roleId)
+                        get("/api/users/" + userId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -115,51 +142,51 @@ public class RoleControllerIntegrationTests {
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        RoleDetailsDto roleResult = mapper.readValue(content, RoleDetailsDto.class);
-        assertEquals(expectedRole, roleResult);
-
+        UserDetailsDto userResult = mapper.readValue(content, UserDetailsDto.class);
+        assertEquals(expectedUser, userResult);
     }
 
-    @WithMockUser(authorities = "Permissions.Roles.View")
-    @Sql("/multiple-roles.sql")
+    @WithMockUser(authorities = {"Permissions.Users.View"})
+    @Sql("/multiple-users.sql")
     @Test
-    public void getRolesStatusShouldBeOk() throws Exception {
+    public void getUsersStatusShouldBeOk() throws Exception {
         mockMvc.perform(
-                        get("/api/roles")
+                        get("/api/users")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("orderBy", "name")
+                                .param("orderBy", "fullName")
                                 .param("sortOrder", "asc")
-                                .param("name", "p")
+                                .param("fullName", "doe")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(3)));
+                .andExpect(jsonPath("$", hasSize(2)));
     }
 
-    @WithMockUser(authorities = "Permissions.Roles.View")
-    @Sql("/multiple-roles.sql")
+    @WithMockUser(authorities = {"Permissions.Users.View"})
+    @Sql("/multiple-users.sql")
     @Test
-    public void getRolesPageStatusShouldBeOk() throws Exception {
+    public void getUsersPageStatusShouldBeOk() throws Exception {
         mockMvc.perform(
-                        get("/api/roles")
+                        get("/api/users")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .param("pageNumber", "1")
                                 .param("pageSize", "1")
-                                .param("orderBy", "name")
+                                .param("orderBy", "fullName")
                                 .param("sortOrder", "asc")
-                                .param("name", "p")
+                                .param("fullName", "doe")
                 )
                 .andDo(print())
+                .andExpect(status().isOk())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.items", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.pageNumber").value(1))
                 .andExpect(jsonPath("$.pageSize").value(1))
-                .andExpect(jsonPath("$.totalPages").value(3))
-                .andExpect(jsonPath("$.totalElements").value(3))
+                .andExpect(jsonPath("$.totalPages").value(2))
+                .andExpect(jsonPath("$.totalElements").value(2))
                 .andExpect(jsonPath("$.hasPreviousPage").value(false))
                 .andExpect(jsonPath("$.hasNextPage").value(true));
     }

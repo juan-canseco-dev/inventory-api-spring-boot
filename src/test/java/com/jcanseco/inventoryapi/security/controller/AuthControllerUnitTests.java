@@ -1,16 +1,11 @@
-package com.jcanseco.inventoryapi.controller;
+package com.jcanseco.inventoryapi.security.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jcanseco.inventoryapi.dtos.PagedList;
-import com.jcanseco.inventoryapi.exceptions.NotFoundException;
 import com.jcanseco.inventoryapi.security.controllers.AuthController;
-import com.jcanseco.inventoryapi.security.controllers.UserController;
 import com.jcanseco.inventoryapi.security.dtos.authentication.JwtAuthenticationDto;
 import com.jcanseco.inventoryapi.security.dtos.authentication.SignInDto;
-import com.jcanseco.inventoryapi.security.dtos.users.*;
 import com.jcanseco.inventoryapi.security.services.*;
 import com.jcanseco.inventoryapi.services.*;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -20,7 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
-import java.util.List;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
@@ -81,7 +76,7 @@ public class AuthControllerUnitTests {
     }
 
     @Test
-    public void signInWhenModelIsInvalidStatusShouldBeBadRequest() throws Exception {
+    public void signInWhenModelIsInvalidStatusShouldBeUnauthorized() throws Exception {
 
         var dto = SignInDto.builder()
                 .email("john.doe@mail.com")
@@ -98,6 +93,6 @@ public class AuthControllerUnitTests {
                                 .content(mapper.writeValueAsString(dto))
                 )
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
     }
 }

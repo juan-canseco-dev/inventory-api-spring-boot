@@ -1,6 +1,6 @@
-package com.jcanseco.inventoryapi.validation.users;
+package com.jcanseco.inventoryapi.security.validation.users;
 
-import com.jcanseco.inventoryapi.security.dtos.users.UpdateUserDto;
+import com.jcanseco.inventoryapi.security.dtos.users.ChangeUserRoleDto;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UpdateUserValidationTests {
+public class ChangeUserRoleValidationTests {
     private Validator validator;
 
     @BeforeEach
@@ -21,33 +21,32 @@ public class UpdateUserValidationTests {
     }
 
     @Test
-    public void updateUserWhenAllPropertiesArePresentValidationShouldNotFail() {
-        var dto = UpdateUserDto.builder()
+    public void changeUserRoleWhenAllPropertiesAreValidValidationShouldNotFail() {
+        var dto = ChangeUserRoleDto.builder()
                 .userId(1L)
-                .fullName("Jane Doe")
+                .roleId(1L)
                 .build();
         var violations = validator.validate(dto);
         assertTrue(violations.isEmpty());
     }
 
+
     @ParameterizedTest
-    @MethodSource("invalidUpdateDto")
-    public void updateUserWhenPropertiesAreInvalidValidationShouldFail(Long userId, String fullName) {
-        var dto = UpdateUserDto.builder()
+    @MethodSource("invalidDto")
+    public void changeUserRoleWhenPropertiesAreInvalidValidationShouldFail(Long userId, Long roleId) {
+        var dto = ChangeUserRoleDto.builder()
                 .userId(userId)
-                .fullName(fullName)
+                .roleId(roleId)
                 .build();
         var violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
     }
-
-    private static Stream<Arguments> invalidUpdateDto() {
+    private static Stream<Arguments> invalidDto() {
         return Stream.of(
-                Arguments.arguments(0L, "Jane Doe"),
-                Arguments.arguments(null, "Jane Doe"),
-                Arguments.arguments(1L, ""),
-                Arguments.arguments(1L, null),
-                Arguments.arguments(1L, "  ")
+                Arguments.arguments(0L, 1L),
+                Arguments.arguments(null, 1L),
+                Arguments.arguments(1L, 0L),
+                Arguments.arguments(1L, null)
         );
     }
 }

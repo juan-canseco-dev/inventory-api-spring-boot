@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.validation.roles;
+package com.jcanseco.inventoryapi.security.validation.roles;
 
 
 import com.jcanseco.inventoryapi.security.dtos.roles.GetRolesRequest;

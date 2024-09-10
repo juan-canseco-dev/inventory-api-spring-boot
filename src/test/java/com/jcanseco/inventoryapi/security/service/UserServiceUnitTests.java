@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.service;
+package com.jcanseco.inventoryapi.security.service;
 
 import com.jcanseco.inventoryapi.exceptions.DomainException;
 import com.jcanseco.inventoryapi.exceptions.NotFoundException;

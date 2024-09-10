@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.mapping;
+package com.jcanseco.inventoryapi.security.mapping;
 
 import com.jcanseco.inventoryapi.security.dtos.roles.RoleDetailsDto;
 import com.jcanseco.inventoryapi.security.entities.Role;

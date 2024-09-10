@@ -1,6 +1,6 @@
-package com.jcanseco.inventoryapi.validation.roles;
+package com.jcanseco.inventoryapi.security.validation.roles;
 
-import com.jcanseco.inventoryapi.security.dtos.roles.UpdateRoleDto;
+import com.jcanseco.inventoryapi.security.dtos.roles.CreateRoleDto;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ExtendWith(MockitoExtension.class)
-public class UpdateRoleValidationTests {
+public class CreateRoleValidationTests {
     private Validator validator;
 
     @BeforeEach
@@ -26,9 +26,8 @@ public class UpdateRoleValidationTests {
     }
 
     @Test
-    public void updateRoleDtoWhenModelIsValidValidationShouldNotFail() {
-        var dto = UpdateRoleDto.builder()
-                .roleId(1L)
+    public void createRoleDtoWhenDtoIsValidValidationShouldNotFail() {
+        var dto = CreateRoleDto.builder()
                 .name("New Role")
                 .permissions(List.of(
                         "Permissions.Roles.View",
@@ -41,9 +40,8 @@ public class UpdateRoleValidationTests {
 
     @ParameterizedTest
     @MethodSource("invalidDto")
-    public void updateRoleDtoWhenModelIsInvalidValidationShouldFail(Long roleId, String name, List<String> permissions) {
-        var dto = UpdateRoleDto.builder()
-                .roleId(roleId)
+    public void createRoleDtoWhenDtoIsInvalidValidationShouldFail(String name, List<String> permissions) {
+        var dto = CreateRoleDto.builder()
                 .name(name)
                 .permissions(permissions)
                 .build();
@@ -53,13 +51,11 @@ public class UpdateRoleValidationTests {
 
     private static Stream<Arguments> invalidDto() {
         return Stream.of(
-                Arguments.arguments(null, "New Role", List.of("Permissions.Roles.View")),
-                Arguments.arguments(0L, "New Role", List.of("Permissions.Roles.View")),
-                Arguments.arguments(1L, null , List.of("Permissions.Roles.View")),
-                Arguments.arguments(1L, "" , List.of("Permissions.Roles.View")),
-                Arguments.arguments(1L, " " , List.of("Permissions.Roles.View")),
-                Arguments.arguments(1L, "New Role" , List.of()),
-                Arguments.arguments(1L, "New Role", List.of("Permissions.Roles.View", "Permissions.Roles.View"))
+                Arguments.arguments(null , List.of("Permissions.Roles.View")),
+                Arguments.arguments("" , List.of("Permissions.Roles.View")),
+                Arguments.arguments(" " , List.of("Permissions.Roles.View")),
+                Arguments.arguments("New Role" , List.of()),
+                Arguments.arguments("New Role", List.of("Permissions.Roles.View", "Permissions.Roles.View"))
         );
     }
 }

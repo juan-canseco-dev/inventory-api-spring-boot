@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.persistence;
+package com.jcanseco.inventoryapi.security.persistence;
 
 import com.jcanseco.inventoryapi.security.entities.Role;
 import com.jcanseco.inventoryapi.security.repositories.RoleRepository;

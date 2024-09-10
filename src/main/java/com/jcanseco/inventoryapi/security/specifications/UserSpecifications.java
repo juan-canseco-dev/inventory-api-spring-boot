@@ -2,7 +2,6 @@ package com.jcanseco.inventoryapi.security.specifications;
 
 import com.jcanseco.inventoryapi.security.entities.Role;
 import com.jcanseco.inventoryapi.security.entities.User;
-import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
 public class UserSpecifications {

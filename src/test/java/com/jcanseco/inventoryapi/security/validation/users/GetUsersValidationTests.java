@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.validation.users;
+package com.jcanseco.inventoryapi.security.validation.users;
 
 import com.jcanseco.inventoryapi.security.dtos.users.GetUsersRequest;
 import jakarta.validation.Validation;

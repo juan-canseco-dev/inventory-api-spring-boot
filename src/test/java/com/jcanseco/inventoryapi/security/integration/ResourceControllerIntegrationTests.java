@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.integration;
+package com.jcanseco.inventoryapi.security.integration;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -140,5 +140,4 @@ public class CategoryControllerIntegrationTests {
                 .andExpect(jsonPath("$.hasPreviousPage").value(false))
                 .andExpect(jsonPath("$.hasNextPage").value(true));
     }
-
 }

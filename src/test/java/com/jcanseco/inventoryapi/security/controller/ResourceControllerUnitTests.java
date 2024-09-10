@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.controller;
+package com.jcanseco.inventoryapi.security.controller;
 
 import com.jcanseco.inventoryapi.controllers.ResourceController;
 import com.jcanseco.inventoryapi.security.resources.Resource;
