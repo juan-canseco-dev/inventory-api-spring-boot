@@ -36,6 +36,8 @@ public class JwtService {
                 .toList();
 
         Map<String, Object> claims = Map.ofEntries(
+                entry("id", user.getId()),
+                entry("email", user.getUsername()),
                 entry("permissions", permissions),
                 entry("fullName", user.getFullName())
         );
