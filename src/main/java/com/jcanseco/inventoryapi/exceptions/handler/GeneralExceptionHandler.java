@@ -119,10 +119,10 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
 
     // Security
     @ExceptionHandler(BadCredentialsException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException exception, WebRequest request) {
         logger.error("Bad credentials exception occurred", exception);
-        return buildErrorResponse(exception, "Bad credentials", HttpStatus.UNAUTHORIZED, request);
+        return buildErrorResponse(exception, "Bad credentials", HttpStatus.BAD_REQUEST, request);
     }
 
 

@@ -29,7 +29,7 @@ public class AuthenticationService {
 
     @Transactional
     public JwtAuthenticationDto signIn(SignInDto dto) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
         return userRepository.findOne(UserSpecifications.byEmail(dto.getEmail()))
                 .map(this::userToToken)
                 .orElseThrow(() -> new BadCredentialsException("Bad credentials"));
