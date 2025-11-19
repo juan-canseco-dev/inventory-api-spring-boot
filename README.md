@@ -1,5 +1,5 @@
 # Inventory Management System
-Inventory API with basic functionality, comprising units and integration tests.
+Lightweight Inventory API implementing core features and validated through unit and integration tests.
 ## Features
 This api has the following features:
 - Sign In (JWT AUTH)
@@ -84,6 +84,7 @@ public class OrderServiceUnitTests {
 - JPA
 - TestContainers
 - MapStruct
+
 
 
 
