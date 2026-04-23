@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mysql:
     image: mysql
@@ -20,7 +18,10 @@ services:
           memory: 512M
 
   inventory-api:
-    image: inventory-api
+    image: ${DOCKER_REGISTRY-}inventory-api
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:

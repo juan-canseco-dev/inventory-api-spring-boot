@@ -1,0 +1,166 @@
+package com.jcanseco.inventoryapi.orders;
+
+import com.jcanseco.inventoryapi.catalog.categories.domain.Category;
+import com.jcanseco.inventoryapi.catalog.products.domain.Product;
+import com.jcanseco.inventoryapi.catalog.units.domain.UnitOfMeasurement;
+import com.jcanseco.inventoryapi.customers.domain.Customer;
+import com.jcanseco.inventoryapi.orders.domain.Order;
+import com.jcanseco.inventoryapi.orders.domain.OrderItem;
+import com.jcanseco.inventoryapi.orders.dto.DeliverOrderDto;
+import com.jcanseco.inventoryapi.shared.address.Address;
+import com.jcanseco.inventoryapi.shared.errors.DomainException;
+import com.jcanseco.inventoryapi.suppliers.domain.Supplier;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class OrderEntityTests {
+    private Customer customer;
+    private List<Product> products;
+    private final HashMap<Long, Long> productsWithQuantities = new HashMap<>() {{
+        put(9L, 10L);
+        put(10L, 10L);
+    }};
+
+    private final HashMap<Long, Long> productsWithQuantitiesForUpdate = new HashMap<>() {{
+        put(9L, 5L);
+        put(10L, 5L);
+    }};
+
+    @BeforeEach
+    public void setup() {
+        var unit = UnitOfMeasurement.builder()
+                .id(1L)
+                .name("Piece")
+                .build();
+
+        var category = Category.builder()
+                .id(1L)
+                .name("Electronics")
+                .build();
+
+        var address = Address.builder()
+                .country("United States")
+                .state("California")
+                .city("San Francisco")
+                .zipCode("94105")
+                .street("123 Main St")
+                .build();
+
+        var supplier = Supplier.builder()
+                .id(1L)
+                .companyName("ABC Corp")
+                .contactName("John Doe")
+                .contactPhone("555-1234-1")
+                .address(address)
+                .build();
+
+        customer = Customer.builder()
+                .id(1L)
+                .dni("123456789")
+                .fullName("John Doe")
+                .phone("555-1234-1")
+                .address(address)
+                .build();
+
+        products = List.of(
+                Product.builder()
+                        .id(9L)
+                        .supplier(supplier)
+                        .category(category)
+                        .unit(unit)
+                        .name("Vacuum Cleaner")
+                        .purchasePrice(BigDecimal.valueOf(90))
+                        .salePrice(BigDecimal.valueOf(150))
+                        .build(),
+                Product.builder()
+                        .id(10L)
+                        .supplier(supplier)
+                        .category(category)
+                        .unit(unit)
+                        .name("Toaster")
+                        .purchasePrice(BigDecimal.valueOf(25))
+                        .salePrice(BigDecimal.valueOf(40))
+                        .build()
+        );
+    }
+
+    @Test
+    public void createOrderItemsAndTotalShouldBeExpected() {
+        var expectedTotal = BigDecimal.valueOf(1900);
+        var order = Order.createNew(customer, products, productsWithQuantities);
+        assertEquals(customer, order.getCustomer());
+        assertEquals(expectedTotal, order.getTotal());
+        orderItemsEqualsToProductsWithQuantities(order.getItems(), products, productsWithQuantities);
+    }
+
+
+    @Test
+    public void updateOrderWhenOrderIsNotDeliveredShouldUpdate() {
+        var expectedTotal = BigDecimal.valueOf(950);
+        var order = Order.createNew(customer, products, productsWithQuantities);
+        order.update(products, productsWithQuantitiesForUpdate);
+        assertEquals(expectedTotal, order.getTotal());
+        orderItemsEqualsToProductsWithQuantities(order.getItems(), products, productsWithQuantitiesForUpdate);
+    }
+
+    @Test
+    public void updateOrderWhenOrderIsDeliveredShouldThrowException() {
+        var order = Order.createNew(customer, products, productsWithQuantities);
+        var dto = DeliverOrderDto.builder().comment("Delivered thank you").build();
+        order.deliver("Delivered thank you");
+        assertThrows(DomainException.class, () -> order.update(products, productsWithQuantitiesForUpdate));
+    }
+
+    @Test
+    public void markOrderAsDeliveredWhenOrderIsNotDeliveredShouldMark() {
+        var order = Order.createNew(customer, products, productsWithQuantities);
+        var dto = DeliverOrderDto.builder().comment("Delivered thank you").build();
+        order.deliver("Delivered thank you");
+        assertTrue(order.isDelivered());
+        assertNotNull(order.getDeliveredAt());
+        assertNotNull(order.getDeliverComments());
+    }
+
+    @Test
+    public void markOrderAsDeliveredWhenOrderIsDeliveredShouldThrowException() {
+        var order = Order.createNew(customer, products, productsWithQuantities);
+        order.deliver("Delivered thank you");
+        assertThrows(DomainException.class, () -> {
+            order.deliver("Already delivered thank you");
+        });
+    }
+
+    private void orderItemsEqualsToProductsWithQuantities(List<OrderItem> items, List<Product> products, HashMap<Long, Long> productsWithQuantities) {
+
+        assertNotNull(items);
+
+        Map<Long, Product> productsMap = products.stream()
+                .collect(Collectors.toMap(Product::getId, product -> product));
+
+        for (OrderItem item : items) {
+            var productId = item.getProductId();
+            var product = productsMap.get(productId);
+            var productQuantity = productsWithQuantities.get(productId);
+            var expectedTotal = product.getSalePrice().multiply(BigDecimal.valueOf(productQuantity));
+            assertEquals(product.getId(), item.getProductId());
+            assertEquals(product.getName(), item.getProductName());
+            assertEquals(product.getUnit().getName(), item.getProductUnit());
+            assertEquals(product.getSalePrice(), item.getPrice());
+            assertEquals(productQuantity, item.getQuantity());
+            assertEquals(expectedTotal, item.getTotal());
+        }
+    }
+}
+
+
+
+
+
+

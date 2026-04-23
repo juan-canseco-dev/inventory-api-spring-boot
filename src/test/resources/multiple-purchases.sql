@@ -1,5 +1,7 @@
 DELETE FROM purchase_items;
 DELETE FROM purchases;
+DELETE FROM order_items;
+DELETE FROM orders;
 DELETE FROM products_stock;
 DELETE FROM products;
 DELETE FROM units_of_measurement;
@@ -68,24 +70,24 @@ VALUES (1, 10),
        (20, 10);
 
 -- Purchase 1
-INSERT INTO purchases (id, supplier_id, total, ordered_at)
-VALUE (1, 1, 13000.00, '2023-05-01');
+INSERT INTO purchases (id, supplier_id, total, ordered_at, receive_comments)
+VALUE (1, 1, 13000.00, '2023-05-01', null);
 
 INSERT INTO purchase_items (id,purchase_id, product_id, product_name, product_unit, quantity, price, total)
 VALUES (1,1, 1, 'Laptop', 'Piece', 10, 800.00, 8000.00),
        (2,1, 2, 'Smartphone', 'Piece', 10, 500.00, 5000.00);
 
 -- Purchase 2
-INSERT INTO purchases (id, supplier_id, total, ordered_at)
-    VALUE (2, 1, 8000.00, '2023-05-08');
+INSERT INTO purchases (id, supplier_id, total, ordered_at, receive_comments)
+    VALUE (2, 1, 8000.00, '2023-05-08', null);
 
 INSERT INTO purchase_items (id,purchase_id, product_id, product_name, product_unit, quantity, price, total)
 VALUES (3,2, 3, 'HD Television', 'Piece', 10, 600.00, 6000.00),
        (4,2, 4, 'Tablet', 'Piece', 10, 200.00, 2000.00);
 
 -- Purchase 3
-INSERT INTO purchases (id, supplier_id, total, ordered_at)
-    VALUE (3, 1, 2300.00, '2023-05-15');
+INSERT INTO purchases (id, supplier_id, total, ordered_at, receive_comments)
+    VALUE (3, 1, 2300.00, '2023-05-15', null);
 
 INSERT INTO purchase_items (id,purchase_id, product_id, product_name, product_unit, quantity, price, total)
 VALUES (5,3, 5, 'Digital Camera', 'Piece', 10, 150.00, 1500.00),
@@ -93,16 +95,16 @@ VALUES (5,3, 5, 'Digital Camera', 'Piece', 10, 150.00, 1500.00),
 
 
 -- Purchase 4
-INSERT INTO purchases (id, supplier_id, total, ordered_at)
-    VALUE (4, 1, 7300.00, '2023-05-22');
+INSERT INTO purchases (id, supplier_id, total, ordered_at, receive_comments)
+    VALUE (4, 1, 7300.00, '2023-05-22', null);
 
 INSERT INTO purchase_items (id,purchase_id, product_id, product_name, product_unit, quantity, price, total)
 VALUES (7,4, 7, 'Refrigerator', 'Piece', 10, 700.00, 7000.00),
        (8,4, 8, 'Bluetooth Speaker', 'Piece', 10, 30.00, 300.00);
 
 -- Purchase 5
-INSERT INTO purchases (id, supplier_id, total, ordered_at)
-    VALUE (5, 1, 1150.00, '2023-05-29');
+INSERT INTO purchases (id, supplier_id, total, ordered_at, receive_comments)
+    VALUE (5, 1, 1150.00, '2023-05-29', null);
 
 INSERT INTO purchase_items (id,purchase_id, product_id, product_name, product_unit, quantity, price, total)
 VALUES (9,5, 9, 'Vacuum Cleaner', 'Piece', 10, 90.00, 900.00),
@@ -110,24 +112,24 @@ VALUES (9,5, 9, 'Vacuum Cleaner', 'Piece', 10, 90.00, 900.00),
 -- Supplier Two Purchases
 
 -- Purchase 6
-INSERT INTO purchases (id, supplier_id, total, ordered_at, arrived, arrived_at)
-    VALUE (6, 2, 1500.00, '2023-06-05', true, '2023-06-05');
+INSERT INTO purchases (id, supplier_id, total, ordered_at, arrived, arrived_at, receive_comments)
+    VALUE (6, 2, 1500.00, '2023-06-05', true, '2023-06-05', 'received');
 
 INSERT INTO purchase_items (id,purchase_id, product_id, product_name, product_unit, quantity, price, total)
 VALUES (11,6, 11, 'Coffee Maker', 'Piece', 10, 50.00, 500.00),
        (12,6, 12, 'Desk Chair', 'Piece', 10, 100.00, 1000.00);
 
 -- Purchase 7
-INSERT INTO purchases (id, supplier_id, total, ordered_at, arrived, arrived_at)
-    VALUE (7, 2, 5200.00, '2023-06-12', true, '2023-06-12');
+INSERT INTO purchases (id, supplier_id, total, ordered_at, arrived, arrived_at, receive_comments)
+    VALUE (7, 2, 5200.00, '2023-06-12', true, '2023-06-12', 'received');
 
 INSERT INTO purchase_items (id,purchase_id, product_id, product_name, product_unit, quantity, price, total)
 VALUES (13,7, 13, 'Washing Machine', 'Piece', 10, 400.00, 4000.00),
        (14,7, 14, 'Office Desk', 'Piece', 10, 120.00, 1200.00);
 
 -- Purchase 8
-INSERT INTO purchases (id, supplier_id, total, ordered_at, arrived, arrived_at)
-    VALUE (8, 2, 1400.00, '2023-06-19', true, '2023-06-19');
+INSERT INTO purchases (id, supplier_id, total, ordered_at, arrived, arrived_at, receive_comments)
+    VALUE (8, 2, 1400.00, '2023-06-19', true, '2023-06-19', 'received');
 
 INSERT INTO purchase_items (id,purchase_id, product_id, product_name, product_unit, quantity, price, total)
 VALUES (15,8, 15, 'Dinnerware Set', 'Piece', 10, 60.00, 600.00),
@@ -135,16 +137,16 @@ VALUES (15,8, 15, 'Dinnerware Set', 'Piece', 10, 60.00, 600.00),
 
 
 -- Purchase 9
-INSERT INTO purchases (id, supplier_id, total, ordered_at, arrived, arrived_at)
-    VALUE (9, 2, 1800.00, '2023-06-26', true, '2023-06-26');
+INSERT INTO purchases (id, supplier_id, total, ordered_at, arrived, arrived_at, receive_comments)
+    VALUE (9, 2, 1800.00, '2023-06-26', true, '2023-06-26', 'received');
 
 INSERT INTO purchase_items (id,purchase_id, product_id, product_name, product_unit, quantity, price, total)
 VALUES (17,9, 17, 'Microwave Oven', 'Piece', 10, 120.00, 1200.00),
        (18,9, 18, 'Coffee Table', 'Piece', 10, 60.00, 600.00);
 
 -- Purchase 10
-INSERT INTO purchases (id, supplier_id, total, ordered_at, arrived, arrived_at)
-    VALUE (10, 2, 1300.00, '2023-07-03', true, '2023-07-03');
+INSERT INTO purchases (id, supplier_id, total, ordered_at, arrived, arrived_at, receive_comments)
+    VALUE (10, 2, 1300.00, '2023-07-03', true, '2023-07-03', 'received');
 
 INSERT INTO purchase_items (id, purchase_id, product_id, product_name, product_unit, quantity, price, total)
 VALUES (19,10, 19, 'Vacuum Cleaner', 'Piece', 10, 90.00, 900.00),

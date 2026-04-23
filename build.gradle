@@ -17,11 +17,17 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url = uri("https://central.sonatype.com/repository/maven-snapshots/")}
+	flatDir {
+		dirs("libs")
+	}
 }
 
 ext {
 	set('mapStructVersion', '1.5.3.Final')
 	set('assertJVersion', '3.25.1')
+	set('dataFakerVersion', '2.6.0-SNAPSHOT')
+	set('jwtVersion', '0.11.5')
 }
 
 dependencies {
@@ -31,10 +37,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation "org.mapstruct:mapstruct:${mapStructVersion}"
 	implementation 'org.apache.commons:commons-collections4:4.4'
-	implementation 'org.apache.commons:commons-lang3:3.0'
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'org.apache.commons:commons-lang3:3.18.0'
+	implementation "io.jsonwebtoken:jjwt-api:${jwtVersion}"
+	implementation "io.jsonwebtoken:jjwt-jackson:${jwtVersion}"
+	implementation "io.jsonwebtoken:jjwt-impl:${jwtVersion}"
+	implementation "net.datafaker:datafaker:${dataFakerVersion}"
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'

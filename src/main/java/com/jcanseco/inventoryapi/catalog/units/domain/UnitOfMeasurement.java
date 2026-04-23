@@ -1,0 +1,30 @@
+package com.jcanseco.inventoryapi.catalog.units.domain;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+
+
+
+
+@EqualsAndHashCode
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Entity
+@Table(name = "units_of_measurement")
+public class UnitOfMeasurement {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    private Long id;
+    @Column(nullable = false)
+    private String name;
+}
+
+
+
+
+
+

@@ -1,3 +1,8 @@
+-- cleanup.sql
+DELETE FROM purchase_items;
+DELETE FROM order_items;
+DELETE FROM products_stock;
+DELETE FROM products;
 DELETE FROM categories;
 INSERT INTO categories (id, name) VALUES
                                   (1,'Electronics'),
