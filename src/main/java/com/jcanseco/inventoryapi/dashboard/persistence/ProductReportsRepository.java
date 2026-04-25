@@ -1,6 +1,7 @@
 package com.jcanseco.inventoryapi.dashboard.persistence;
 
 import com.jcanseco.inventoryapi.catalog.products.domain.Product;
+import com.jcanseco.inventoryapi.dashboard.dto.ProductsByCategoryDto;
 import com.jcanseco.inventoryapi.dashboard.dto.ProductWithLowStockDto;
 import com.jcanseco.inventoryapi.dashboard.dto.TopSoldProductDto;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -43,9 +45,17 @@ public interface ProductReportsRepository extends JpaRepository<Product, Long> {
         )
         FROM OrderItem oi
         INNER JOIN oi.product p
+        INNER JOIN oi.order o
+        WHERE o.delivered = true
+        AND (:startDate IS NULL OR o.deliveredAt >= :startDate)
+        AND (:endDate IS NULL OR o.deliveredAt < :endDate)
         GROUP BY p.id, p.name
         ORDER BY SUM(oi.quantity) DESC""")
-    List<TopSoldProductDto> getTopSoldProducts(Pageable pageable);
+    List<TopSoldProductDto> getTopSoldProducts(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            Pageable pageable
+    );
 
     @Query("""
     SELECT COALESCE(COUNT(p), 0)
@@ -53,5 +63,25 @@ public interface ProductReportsRepository extends JpaRepository<Product, Long> {
     WHERE s.quantity <= :stockThreshold
     """)
     Long getProductsWithLowStockCount(@Param("stockThreshold") Long stockThreshold);
+
+    @Query("""
+    SELECT COALESCE(COUNT(p), 0)
+    FROM Product p INNER JOIN p.stock s
+    WHERE s.quantity = 0
+    """)
+    Long getOutOfStockProductsCount();
+
+    @Query("""
+    SELECT new com.jcanseco.inventoryapi.dashboard.dto.ProductsByCategoryDto(
+        c.id,
+        c.name,
+        COUNT(p)
+    )
+    FROM Product p
+    INNER JOIN p.category c
+    GROUP BY c.id, c.name
+    ORDER BY COUNT(p) DESC, c.name ASC
+    """)
+    List<ProductsByCategoryDto> getProductsCountByCategory();
 
 }

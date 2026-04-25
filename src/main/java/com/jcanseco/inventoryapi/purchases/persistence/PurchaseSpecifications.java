@@ -1,13 +1,14 @@
 package com.jcanseco.inventoryapi.purchases.persistence;
 
+import com.jcanseco.inventoryapi.customers.domain.Customer;
+import com.jcanseco.inventoryapi.orders.domain.Order;
 import com.jcanseco.inventoryapi.purchases.domain.Purchase;
 import com.jcanseco.inventoryapi.suppliers.domain.Supplier;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
-
-
-
-
 
 public class PurchaseSpecifications {
 
@@ -65,21 +66,21 @@ public class PurchaseSpecifications {
 
     public static Specification<Purchase> orderBySupplierAsc(Specification<Purchase> spec) {
         return (root, query, builder) -> {
-            root.fetch("supplier");
-            query.orderBy(
-                    builder.asc(root.get("supplier").get("companyName"))
-            );
-            return spec.toPredicate(root, query, builder);
+            Join<Purchase, Supplier> supplierJoin = root.join("supplier", JoinType.LEFT);
+            query.orderBy(builder.asc(supplierJoin.get("companyName")));
+            return spec == null
+                    ? builder.conjunction()
+                    : spec.toPredicate(root, query, builder);
         };
     }
 
     public static Specification<Purchase> orderBySupplierDesc(Specification<Purchase> spec) {
         return (root, query, builder) -> {
-            root.fetch("supplier");
-            query.orderBy(
-                    builder.desc(root.get("supplier").get("companyName"))
-            );
-            return spec.toPredicate(root, query, builder);
+            Join<Purchase, Supplier> supplierJoin = root.join("supplier", JoinType.LEFT);
+            query.orderBy(builder.desc(supplierJoin.get("companyName")));
+            return spec == null
+                    ? builder.conjunction()
+                    : spec.toPredicate(root, query, builder);
         };
     }
 

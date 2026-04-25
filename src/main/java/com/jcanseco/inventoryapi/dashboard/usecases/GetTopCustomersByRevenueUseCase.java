@@ -14,6 +14,10 @@ import java.util.List;
 public class GetTopCustomersByRevenueUseCase {
     private final CustomerReportsRepository repository;
     public List<TopCustomerByRevenueDto> execute(GetTopCustomersByRevenueRequest request) {
-        return repository.getTopCustomerByRevenue(Pageable.ofSize(request.getLimit()));
+        return repository.getTopCustomerByRevenue(
+                request.getStartDate(),
+                request.getEndDate(),
+                Pageable.ofSize(request.getLimit())
+        );
     }
 }

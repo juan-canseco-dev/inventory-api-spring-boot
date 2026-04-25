@@ -1,5 +1,6 @@
 package com.jcanseco.inventoryapi.dashboard.listeners;
 
+import com.jcanseco.inventoryapi.dashboard.realtime.DashboardSocketPublisher;
 import com.jcanseco.inventoryapi.orders.events.OrderDeliveredEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,11 +13,12 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 @RequiredArgsConstructor
 public class OrderDeliveredDashboardListener {
+    private final DashboardSocketPublisher dashboardSocketPublisher;
+
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(OrderDeliveredEvent event) {
-        log.info("Updating dashboard KPIs after delivered order {}", event.orderId());
-        // TODO: implement later
-
+        log.info("Publishing dashboard update signal after delivered order {}", event.orderId());
+        dashboardSocketPublisher.publishUpdateSignal();
     }
 }

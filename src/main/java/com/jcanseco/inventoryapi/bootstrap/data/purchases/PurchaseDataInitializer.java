@@ -3,11 +3,10 @@ package com.jcanseco.inventoryapi.bootstrap.data.purchases;
 import com.jcanseco.inventoryapi.catalog.products.domain.Product;
 import com.jcanseco.inventoryapi.catalog.products.persistence.ProductRepository;
 import com.jcanseco.inventoryapi.catalog.products.persistence.ProductSpecifications;
-import com.jcanseco.inventoryapi.purchases.dto.CreatePurchaseDto;
-import com.jcanseco.inventoryapi.purchases.dto.ReceivePurchaseDto;
+import com.jcanseco.inventoryapi.inventory.stock.persistence.StockRepository;
+import com.jcanseco.inventoryapi.purchases.domain.Purchase;
 import com.jcanseco.inventoryapi.purchases.persistence.PurchaseRepository;
-import com.jcanseco.inventoryapi.purchases.usecases.create.CreatePurchaseUseCase;
-import com.jcanseco.inventoryapi.purchases.usecases.receive.ReceivePurchaseUseCase;
+import com.jcanseco.inventoryapi.shared.errors.DomainException;
 import com.jcanseco.inventoryapi.suppliers.domain.Supplier;
 import com.jcanseco.inventoryapi.suppliers.persistence.SupplierRepository;
 import java.util.HashMap;
@@ -23,9 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-
-
-
+import static com.jcanseco.inventoryapi.inventory.stock.persistence.StockSpecifications.byProductIds;
 
 @Profile("!test")
 @Slf4j
@@ -38,9 +35,8 @@ public class PurchaseDataInitializer implements ApplicationRunner {
 
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
+    private final StockRepository stockRepository;
     private final PurchaseRepository purchaseRepository;
-    private final CreatePurchaseUseCase createPurchaseUseCase;
-    private final ReceivePurchaseUseCase receivePurchaseUseCase;
 
     @Transactional
     @Override
@@ -78,13 +74,8 @@ public class PurchaseDataInitializer implements ApplicationRunner {
             for (int i = 0; i < NUM_OF_PURCHASES_BY_SUPPLIER; i++) {
                 var productsWithQuantitiesMap = createQuantityMapFromProduct(productsBySupplier, initialQuantity);
 
-                var createPurchaseDto = CreatePurchaseDto.builder()
-                        .supplierId(supplier.getId())
-                        .productsWithQuantities(productsWithQuantitiesMap)
-                        .build();
+                Long purchaseId = createPurchaseAndMarkAsReceived(supplier.getId(), productsWithQuantitiesMap);
 
-                Long purchaseId = createPurchaseUseCase.execute(createPurchaseDto);
-                String receivePurchaseComments = "Received the purchase thank you :)";
                 log.debug(
                         "Created purchase with id {} for supplier id {} using quantity {} for {} products.",
                         purchaseId,
@@ -93,17 +84,6 @@ public class PurchaseDataInitializer implements ApplicationRunner {
                         productsWithQuantitiesMap.size()
                 );
 
-                var receivePurchaseDto = ReceivePurchaseDto.builder()
-                                .purchaseId(purchaseId)
-                        .comment(receivePurchaseComments)
-                        .build();
-
-                receivePurchaseUseCase.execute(receivePurchaseDto);
-                log.debug(
-                        "Received purchase with id {} for supplier id {}. Stock updated successfully.",
-                        purchaseId,
-                        supplier.getId()
-                );
 
                 totalPurchasesCreated++;
                 initialQuantity += 10L;
@@ -111,6 +91,27 @@ public class PurchaseDataInitializer implements ApplicationRunner {
         }
 
         log.info("Purchase data initialization completed successfully. Total purchases created and received: {}.", totalPurchasesCreated);
+    }
+
+    private Long createPurchaseAndMarkAsReceived(Long supplierId, HashMap<Long, Long> productsWithQuantities) {
+        var supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new DomainException(String.format("Supplier with the Id : {%d} was not found.", supplierId)));
+
+        var products = productRepository.findAllById(productsWithQuantities.keySet());
+
+        var newPurchase = Purchase.createNew(supplier, products, productsWithQuantities);
+        newPurchase.markAsArrived("Arrived");
+
+        var savedPurchase = purchaseRepository.saveAndFlush(
+                newPurchase
+        );
+
+        var stocks = stockRepository.findAll(byProductIds(productsWithQuantities.keySet().stream().toList()));
+        stocks.forEach(stock -> stock.addStock(productsWithQuantities.get(stock.getProductId())));
+
+        stockRepository.saveAllAndFlush(stocks);
+
+        return savedPurchase.getId();
     }
 
     private Specification<Product> bySupplierSpec(Supplier supplier) {

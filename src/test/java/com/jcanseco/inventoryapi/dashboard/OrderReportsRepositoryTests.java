@@ -36,4 +36,21 @@ public class OrderReportsRepositoryTests {
 
         assertEquals(0, totalValue.compareTo(BigDecimal.valueOf(1110)));
     }
+
+    @Test
+    @Sql("/dashboard-data.sql")
+    public void getMonthlySalesSummaryShouldReturnOrderedSeries() {
+        var monthlySales = orderReportsRepository.getMonthlySalesSummary(
+                LocalDateTime.of(2024, 1, 1, 0, 0),
+                LocalDateTime.of(2024, 3, 1, 0, 0)
+        );
+
+        assertEquals(2, monthlySales.size());
+        assertEquals(2024, monthlySales.get(0).year());
+        assertEquals(1, monthlySales.get(0).month());
+        assertEquals(0, monthlySales.get(0).totalValue().compareTo(BigDecimal.valueOf(1110)));
+        assertEquals(2024, monthlySales.get(1).year());
+        assertEquals(2, monthlySales.get(1).month());
+        assertEquals(0, monthlySales.get(1).totalValue().compareTo(BigDecimal.valueOf(480)));
+    }
 }

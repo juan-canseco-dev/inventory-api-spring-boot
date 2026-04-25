@@ -6,9 +6,12 @@ import com.jcanseco.inventoryapi.dashboard.dto.GetTopCustomersByRevenueRequest;
 import com.jcanseco.inventoryapi.dashboard.dto.GetTopSoldProductsRequest;
 import com.jcanseco.inventoryapi.dashboard.dto.GetTopSuppliersByRevenueRequest;
 import com.jcanseco.inventoryapi.dashboard.dto.GetValueSummaryRequest;
-import com.jcanseco.inventoryapi.dashboard.usecases.GetInventoryValueSummaryByPeriodUseCase;
+import com.jcanseco.inventoryapi.dashboard.usecases.GetMonthlySalesSeriesUseCase;
+import com.jcanseco.inventoryapi.dashboard.usecases.GetOutOfStockProductsCountUseCase;
 import com.jcanseco.inventoryapi.dashboard.usecases.GetProductsWithLowStockCountUseCase;
+import com.jcanseco.inventoryapi.dashboard.usecases.GetProductsCountByCategoryUseCase;
 import com.jcanseco.inventoryapi.dashboard.usecases.GetProductsWithLowStockUseCase;
+import com.jcanseco.inventoryapi.dashboard.usecases.GetPurchasesValueSummaryByPeriodUseCase;
 import com.jcanseco.inventoryapi.dashboard.usecases.GetSalesValueSummaryByPeriodUseCase;
 import com.jcanseco.inventoryapi.dashboard.usecases.GetTopCustomersByRevenueUseCase;
 import com.jcanseco.inventoryapi.dashboard.usecases.GetTopSoldProductsUseCase;
@@ -32,7 +35,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RequiredArgsConstructor
 public class DashboardController {
 
-    private final GetInventoryValueSummaryByPeriodUseCase getInventoryValueSummaryByPeriodUseCase;
+    private final GetPurchasesValueSummaryByPeriodUseCase getPurchasesValueSummaryByPeriodUseCase;
+    private final GetMonthlySalesSeriesUseCase getMonthlySalesSeriesUseCase;
+    private final GetOutOfStockProductsCountUseCase getOutOfStockProductsCountUseCase;
+    private final GetProductsCountByCategoryUseCase getProductsCountByCategoryUseCase;
     private final GetProductsWithLowStockCountUseCase getProductsWithLowStockCountUseCase;
     private final GetProductsWithLowStockUseCase getProductsWithLowStockUseCase;
     private final GetSalesValueSummaryByPeriodUseCase getSalesValueSummaryByPeriodUseCase;
@@ -41,9 +47,24 @@ public class DashboardController {
     private final GetTopSuppliersByRevenueUseCase getTopSuppliersByRevenueUseCase;
     private final GetTotalInventoryValueSummaryUseCase getTotalInventoryValueSummaryUseCase;
 
-    @GetMapping("inventory-value/summary/by-period")
-    public ResponseEntity<?> getInventoryValueSummaryByPeriod(@Valid GetValueSummaryRequest request) {
-        return ResponseEntity.ok(getInventoryValueSummaryByPeriodUseCase.execute(request));
+    @GetMapping("purchases-value/summary/by-period")
+    public ResponseEntity<?> getPurchasesValueSummaryByPeriod(@Valid GetValueSummaryRequest request) {
+        return ResponseEntity.ok(getPurchasesValueSummaryByPeriodUseCase.execute(request));
+    }
+
+    @GetMapping("sales-value/series/monthly")
+    public ResponseEntity<?> getMonthlySalesSeries(@Valid GetValueSummaryRequest request) {
+        return ResponseEntity.ok(getMonthlySalesSeriesUseCase.execute(request));
+    }
+
+    @GetMapping("products/out-of-stock/count")
+    public ResponseEntity<?> getOutOfStockProductsCount() {
+        return ResponseEntity.ok(getOutOfStockProductsCountUseCase.execute());
+    }
+
+    @GetMapping("products/count/by-category")
+    public ResponseEntity<?> getProductsCountByCategory() {
+        return ResponseEntity.ok(getProductsCountByCategoryUseCase.execute());
     }
 
     @GetMapping("products/low-stock/count")

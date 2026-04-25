@@ -35,7 +35,7 @@ public class Purchase {
     private Supplier supplier;
 
 
-    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PurchaseItem> items;
 
     @Column(nullable = false, name = "arrived", columnDefinition = "BOOLEAN DEFAULT false")
@@ -57,7 +57,7 @@ public class Purchase {
         if (isArrived()) {
             throw new DomainException(String.format("Purchase with Id %d has already arrived and cannot be updated.", getId()));
         }
-        var items = getItemsByProducts(products, productsWithQuantities);
+        var items = getItemsByProducts(this, products, productsWithQuantities);
         var total = getTotalFromItems(items);
         this.items.clear();
         this.items.addAll(items);
@@ -74,16 +74,20 @@ public class Purchase {
     }
 
     public static Purchase createNew(Supplier supplier, List<Product> products, HashMap<Long, Long> productsWithQuantities) {
-        var items = getItemsByProducts(products, productsWithQuantities);
-        var total = getTotalFromItems(items);
-        return Purchase.builder()
+        var newPurchase =  Purchase.builder()
                 .supplier(supplier)
-                .items(items)
-                .total(total)
                 .build();
+
+        var items = getItemsByProducts(newPurchase, products, productsWithQuantities);
+        var total = getTotalFromItems(items);
+
+        newPurchase.setItems(items);
+        newPurchase.setTotal(total);
+
+        return newPurchase;
     }
 
-    private static List<PurchaseItem> getItemsByProducts(List<Product> products, HashMap<Long, Long> quantities) {
+    private static List<PurchaseItem> getItemsByProducts(Purchase purchase, List<Product> products, HashMap<Long, Long> quantities) {
         return products.stream().map(p -> PurchaseItem.builder()
                 .product(p)
                 .productId(p.getId())
@@ -91,6 +95,7 @@ public class Purchase {
                 .productUnit(p.getUnit().getName())
                 .quantity(quantities.get(p.getId()))
                 .price(p.getPurchasePrice())
+                        .purchase(purchase)
                 .total(p.getPurchasePrice().multiply(BigDecimal.valueOf(quantities.get(p.getId()))))
                 .build())
                 .collect(Collectors.toList());

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -29,14 +30,18 @@ public class CustomerReportsRepositoryTests {
     @Test
     @Sql("/dashboard-data.sql")
     public void getTopCustomerByRevenueShouldReturnOrderedList() {
-        var topCustomers = customerReportsRepository.getTopCustomerByRevenue(Pageable.ofSize(2));
+        var topCustomers = customerReportsRepository.getTopCustomerByRevenue(
+                LocalDateTime.of(2024, 1, 1, 0, 0),
+                LocalDateTime.of(2024, 2, 1, 0, 0),
+                Pageable.ofSize(2)
+        );
 
         assertEquals(2, topCustomers.size());
-        assertEquals(1L, topCustomers.get(0).id());
-        assertEquals("John Doe", topCustomers.get(0).fullName());
-        assertEquals(0, topCustomers.get(0).totalRevenue().compareTo(BigDecimal.valueOf(990)));
-        assertEquals(2L, topCustomers.get(1).id());
-        assertEquals("Jane Smith", topCustomers.get(1).fullName());
-        assertEquals(0, topCustomers.get(1).totalRevenue().compareTo(BigDecimal.valueOf(600)));
+        assertEquals(2L, topCustomers.get(0).id());
+        assertEquals("Jane Smith", topCustomers.get(0).fullName());
+        assertEquals(0, topCustomers.get(0).totalRevenue().compareTo(BigDecimal.valueOf(600)));
+        assertEquals(1L, topCustomers.get(1).id());
+        assertEquals("John Doe", topCustomers.get(1).fullName());
+        assertEquals(0, topCustomers.get(1).totalRevenue().compareTo(BigDecimal.valueOf(510)));
     }
 }

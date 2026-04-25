@@ -22,14 +22,18 @@ public class GetTopSoldProductsRequestValidationTests {
 
     @Test
     public void getTopSoldProductsRequestWhenLimitIsValidValidationShouldNotFail() {
-        var request = new GetTopSoldProductsRequest(2);
+        var request = GetTopSoldProductsRequest.builder()
+                .limit(2)
+                .build();
         var violations = validator.validate(request);
         assertTrue(violations.isEmpty());
     }
 
     @Test
     public void getTopSoldProductsRequestWhenLimitIsLessThanOneValidationShouldFail() {
-        var request = new GetTopSoldProductsRequest(0);
+        var request = GetTopSoldProductsRequest.builder()
+                .limit(0)
+                .build();
         var violations = validator.validate(request);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());

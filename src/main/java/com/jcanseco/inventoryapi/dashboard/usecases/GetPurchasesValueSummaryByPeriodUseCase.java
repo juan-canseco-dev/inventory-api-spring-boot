@@ -8,10 +8,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class GetInventoryValueSummaryByPeriodUseCase {
+public class GetPurchasesValueSummaryByPeriodUseCase {
     private final PurchaseReportsRepository repository;
+
     public InventoryValueSummaryDto execute(GetValueSummaryRequest request) {
         var totalValue = repository.getPurchasesSummaryByPeriod(request.getStartDate(), request.getEndDate());
-        return  new InventoryValueSummaryDto(totalValue);
+        return new InventoryValueSummaryDto(totalValue);
     }
 }

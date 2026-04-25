@@ -13,7 +13,9 @@ INSERT INTO units_of_measurement (id, name)
 VALUES (1, 'Piece');
 
 INSERT INTO categories (id, name)
-VALUES (1, 'Electronics');
+VALUES
+    (1, 'Electronics'),
+    (2, 'Furniture');
 
 INSERT INTO suppliers (
     id,
@@ -49,21 +51,23 @@ INSERT INTO products (id, supplier_id, category_id, unit_id, name, purchase_pric
 VALUES
     (1, 1, 1, 1, 'Laptop', 100.00, 150.00),
     (2, 1, 1, 1, 'Mouse', 50.00, 70.00),
-    (3, 2, 1, 1, 'Desk', 80.00, 120.00),
-    (4, 2, 1, 1, 'Chair', 60.00, 90.00);
+    (3, 2, 2, 1, 'Desk', 80.00, 120.00),
+    (4, 2, 2, 1, 'Chair', 60.00, 90.00),
+    (5, 1, 1, 1, 'Keyboard', 40.00, 60.00);
 
 INSERT INTO products_stock (product_id, quantity)
 VALUES
     (1, 5),
     (2, 2),
     (3, 8),
-    (4, 1);
+    (4, 1),
+    (5, 0);
 
 INSERT INTO orders (id, customer_id, total, ordered_at, delivered, delivered_at, deliver_comments)
 VALUES
     (1, 1, 510.00, '2024-01-10 00:00:00', true, '2024-01-11 00:00:00', null),
     (2, 2, 600.00, '2024-01-19 00:00:00', true, '2024-01-20 00:00:00', null),
-    (3, 1, 480.00, '2024-02-05 00:00:00', false, null, null);
+    (3, 1, 480.00, '2024-02-05 00:00:00', true, '2024-02-06 00:00:00', null);
 
 INSERT INTO order_items (id, order_id, product_id, product_name, product_unit, quantity, price, total)
 VALUES

@@ -13,6 +13,10 @@ import java.util.List;
 public class GetTopSuppliersByRevenueUseCase {
     private final SuppliersReportsRepository repository;
     public List<TopSupplierByRevenueDto> execute(GetTopSuppliersByRevenueRequest request) {
-        return repository.getTopSuppliersByRevenue(Pageable.ofSize(request.getLimit()));
+        return repository.getTopSuppliersByRevenue(
+                request.getStartDate(),
+                request.getEndDate(),
+                Pageable.ofSize(request.getLimit())
+        );
     }
 }

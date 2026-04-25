@@ -1,5 +1,6 @@
 package com.jcanseco.inventoryapi.dashboard;
 
+import com.jcanseco.inventoryapi.dashboard.dto.ProductsByCategoryDto;
 import com.jcanseco.inventoryapi.dashboard.dto.ProductWithLowStockDto;
 import com.jcanseco.inventoryapi.dashboard.dto.TopSoldProductDto;
 import com.jcanseco.inventoryapi.dashboard.persistence.ProductReportsRepository;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,8 +44,8 @@ public class ProductReportsRepositoryTests {
         var products = productReportsRepository.getProductsWithLowStock(5L, Pageable.ofSize(2));
 
         var expectedProducts = List.of(
-                new ProductWithLowStockDto(4L, "Chair", 1L),
-                new ProductWithLowStockDto(2L, "Mouse", 2L)
+                new ProductWithLowStockDto(5L, "Keyboard", 0L),
+                new ProductWithLowStockDto(4L, "Chair", 1L)
         );
 
         assertEquals(expectedProducts, products);
@@ -52,11 +54,15 @@ public class ProductReportsRepositoryTests {
     @Test
     @Sql("/dashboard-data.sql")
     public void getTopSoldProductsShouldReturnOrderedList() {
-        var topSoldProducts = productReportsRepository.getTopSoldProducts(Pageable.ofSize(2));
+        var topSoldProducts = productReportsRepository.getTopSoldProducts(
+                LocalDateTime.of(2024, 1, 1, 0, 0),
+                LocalDateTime.of(2024, 2, 1, 0, 0),
+                Pageable.ofSize(2)
+        );
 
         var expectedProducts = List.of(
                 new TopSoldProductDto(3L, "Desk", 5L),
-                new TopSoldProductDto(1L, "Laptop", 4L)
+                new TopSoldProductDto(2L, "Mouse", 3L)
         );
 
         assertEquals(expectedProducts, topSoldProducts);
@@ -66,6 +72,26 @@ public class ProductReportsRepositoryTests {
     @Sql("/dashboard-data.sql")
     public void getProductsWithLowStockCountShouldReturnCount() {
         var productsWithLowStockCount = productReportsRepository.getProductsWithLowStockCount(5L);
-        assertEquals(3L, productsWithLowStockCount);
+        assertEquals(4L, productsWithLowStockCount);
+    }
+
+    @Test
+    @Sql("/dashboard-data.sql")
+    public void getOutOfStockProductsCountShouldReturnCount() {
+        var outOfStockProductsCount = productReportsRepository.getOutOfStockProductsCount();
+        assertEquals(1L, outOfStockProductsCount);
+    }
+
+    @Test
+    @Sql("/dashboard-data.sql")
+    public void getProductsCountByCategoryShouldReturnOrderedList() {
+        var productsByCategory = productReportsRepository.getProductsCountByCategory();
+
+        var expectedProductsByCategory = List.of(
+                new ProductsByCategoryDto(1L, "Electronics", 3L),
+                new ProductsByCategoryDto(2L, "Furniture", 2L)
+        );
+
+        assertEquals(expectedProductsByCategory, productsByCategory);
     }
 }

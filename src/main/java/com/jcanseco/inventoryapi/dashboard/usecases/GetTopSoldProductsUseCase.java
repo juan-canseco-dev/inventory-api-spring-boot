@@ -15,6 +15,10 @@ public class GetTopSoldProductsUseCase {
     private final ProductReportsRepository repository;
 
     public List<TopSoldProductDto> execute(GetTopSoldProductsRequest request) {
-        return repository.getTopSoldProducts(Pageable.ofSize(request.getLimit()));
+        return repository.getTopSoldProducts(
+                request.getStartDate(),
+                request.getEndDate(),
+                Pageable.ofSize(request.getLimit())
+        );
     }
 }
