@@ -31,7 +31,7 @@ public class WebSecurityConfig {
                                                    JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers("/api/auth/**")
+                        request.requestMatchers("/api/auth/**", "/ws-stomp")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()

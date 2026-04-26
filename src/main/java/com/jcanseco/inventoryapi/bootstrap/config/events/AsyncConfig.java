@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.bootstrap.config;
+package com.jcanseco.inventoryapi.bootstrap.config.events;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
