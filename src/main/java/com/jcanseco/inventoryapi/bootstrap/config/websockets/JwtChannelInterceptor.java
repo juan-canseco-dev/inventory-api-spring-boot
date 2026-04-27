@@ -4,6 +4,7 @@ import com.jcanseco.inventoryapi.identity.auth.security.DatabaseUserDetailsServi
 import com.jcanseco.inventoryapi.identity.auth.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.lang.NonNull;
@@ -17,6 +18,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
+@Profile("!test")
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -31,12 +35,12 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
     public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
 
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-        assert accessor != null;
+        Objects.requireNonNull(accessor);
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             var authHeaderList = accessor.getNativeHeader(JWT_HEADER);
             log.info("Received Authorization header: {}", authHeaderList);
 
-            assert authHeaderList != null;
+            Objects.requireNonNull(authHeaderList);
 
             String authHeader = authHeaderList.get(0);
 
