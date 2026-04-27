@@ -11,6 +11,7 @@ The project uses a package-by-feature structure, JWT authentication, permission-
 - CRUD flows for users, roles, units, categories, products, suppliers, and customers
 - Purchase receiving and order delivery workflows
 - Dashboard endpoints for inventory value, low-stock products, top customers, top suppliers, and top-selling products
+- Web Sockets for dashboard real time updates.
 - Seeded demo data for local development outside the `test` profile
 
 ## Tech Stack

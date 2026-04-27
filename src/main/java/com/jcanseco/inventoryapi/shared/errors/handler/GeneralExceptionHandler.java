@@ -30,10 +30,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-
-
-
-
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice
 public class  GeneralExceptionHandler extends ResponseEntityExceptionHandler {

@@ -3,6 +3,8 @@ app:
   token:
     signing:
       key: Y29sdW1uc2NyZWVuY291bnRhbGxvd3dvcmtsaWVob3JzZXdoYXR2YWx1YWJsZXByb2MY2
+  cors:
+    allowed-origins: "http://localhost:4200"
 
 
 spring:
