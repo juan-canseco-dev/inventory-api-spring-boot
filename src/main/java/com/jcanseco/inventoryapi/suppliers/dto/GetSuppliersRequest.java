@@ -5,10 +5,6 @@ import com.jcanseco.inventoryapi.shared.validation.query.sortorder.SortOrder;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 
-
-
-
-
 @EqualsAndHashCode
 @Builder
 @Setter

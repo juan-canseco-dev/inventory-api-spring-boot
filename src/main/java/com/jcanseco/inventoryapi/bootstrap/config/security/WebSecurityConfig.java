@@ -1,4 +1,4 @@
-package com.jcanseco.inventoryapi.identity.config;
+package com.jcanseco.inventoryapi.bootstrap.config.security;
 
 import com.jcanseco.inventoryapi.identity.auth.security.JwtAuthenticationFilter;
 import com.jcanseco.inventoryapi.identity.auth.security.DatabaseUserDetailsService;
@@ -31,7 +31,7 @@ public class WebSecurityConfig {
                                                    JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers("/api/auth/**", "/ws-stomp")
+                        request.requestMatchers("/api/auth/**", "/ws-stomp/**")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
