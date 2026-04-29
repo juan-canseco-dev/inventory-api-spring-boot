@@ -4,10 +4,6 @@ import com.jcanseco.inventoryapi.shared.address.Address;
 import jakarta.persistence.*;
 import lombok.*;
 
-
-
-
-
 @EqualsAndHashCode
 @Builder
 @NoArgsConstructor
@@ -32,15 +28,15 @@ public class Supplier {
     @AttributeOverrides({
             @AttributeOverride(
                     name = "country",
-                    column = @Column(name = "supplier_address_country", nullable = false, length = 50)
+                    column = @Column(name = "supplier_address_country", nullable = false, length = 75)
             ),
             @AttributeOverride(
                     name = "state",
-                    column = @Column(name = "supplier_address_state", nullable = false, length = 50)
+                    column = @Column(name = "supplier_address_state", nullable = false, length = 75)
             ),
             @AttributeOverride(
                     name = "city",
-                    column = @Column(name = "supplier_address_city", nullable = false, length = 50)
+                    column = @Column(name = "supplier_address_city", nullable = false, length = 75)
             ),
             @AttributeOverride(
                     name = "zipCode",

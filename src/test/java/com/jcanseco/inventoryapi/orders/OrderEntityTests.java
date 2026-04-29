@@ -11,6 +11,7 @@ import com.jcanseco.inventoryapi.shared.address.Address;
 import com.jcanseco.inventoryapi.shared.errors.DomainException;
 import com.jcanseco.inventoryapi.suppliers.domain.Supplier;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +95,7 @@ public class OrderEntityTests {
     @Test
     public void createOrderItemsAndTotalShouldBeExpected() {
         var expectedTotal = BigDecimal.valueOf(1900);
-        var order = Order.createNew(customer, products, productsWithQuantities);
+        var order = Order.createNew(customer, products, productsWithQuantities, LocalDateTime.now());
         assertEquals(customer, order.getCustomer());
         assertEquals(expectedTotal, order.getTotal());
         orderItemsEqualsToProductsWithQuantities(order.getItems(), products, productsWithQuantities);
@@ -104,7 +105,7 @@ public class OrderEntityTests {
     @Test
     public void updateOrderWhenOrderIsNotDeliveredShouldUpdate() {
         var expectedTotal = BigDecimal.valueOf(950);
-        var order = Order.createNew(customer, products, productsWithQuantities);
+        var order = Order.createNew(customer, products, productsWithQuantities, LocalDateTime.now());
         order.update(products, productsWithQuantitiesForUpdate);
         assertEquals(expectedTotal, order.getTotal());
         orderItemsEqualsToProductsWithQuantities(order.getItems(), products, productsWithQuantitiesForUpdate);
@@ -112,17 +113,17 @@ public class OrderEntityTests {
 
     @Test
     public void updateOrderWhenOrderIsDeliveredShouldThrowException() {
-        var order = Order.createNew(customer, products, productsWithQuantities);
+        var order = Order.createNew(customer, products, productsWithQuantities, LocalDateTime.now());
         var dto = DeliverOrderDto.builder().comment("Delivered thank you").build();
-        order.deliver("Delivered thank you");
+        order.deliver("Delivered thank you", LocalDateTime.now());
         assertThrows(DomainException.class, () -> order.update(products, productsWithQuantitiesForUpdate));
     }
 
     @Test
     public void markOrderAsDeliveredWhenOrderIsNotDeliveredShouldMark() {
-        var order = Order.createNew(customer, products, productsWithQuantities);
+        var order = Order.createNew(customer, products, productsWithQuantities, LocalDateTime.now());
         var dto = DeliverOrderDto.builder().comment("Delivered thank you").build();
-        order.deliver("Delivered thank you");
+        order.deliver("Delivered thank you", LocalDateTime.now());
         assertTrue(order.isDelivered());
         assertNotNull(order.getDeliveredAt());
         assertNotNull(order.getDeliverComments());
@@ -130,10 +131,10 @@ public class OrderEntityTests {
 
     @Test
     public void markOrderAsDeliveredWhenOrderIsDeliveredShouldThrowException() {
-        var order = Order.createNew(customer, products, productsWithQuantities);
-        order.deliver("Delivered thank you");
+        var order = Order.createNew(customer, products, productsWithQuantities, LocalDateTime.now());
+        order.deliver("Delivered thank you", LocalDateTime.now());
         assertThrows(DomainException.class, () -> {
-            order.deliver("Already delivered thank you");
+            order.deliver("Already delivered thank you", LocalDateTime.now());
         });
     }
 

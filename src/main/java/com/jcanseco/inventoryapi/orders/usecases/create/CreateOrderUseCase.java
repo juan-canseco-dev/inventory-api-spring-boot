@@ -6,6 +6,7 @@ import com.jcanseco.inventoryapi.orders.dto.CreateOrderDto;
 import com.jcanseco.inventoryapi.orders.domain.Order;
 import com.jcanseco.inventoryapi.orders.persistence.OrderRepository;
 import com.jcanseco.inventoryapi.shared.errors.DomainException;
+import com.jcanseco.inventoryapi.shared.utils.ClockProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ public class CreateOrderUseCase {
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
     private final OrderRepository orderRepository;
+    private final ClockProvider clockProvider;
 
     @Transactional
     public Long execute(CreateOrderDto dto) {
@@ -26,7 +28,7 @@ public class CreateOrderUseCase {
         var productsWithQuantities = dto.getProductsWithQuantities();
         var products = productRepository.findAllById(productsWithQuantities.keySet());
 
-        var savedOrder = orderRepository.saveAndFlush(Order.createNew(customer, products, productsWithQuantities));
+        var savedOrder = orderRepository.saveAndFlush(Order.createNew(customer, products, productsWithQuantities, clockProvider.now()));
         return savedOrder.getId();
     }
 }

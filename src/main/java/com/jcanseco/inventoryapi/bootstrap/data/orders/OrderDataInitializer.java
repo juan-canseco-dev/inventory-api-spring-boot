@@ -6,8 +6,8 @@ import com.jcanseco.inventoryapi.customers.persistence.CustomerRepository;
 import com.jcanseco.inventoryapi.inventory.stock.domain.Stock;
 import com.jcanseco.inventoryapi.inventory.stock.persistence.StockRepository;
 import com.jcanseco.inventoryapi.orders.persistence.OrderRepository;
-import com.jcanseco.inventoryapi.orders.usecases.create.CreateOrderUseCase;
-import com.jcanseco.inventoryapi.orders.usecases.deliver.DeliverOrderUseCase;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
@@ -35,9 +35,9 @@ import static com.jcanseco.inventoryapi.inventory.stock.persistence.StockSpecifi
 public class OrderDataInitializer implements ApplicationRunner {
 
     private static final long MIN_STOCK_THRESHOLD = 10L;
-    private static final int NUMBER_OF_ORDERS_PER_CUSTOMER = 5;
-    private static final int MAX_PRODUCTS_PER_ORDER = 3;
-    private static final long MAX_QUANTITY_PER_PRODUCT_PER_ORDER = 5L;
+    private static final int NUMBER_OF_ORDERS_PER_CUSTOMER = 10;
+    private static final int MAX_PRODUCTS_PER_ORDER = 6;
+    private static final long MAX_QUANTITY_PER_PRODUCT_PER_ORDER = 20L;
 
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
@@ -73,6 +73,8 @@ public class OrderDataInitializer implements ApplicationRunner {
             return;
         }
 
+        // Sales stars 2022
+        LocalDateTime startDate = LocalDateTime.of(2022, Month.JULY, 1, 0, 0);
         var random = ThreadLocalRandom.current();
         int totalOrdersCreated = 0;
 
@@ -94,12 +96,14 @@ public class OrderDataInitializer implements ApplicationRunner {
                     break;
                 }
 
-                Long orderId = createOrderAndMarkAsDelivered(customer.getId(), orderProducts);
+                Long orderId = createOrderAndMarkAsDelivered(customer.getId(), orderProducts, startDate);
                 updateAvailableStock(productsWithAvailableStock, orderProducts);
 
 
                 customerOrdersCreated++;
                 totalOrdersCreated++;
+
+                startDate = startDate.plusDays(7);
 
                 log.debug(
                         "Created order id {} for customer id {} with {} products.",
@@ -119,15 +123,15 @@ public class OrderDataInitializer implements ApplicationRunner {
         log.info("Order data initialization completed successfully. Total orders created: {}.", totalOrdersCreated);
     }
 
-    private Long createOrderAndMarkAsDelivered(Long customerId, HashMap<Long, Long> productsWithQuantities)
+    private Long createOrderAndMarkAsDelivered(Long customerId, HashMap<Long, Long> productsWithQuantities, LocalDateTime createdAt)
     {
         var customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new DomainException(String.format("Customer with the Id : {%d} was not found.", customerId)));
 
         var products = productRepository.findAllById(productsWithQuantities.keySet());
 
-        var order = com.jcanseco.inventoryapi.orders.domain.Order.createNew(customer, products, productsWithQuantities);
-        order.deliver("Delivered");
+        var order = com.jcanseco.inventoryapi.orders.domain.Order.createNew(customer, products, productsWithQuantities, createdAt);
+        order.deliver("Delivered", createdAt.plusDays(1));
         var savedOrder = orderRepository.saveAndFlush(order);
 
         var stocks = stockRepository.findAll(byProductIds(productsWithQuantities.keySet().stream().toList()));

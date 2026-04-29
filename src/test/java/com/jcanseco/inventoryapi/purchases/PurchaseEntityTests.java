@@ -9,6 +9,7 @@ import com.jcanseco.inventoryapi.shared.address.Address;
 import com.jcanseco.inventoryapi.shared.errors.DomainException;
 import com.jcanseco.inventoryapi.suppliers.domain.Supplier;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +84,7 @@ public class PurchaseEntityTests {
     @Test
     public void createPurchaseItemsAndTotalShouldBeExpected() {
         var expectedTotal = BigDecimal.valueOf(1150);
-        var purchase = Purchase.createNew(supplier, products, productsWithQuantities);
+        var purchase = Purchase.createNew(supplier, products, productsWithQuantities, LocalDateTime.now());
         assertEquals(supplier, purchase.getSupplier());
         assertEquals(expectedTotal, purchase.getTotal());
         purchaseItemsEqualsToProductsWithQuantities(purchase.getItems(), products, productsWithQuantities);
@@ -93,7 +94,7 @@ public class PurchaseEntityTests {
     @Test
     public void updatePurchaseWhenPurchaseIsNotArrivedShouldUpdate() {
         var expectedTotal = BigDecimal.valueOf(575);
-        var purchase = Purchase.createNew(supplier, products, productsWithQuantities);
+        var purchase = Purchase.createNew(supplier, products, productsWithQuantities, LocalDateTime.now());
         purchase.update(products, productsWithQuantitiesForUpdate);
         assertEquals(expectedTotal, purchase.getTotal());
         purchaseItemsEqualsToProductsWithQuantities(purchase.getItems(), products, productsWithQuantitiesForUpdate);
@@ -101,28 +102,28 @@ public class PurchaseEntityTests {
 
     @Test
     public void updatePurchaseWhenPurchaseIsArrivedShouldThrowException() {
-        var purchase = Purchase.createNew(supplier, products, productsWithQuantities);
+        var purchase = Purchase.createNew(supplier, products, productsWithQuantities, LocalDateTime.now());
         String receiveComments = "Received thank you";
-        purchase.markAsArrived(receiveComments);
+        purchase.markAsArrived(receiveComments, LocalDateTime.now());
         assertThrows(DomainException.class, () -> purchase.update(products, productsWithQuantitiesForUpdate));
     }
 
     @Test
     public void markPurchaseAsArrivedWhenPurchaseIsNotArrivedShouldMark() {
-        var purchase = Purchase.createNew(supplier, products, productsWithQuantities);
+        var purchase = Purchase.createNew(supplier, products, productsWithQuantities, LocalDateTime.now());
         String receiveComments = "Received thank you";
-        purchase.markAsArrived(receiveComments);
+        purchase.markAsArrived(receiveComments, LocalDateTime.now());
         assertNotNull(purchase.getArrivedAt());
         assertNotNull(purchase.getReceiveComments());
     }
 
     @Test
     public void markPurchaseAsArrivedWhenPurchaseIsArrivedShouldThrowException() {
-        var purchase = Purchase.createNew(supplier, products, productsWithQuantities);
+        var purchase = Purchase.createNew(supplier, products, productsWithQuantities, LocalDateTime.now());
         String receiveComments = "Received thank you";
-        purchase.markAsArrived(receiveComments);
+        purchase.markAsArrived(receiveComments, LocalDateTime.now());
         assertThrows(DomainException.class, () -> {
-            purchase.markAsArrived("Already received thank you");
+            purchase.markAsArrived("Already received thank you", LocalDateTime.now());
         });
     }
 

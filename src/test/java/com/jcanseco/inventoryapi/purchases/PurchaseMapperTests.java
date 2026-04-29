@@ -80,10 +80,11 @@ public class PurchaseMapperTests {
     }
 
     private Purchase buildPurchase(Long id, List<Product> products, HashMap<Long, Long> productsWithQuantities) {
-        var purchase = Purchase.createNew(supplier, products, productsWithQuantities);
+        var createdAt = LocalDateTime.now();
+        var purchase = Purchase.createNew(supplier, products, productsWithQuantities, createdAt);
         purchase.setId(id);
         purchase.setOrderedAt(LocalDateTime.now());
-        purchase.markAsArrived("Received thank you");
+        purchase.markAsArrived("Received thank you", createdAt);
         return purchase;
     }
 

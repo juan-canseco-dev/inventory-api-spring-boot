@@ -48,7 +48,7 @@ public class OrderRepositoryTests {
         var products = productRepository.findAllById(productsWithQuantities.keySet());
 
         var order = orderRepository.saveAndFlush(
-                Order.createNew(customer, products, productsWithQuantities)
+                Order.createNew(customer, products, productsWithQuantities, LocalDateTime.now())
         );
 
         assertNotNull(order);

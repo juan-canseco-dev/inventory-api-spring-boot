@@ -7,6 +7,7 @@ import com.jcanseco.inventoryapi.orders.events.OrderDeliveredEvent;
 import com.jcanseco.inventoryapi.orders.persistence.OrderRepository;
 import com.jcanseco.inventoryapi.shared.errors.NotFoundException;
 import java.util.stream.Collectors;
+import com.jcanseco.inventoryapi.shared.utils.ClockProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class DeliverOrderUseCase {
 
     private final StockRepository stockRepository;
     private final OrderRepository orderRepository;
+    private final ClockProvider clockProvider;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -26,7 +28,7 @@ public class DeliverOrderUseCase {
         var order = orderRepository.findById(dto.getOrderId())
                 .orElseThrow(() -> new NotFoundException(String.format("Order with the Id : {%d} was not found.", dto.getOrderId())));
 
-        order.deliver(dto.getComment());
+        order.deliver(dto.getComment(), clockProvider.now());
         var productsWithQuantities = order.getItems().stream()
                 .collect(Collectors.toMap(OrderItem::getProductId, OrderItem::getQuantity));
 

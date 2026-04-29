@@ -34,15 +34,15 @@ public class Customer {
     @AttributeOverrides({
             @AttributeOverride(
                     name = "country",
-                    column = @Column(name = "customer_address_country", nullable = false, length = 50)
+                    column = @Column(name = "customer_address_country", nullable = false, length = 75)
             ),
             @AttributeOverride(
                     name = "state",
-                    column = @Column(name = "customer_address_state", nullable = false, length = 50)
+                    column = @Column(name = "customer_address_state", nullable = false, length = 75)
             ),
             @AttributeOverride(
                     name = "city",
-                    column = @Column(name = "customer_address_city", nullable = false, length = 50)
+                    column = @Column(name = "customer_address_city", nullable = false, length = 75)
             ),
             @AttributeOverride(
                     name = "zipCode",

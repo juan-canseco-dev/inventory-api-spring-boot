@@ -49,7 +49,7 @@ public class PurchaseRepositoryTests {
         var products = productRepository.findAllById(productsWithQuantities.keySet());
 
         var purchase = purchaseRepository.saveAndFlush(
-                Purchase.createNew(supplier, products, productsWithQuantities)
+                Purchase.createNew(supplier, products, productsWithQuantities, LocalDateTime.now())
         );
 
         assertNotNull(purchase);

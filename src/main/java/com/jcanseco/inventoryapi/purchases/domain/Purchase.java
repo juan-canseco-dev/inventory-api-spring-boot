@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 @EqualsAndHashCode
 @Builder
@@ -48,7 +47,6 @@ public class Purchase {
     @Column(name = "arrived_at")
     private LocalDateTime arrivedAt;
 
-    @CreationTimestamp
     @Column(name = "ordered_at", nullable = false, updatable = false)
     private LocalDateTime orderedAt;
 
@@ -64,17 +62,18 @@ public class Purchase {
         setTotal(total);
     }
 
-    public void markAsArrived(String comments) {
+    public void markAsArrived(String comments, LocalDateTime arrivedAt) {
         if (isArrived()) {
             throw new DomainException(String.format("The purchase with ID %d has already been marked as 'arrived'.", getId()));
         }
         setArrived(true);
         setReceiveComments(comments);
-        setArrivedAt(LocalDateTime.now());
+        setArrivedAt(arrivedAt);
     }
 
-    public static Purchase createNew(Supplier supplier, List<Product> products, HashMap<Long, Long> productsWithQuantities) {
+    public static Purchase createNew(Supplier supplier, List<Product> products, HashMap<Long, Long> productsWithQuantities, LocalDateTime createdAt) {
         var newPurchase =  Purchase.builder()
+                .orderedAt(createdAt)
                 .supplier(supplier)
                 .build();
 

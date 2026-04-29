@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 @EqualsAndHashCode
 @Builder
@@ -38,7 +37,6 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
-    @CreationTimestamp
     @Column(name = "ordered_at", nullable = false, updatable = false)
     private LocalDateTime orderedAt;
 
@@ -63,19 +61,22 @@ public class Order {
         setTotal(total);
     }
 
-    public void deliver(String comments) {
+    public void deliver(String comments, LocalDateTime deliveredAt) {
         if (isDelivered()) {
             throw new DomainException(String.format("The order with ID %d has already been marked as 'delivered'.", getId()));
         }
         setDelivered(true);
-        setDeliveredAt(LocalDateTime.now());
+        setDeliveredAt(deliveredAt);
         setDeliverComments(comments);
     }
 
-    public static Order createNew(Customer customer, List<Product> products, HashMap<Long, Long> productsWithQuantities) {
+    public static Order createNew(Customer customer, List<Product> products, HashMap<Long, Long> productsWithQuantities, LocalDateTime createdAt) {
+
         var newOrder = Order.builder()
                 .customer(customer)
+                .orderedAt(createdAt)
                 .build();
+
         var items = getItemsByProducts(newOrder, products, productsWithQuantities);
         var total = getTotalFromItems(items);
         newOrder.setItems(items);

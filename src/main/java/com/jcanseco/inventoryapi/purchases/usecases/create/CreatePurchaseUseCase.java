@@ -5,6 +5,7 @@ import com.jcanseco.inventoryapi.purchases.dto.CreatePurchaseDto;
 import com.jcanseco.inventoryapi.purchases.domain.Purchase;
 import com.jcanseco.inventoryapi.purchases.persistence.PurchaseRepository;
 import com.jcanseco.inventoryapi.shared.errors.DomainException;
+import com.jcanseco.inventoryapi.shared.utils.ClockProvider;
 import com.jcanseco.inventoryapi.suppliers.persistence.SupplierRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class CreatePurchaseUseCase {
     private final ProductRepository productRepository;
     private final SupplierRepository supplierRepository;
     private final PurchaseRepository purchaseRepository;
-
+    private final ClockProvider clockProvider;
 
     @Transactional
     public Long execute(CreatePurchaseDto dto) {
@@ -27,7 +28,7 @@ public class CreatePurchaseUseCase {
         var products = productRepository.findAllById(productsWithQuantities.keySet());
 
         var savedPurchase = purchaseRepository.saveAndFlush(
-                Purchase.createNew(supplier, products, productsWithQuantities)
+                Purchase.createNew(supplier, products, productsWithQuantities, clockProvider.now())
         );
 
         return savedPurchase.getId();

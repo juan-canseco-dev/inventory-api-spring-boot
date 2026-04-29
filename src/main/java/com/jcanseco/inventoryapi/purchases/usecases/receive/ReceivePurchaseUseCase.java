@@ -9,6 +9,8 @@ import com.jcanseco.inventoryapi.purchases.persistence.PurchaseRepository;
 import com.jcanseco.inventoryapi.shared.errors.NotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.jcanseco.inventoryapi.shared.utils.ClockProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -22,13 +24,14 @@ public class ReceivePurchaseUseCase {
     private final StockRepository stockRepository;
     private final PurchaseRepository purchaseRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final ClockProvider clockProvider;
 
     @Transactional
     public void execute(ReceivePurchaseDto dto) {
         var purchase = purchaseRepository.findById(dto.getPurchaseId())
                 .orElseThrow(() -> new NotFoundException(String.format("Purchase with the Id : {%d} was not found.", dto.getPurchaseId())));
 
-        purchase.markAsArrived(dto.getComment());
+        purchase.markAsArrived(dto.getComment(), clockProvider.now());
 
         var productsWithQuantities = purchase.getItems().stream()
                 .collect(Collectors.toMap(PurchaseItem::getProductId, PurchaseItem::getQuantity));

@@ -9,6 +9,9 @@ import com.jcanseco.inventoryapi.purchases.persistence.PurchaseRepository;
 import com.jcanseco.inventoryapi.shared.errors.DomainException;
 import com.jcanseco.inventoryapi.suppliers.domain.Supplier;
 import com.jcanseco.inventoryapi.suppliers.persistence.SupplierRepository;
+
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,6 +56,7 @@ public class PurchaseDataInitializer implements ApplicationRunner {
         log.info("Found {} suppliers for purchase generation.", suppliers.size());
 
         int totalPurchasesCreated = 0;
+        LocalDateTime startDate = LocalDateTime.of(2022, Month.JULY, 1, 0,0);
 
         for (var supplier : suppliers) {
             var productsBySupplier = productRepository.findAll(bySupplierSpec(supplier));
@@ -74,7 +78,8 @@ public class PurchaseDataInitializer implements ApplicationRunner {
             for (int i = 0; i < NUM_OF_PURCHASES_BY_SUPPLIER; i++) {
                 var productsWithQuantitiesMap = createQuantityMapFromProduct(productsBySupplier, initialQuantity);
 
-                Long purchaseId = createPurchaseAndMarkAsReceived(supplier.getId(), productsWithQuantitiesMap);
+                Long purchaseId = createPurchaseAndMarkAsReceived(supplier.getId(), productsWithQuantitiesMap, startDate);
+                startDate = startDate.plusDays(7);
 
                 log.debug(
                         "Created purchase with id {} for supplier id {} using quantity {} for {} products.",
@@ -93,14 +98,14 @@ public class PurchaseDataInitializer implements ApplicationRunner {
         log.info("Purchase data initialization completed successfully. Total purchases created and received: {}.", totalPurchasesCreated);
     }
 
-    private Long createPurchaseAndMarkAsReceived(Long supplierId, HashMap<Long, Long> productsWithQuantities) {
+    private Long createPurchaseAndMarkAsReceived(Long supplierId, HashMap<Long, Long> productsWithQuantities, LocalDateTime createdAt) {
         var supplier = supplierRepository.findById(supplierId)
                 .orElseThrow(() -> new DomainException(String.format("Supplier with the Id : {%d} was not found.", supplierId)));
 
         var products = productRepository.findAllById(productsWithQuantities.keySet());
 
-        var newPurchase = Purchase.createNew(supplier, products, productsWithQuantities);
-        newPurchase.markAsArrived("Arrived");
+        var newPurchase = Purchase.createNew(supplier, products, productsWithQuantities, createdAt);
+        newPurchase.markAsArrived("Arrived", createdAt.plusDays(1));
 
         var savedPurchase = purchaseRepository.saveAndFlush(
                 newPurchase

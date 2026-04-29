@@ -89,10 +89,10 @@ public class OrderMapperTests {
     }
 
     private Order buildOrder(Long id, List<Product> products, HashMap<Long, Long> productsWithQuantities) {
-        var order = Order.createNew(customer, products, productsWithQuantities);
+        var order = Order.createNew(customer, products, productsWithQuantities, LocalDateTime.now());
         order.setId(id);
         order.setOrderedAt(LocalDateTime.now());
-        order.deliver("Delivered thank you");
+        order.deliver("Delivered thank you", LocalDateTime.now());
         return order;
     }
 
